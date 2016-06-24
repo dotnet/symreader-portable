@@ -2,7 +2,6 @@
 // Jenkins DSL: https://github.com/jenkinsci/job-dsl-plugin/wiki
 
 import jobs.generation.Utilities;
-import jobs.generation.InternalUtilities;
 
 static getJobName(def opsysName, def configName, def testName) {
   return "${opsysName}_${configName}_${testName}"
@@ -161,7 +160,7 @@ set TMP=%TEMP%
         def fullJobName = Utilities.getFullJobName(projectName, jobName, isPR)
         def myJob = job(fullJobName)
 
-        InternalUtilities.standardJobSetup(myJob, projectName, isPR, "*/${branchName}")
+        Utilities.standardJobSetup(myJob, projectName, isPR, "*/${branchName}")
 
         if (testName == 'build') {
           if (isPR) {
@@ -182,7 +181,7 @@ set TMP=%TEMP%
           addXUnitDotNETResults(myJob, configName)
         }
 
-        Utilities.setMachineAffinity(myJob, 'Windows_NT', 'latest-or-auto-internal')
+        Utilities.setMachineAffinity(myJob, 'Windows_NT', 'latest-or-auto')
 
         if (!isPR) {
           addExtendedEmailPublisher(myJob)
