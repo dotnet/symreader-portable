@@ -1,10 +1,4 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- ====================================================================================
-
-         Generation of AssemblyVersion attributes from the BuildVersion property
-
-       ==================================================================================== -->
-
   <PropertyGroup>
     <GeneratedAssemblyInfoFile>$(IntermediateOutputPath)GeneratedAssemblyInfo_$(BuildVersion)$(DefaultLanguageSourceExtension)</GeneratedAssemblyInfoFile>
   </PropertyGroup>
@@ -13,17 +7,23 @@
     <AssemblyVersionAttribute Include="System.Reflection.AssemblyCompanyAttribute">
       <_Parameter1>Microsoft Corporation</_Parameter1>
     </AssemblyVersionAttribute>
+    <AssemblyInfoAttribute Include="System.Reflection.AssemblyConfigurationAttribute">
+      <_Parameter1>$(Configuration)</_Parameter1>
+    </AssemblyInfoAttribute>
     <AssemblyVersionAttribute Include="System.Reflection.AssemblyCopyrightAttribute">
       <_Parameter1>© Microsoft Corporation. All rights reserved.</_Parameter1>
     </AssemblyVersionAttribute>
-    <AssemblyVersionAttribute Include="System.Reflection.AssemblyVersionAttribute">
-      <_Parameter1>$(AssemblyVersion)</_Parameter1>
-    </AssemblyVersionAttribute>
+    <AssemblyInfoAttribute Include="System.Reflection.AssemblyDefaultAliasAttribute">
+      <_Parameter1>$(AssemblyName)</_Parameter1>
+    </AssemblyInfoAttribute>
     <AssemblyVersionAttribute Include="System.Reflection.AssemblyFileVersionAttribute">
       <_Parameter1>$(BuildVersion)</_Parameter1>
     </AssemblyVersionAttribute>
     <AssemblyVersionAttribute Include="System.Reflection.AssemblyInformationalVersionAttribute">
       <_Parameter1>$(BuildVersion)</_Parameter1>
+    </AssemblyVersionAttribute>
+    <AssemblyVersionAttribute Include="System.Reflection.AssemblyVersionAttribute">
+      <_Parameter1>$(AssemblyVersion)</_Parameter1>
     </AssemblyVersionAttribute>
   </ItemGroup>
 
@@ -70,21 +70,13 @@
           Inputs="$(MSBuildThisFileFullPath)"
           Outputs="$(GeneratedAssemblyInfoFile)"
           DependsOnTargets="PrepareForBuild"
-          Condition="('$(Language)' == 'C#' or '$(Language)' == 'VB')">
+          Condition="('$(Language)' == 'C#' or '$(Language)' == 'VB') and '$(OS)' == 'Windows_NT' ">
 
-    <CreateItem Include="System.Reflection.AssemblyMetadataAttribute"
-            AdditionalMetadata="_Parameter1=Serviceable;_Parameter2=True"
-            Condition="'$(ServiceablePackage)' == 'true'">
-      <Output TaskParameter="Include" ItemName="AssemblyVersionAttribute" />
-    </CreateItem>
-
-    <!-- The necessity of this Task is tracked by https://github.com/dotnet/roslyn/issues/8421 -->
-    <WriteCodeFragmentEx 
-        AssemblyAttributes="@(AssemblyVersionAttribute)"
-        Language="$(Language)"
-        OutputFile="$(GeneratedAssemblyInfoFile)">
+    <WriteCodeFragment AssemblyAttributes="@(AssemblyVersionAttribute)"
+                       Language="$(Language)"
+                       OutputFile="$(GeneratedAssemblyInfoFile)">
       <Output TaskParameter="OutputFile" ItemName="Compile" />
       <Output TaskParameter="OutputFile" ItemName="FileWrites" />
-    </WriteCodeFragmentEx>
+    </WriteCodeFragment>
   </Target>
 </Project>

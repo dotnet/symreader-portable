@@ -13,11 +13,11 @@
     <RootNamespace>Microsoft.DiaSymReader.PortablePdb.UnitTests</RootNamespace>
     <AssemblyName>Microsoft.DiaSymReader.PortablePdb.UnitTests</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <SolutionDir Condition="'$(SolutionDir)' == '' OR '$(SolutionDir)' == '*Undefined*'">..\..\..\..\</SolutionDir>
     <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <TargetFrameworkIdentifier>.NETPortable</TargetFrameworkIdentifier>
+    <NuGetTargetMoniker>.NETStandard,Version=v1.3</NuGetTargetMoniker>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
@@ -92,13 +92,16 @@
     <Compile Include="SymReaderTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="project.json" />
+    <None Include="project.json" />    
+    <None Include="Microsoft.DiaSymReader.PortablePdb.UnitTests.xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ImportGroup Label="Targets">
-    <Import Project="..\..\build\Targets\VSL.Imports.targets" />
-    <Import Project="..\..\build\Targets\Roslyn.Toolsets.Xunit.targets" />
+    <Import Project="..\..\build\Targets\Imports.targets" />
+    <Import Project="..\..\build\Toolset\XunitProjectRunAction.targets" />
   </ImportGroup>
 </Project>
