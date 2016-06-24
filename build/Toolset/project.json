@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "Microsoft.Net.Compilers": "2.0.0-beta1",
+    "xunit.runner.console": "2.1.0"
+  },
+  "frameworks": {
+    "net46": {}
+  },
+  "runtimes": {
+    "win": {}
+  }
+}

@@ -7,11 +7,8 @@
     <NuSpec Include="Microsoft.DiaSymReader.PortablePdb" />
   </ItemGroup>
   <Target Name="Build" Inputs="@(NuSpec)" Outputs="@(NuSpec->NuGet\%(Identity).$(NuGetVersion).nupkg">
-    <PropertyGroup>
-      <NuGetOutDir>$(OutDir)NuGet</NuGetOutDir>
-    </PropertyGroup>
     <MakeDir Directories="$(NuGetOutDir)" Condition="!Exists('$(NuGetOutDir)')" />
-    <Exec Command='$(NuGetToolPath) Pack "$(MSBuildProjectDirectory)\%(NuSpec.Identity).nuspec" -BasePath "$(OutDir)\" -OutputDirectory "$(NuGetOutDir)" -prop currentVersion="$(NuGetVersion)"' />
+    <Exec Command='$(NuGetToolPath) Pack "$(MSBuildProjectDirectory)\%(NuSpec.Identity).nuspec" -BasePath "$(OutDir)" -OutputDirectory "$(NuGetOutDir)" -prop currentVersion="$(NuGetVersion)"' />
   </Target>
   <Target Name="Clean">
     <RemoveDir Directories="$(OutDir)NuGet" />
