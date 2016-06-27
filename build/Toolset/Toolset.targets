@@ -1,12 +1,18 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- Copyright (c)  Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information. -->
+
+  <!--
+  
+  Requires the following properties to be set:
+    ToolsetCompilerPackageVersion
+    XUnitConsoleRunnerPackageVersion
+    
+  -->
+
   <Import Project="NuGet.props" />
 
   <PropertyGroup>
-    <ToolsetCompilerPackageVersion>2.0.0-beta3-60616-03</ToolsetCompilerPackageVersion>
     <ToolsetCompilerPropsFilePath>$(NuGetPackageRoot)\Microsoft.Net.Compilers\$(ToolsetCompilerPackageVersion)\build\Microsoft.Net.Compilers.props</ToolsetCompilerPropsFilePath>
-
-    <XUnitConsoleRunnerPackageVersion>2.1.0</XUnitConsoleRunnerPackageVersion>
     <XUnitConsoleRunnerExeFilePath>$(NuGetPackageRoot)\xunit.runner.console\$(XUnitConsoleRunnerPackageVersion)\tools\xunit.console.x86.exe</XUnitConsoleRunnerExeFilePath>
   </PropertyGroup>
   
