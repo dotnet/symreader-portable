@@ -199,7 +199,7 @@ function Locate-xUnitLogPath {
 function Locate-xUnitTestBinaries {
   $artifactsPath = Locate-ArtifactsPath
 
-  $binariesPath = Join-Path -path $artifactsPath -childPath "$configuration\bin\DeployDesktopTestRuntime"
+  $binariesPath = Join-Path -path $artifactsPath -childPath "$configuration\bin\DesktopTests"
   $testBinaries = Get-ChildItem -path $binariesPath -filter $testFilter -recurse -force
 
   $xUnitTestBinaries = @()
@@ -214,7 +214,7 @@ function Locate-xUnitTestBinaries {
 function Locate-VsixDeployExe {
   $artifactsPath = Locate-ArtifactsPath
   
-  $binariesPath = Join-Path -path $artifactsPath -childPath "$configuration\bin\DeployDesktopTestRuntime"
+  $binariesPath = Join-Path -path $artifactsPath -childPath "$configuration\bin\DesktopTests"
 
   return Join-Path $binariesPath "DeployIntegrationTestVsixes\DeployIntegrationTestVsixes.exe"
 }
@@ -346,7 +346,7 @@ function Perform-Test-Core {
   }
 
   $artifactsPath = Locate-ArtifactsPath
-  $binariesPath = Join-Path $artifactsPath "$configuration\bin\DeployCoreClrTestRuntime"
+  $binariesPath = Join-Path $artifactsPath "$configuration\bin\CoreTests"
  
   $corerun = Join-Path $binariesPath "CoreRun.exe"
   $xUnit = Join-Path $binariesPath "xunit.console.netcore.exe"

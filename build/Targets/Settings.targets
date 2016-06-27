@@ -1,9 +1,9 @@
 <Project DefaultTargets="Build" InitialTargets="RestoreToolsetCheck" TreatAsLocalProperty="OutDir;RoslynHive" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- Copyright (c)  Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information. -->
 
-  <!-- This file is imported by all projects at the beginning of the project files -->
-
   <Import Project="Version.props" />
+  <Import Project="Dependencies.props" />  
+  
   <Import Project="..\Toolset\Toolset.targets" />
 
   <!-- ====================================================================================
@@ -29,10 +29,10 @@
     <FileAlignment>512</FileAlignment>
     <HighEntropyVA>true</HighEntropyVA>
     <ArtifactsDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\..\..\artifacts'))</ArtifactsDir>
-    <ProjectOutSubDir>$([System.IO.Path]::GetFileName('$(MSBuildProjectDirectory)'))</ProjectOutSubDir>
-    <NuGetOutDir>$(ArtifactsDir)\nuget</NuGetOutDir>
-    <OutDir Condition="'$(OutDir)' == ''">$(ArtifactsDir)\$(Configuration)\bin\$(ProjectOutSubDir)</OutDir>
-    <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == ''">$(ArtifactsDir)\$(Configuration)\obj\$(ProjectOutSubDir)</IntermediateOutputPath>
+    <OutDirName Condition="'$(OutDirName)' == ''">$([System.IO.Path]::GetFileName('$(MSBuildProjectDirectory)'))</OutDirName>
+    <OutDirBase>$(ArtifactsDir)\$(Configuration)\bin</OutDirBase>
+    <OutDir Condition="'$(OutDir)' == ''">$(OutDirBase)\$(OutDirName)</OutDir>
+    <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == ''">$(ArtifactsDir)\$(Configuration)\obj\$(OutDirName)</IntermediateOutputPath>
 
     <!-- Disable AppX packaging for the Roslyn source. Not setting this to false has the side effect
          that any builds of portable projects end up in a sub folder of $(OutDir). Search for this flag in
