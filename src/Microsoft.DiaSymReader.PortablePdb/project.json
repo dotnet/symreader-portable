@@ -2,7 +2,7 @@
   "dependencies": {
     "System.Collections.Immutable": "1.2.0",
     "System.Reflection.Metadata": "1.4.1-beta-24223-07",
-    "Microsoft.DiaSymReader": "1.1.0-beta1-60617-01",
+    "Microsoft.DiaSymReader": "1.1.0-beta1-60625-03",
     "System.Collections": "4.0.11",
     "System.Diagnostics.Debug": "4.0.11",
     "System.Runtime": "4.1.0",

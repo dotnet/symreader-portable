@@ -4,7 +4,7 @@
     <XUnitConsoleRunnerPackageVersion>2.1.0</XUnitConsoleRunnerPackageVersion>
   
     <!-- symreader -->
-    <MicrosoftDiaSymReaderVersion>1.1.0-beta1-60617-01</MicrosoftDiaSymReaderVersion>
+    <MicrosoftDiaSymReaderVersion>1.1.0-beta1-60625-03</MicrosoftDiaSymReaderVersion>
     <MicrosoftDiaSymReaderNativeVersion>1.4.0</MicrosoftDiaSymReaderNativeVersion>
 
     <!-- CoreFX -->
