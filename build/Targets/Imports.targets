@@ -11,7 +11,7 @@
     <DocumentationFile Condition="'$(DocumentationFile)' == '' AND '$(NoDocumentationFile)' != 'true' AND '$(AssemblyName)' != ''">$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
 
-  <Import Project="..\Signing\Signing.targets"/>
+  <Import Project="..\Signing\StrongName.targets"/>
 
   <!-- ====================================================================================
          Import Language Specific Targets
