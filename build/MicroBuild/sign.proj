@@ -28,7 +28,7 @@
 
     <Message Text="Signing using authenticode certificate '%(AssembliesToSign.AuthenticodeCertificateName)' for @(AssembliesToSign)"/>
     <SignFiles Files="@(AssembliesToSign)"
-               BinariesDirectory="$(OutDir)"
+               BinariesDirectory="$(OutDirBase)"
                IntermediatesDirectory="$(IntermediateOutputPath)"
                Type="$(SignType)" />
   </Target>
