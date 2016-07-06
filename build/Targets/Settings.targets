@@ -23,7 +23,8 @@
     <OverwriteReadOnlyFiles Condition="'$(OverwriteReadOnlyFiles)' == ''">true</OverwriteReadOnlyFiles>
     <SignAssembly Condition="'$(SignAssembly)' == ''">true</SignAssembly>
     <FileAlignment>512</FileAlignment>
-    <HighEntropyVA>true</HighEntropyVA>    
+    <HighEntropyVA>true</HighEntropyVA>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
   </PropertyGroup>
 
   <!-- ====================================================================================
