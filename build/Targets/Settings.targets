@@ -24,6 +24,10 @@
     <SignAssembly Condition="'$(SignAssembly)' == ''">true</SignAssembly>
     <FileAlignment>512</FileAlignment>
     <HighEntropyVA>true</HighEntropyVA>
+    <!-- 
+    Suppress generating TFA so that projects targeting Portable Profile7 can reference the dll
+    (see https://github.com/dotnet/roslyn/issues/11067).
+    -->
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
   </PropertyGroup>
 
