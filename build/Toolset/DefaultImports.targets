@@ -14,4 +14,8 @@
       </PropertyGroup>
     </When>
   </Choose>
+  
+  <PropertyGroup>
+    <DocumentationFile Condition="'$(DocumentationFile)' == '' AND '$(NoDocumentationFile)' != 'true' AND '$(AssemblyName)' != ''">$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
+  </PropertyGroup>
 </Project>

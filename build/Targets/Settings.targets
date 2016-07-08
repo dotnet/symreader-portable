@@ -3,9 +3,6 @@
 
   <Import Project="Version.props" />
   <Import Project="Dependencies.props" />
-  <Import Project="Layout.props"/>
-
-  <Import Project="..\Toolset\Toolset.targets" />
   <Import Project="..\Toolset\DefaultSettings.targets" />
 
   <PropertyGroup>
