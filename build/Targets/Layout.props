@@ -10,7 +10,9 @@
     <OutDirBase>$(ArtifactsDir)\$(Configuration)\bin</OutDirBase>
     <OutDir Condition="'$(OutDir)' == ''">$(OutDirBase)\$(OutDirName)</OutDir>
     <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == ''">$(ArtifactsDir)\$(Configuration)\obj\$(OutDirName)</IntermediateOutputPath>
-    
+    <OutputPath>$(OutDir)</OutputPath>
+    <DocumentationFile Condition="'$(DocumentationFile)' == '' AND '$(NoDocumentationFile)' != 'true' AND '$(AssemblyName)' != ''">$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
+
     <!-- Disable AppX packaging for the Roslyn source. Not setting this to false has the side effect
            that any builds of portable projects end up in a sub folder of $(OutDir). Search for this flag in
            Microsoft.Common.CurrentVersion.targets to see how it is consumed -->

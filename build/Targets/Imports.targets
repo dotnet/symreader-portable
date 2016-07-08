@@ -3,46 +3,8 @@
 
   <!-- This file is imported by all projects at the end of the project files -->
 
-  <!-- ====================================================================================
-         Update Common Properties
-       ==================================================================================== -->
-  <PropertyGroup>
-    <OutputPath>$(OutDir)</OutputPath>
-    <DocumentationFile Condition="'$(DocumentationFile)' == '' AND '$(NoDocumentationFile)' != 'true' AND '$(AssemblyName)' != ''">$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
-  </PropertyGroup>
-
   <Import Project="..\Signing\StrongName.targets"/>
-
-  <!-- ====================================================================================
-         Import Language Specific Targets
-       ==================================================================================== -->
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" Condition="'$(TargetFrameworkIdentifier)' == '.NETPortable'" />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" Condition="'$(TargetFrameworkIdentifier)' != '.NETPortable'" />
-
-  <Choose>
-    <When Condition="'$(TargetFrameworkIdentifier)' == '.NETPortable' AND
-                     '$(TargetFrameworkVersion)' == 'v5.0'">
-      <!-- Treat portable exes as CoreClr-targeting-exes -->
-      <PropertyGroup Condition="'$(OutputType)' == 'Exe'">
-        <NuGetTargetMoniker>.NETCoreApp,Version=v1.0</NuGetTargetMoniker>
-        <BaseNuGetRuntimeIdentifier Condition="'$(OS)' == 'Windows_NT'">win7</BaseNuGetRuntimeIdentifier>
-      </PropertyGroup>
-    </When>
-  </Choose>
-
-  <!-- ====================================================================================
-
-         Generation of AssemblyVersion attributes from the BuildVersion property
-
-       ==================================================================================== -->
-
-  <Import Project="GenerateAssemblyInfo.targets" />
-
-  <!-- ====================================================================================
-
-         Generation of InternalsVisibleTo attributes from the project
-
-       ==================================================================================== -->
-
-  <Import Project="GenerateInternalsVisibleTo.targets" />
+  <Import Project="..\Toolset\DefaultImports.targets"/>
+  <Import Project="..\Toolset\GenerateAssemblyInfo.targets" />
+  <Import Project="..\Toolset\GenerateInternalsVisibleTo.targets" />
 </Project>
