@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" InitialTargets="RestoreToolsetCheck" TreatAsLocalProperty="OutDir;RoslynHive" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" InitialTargets="RestoreToolsetCheck" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- Copyright (c)  Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information. -->
 
   <Import Project="Version.props" />
@@ -6,48 +6,13 @@
   <Import Project="Layout.props"/>
 
   <Import Project="..\Toolset\Toolset.targets" />
+  <Import Project="..\Toolset\DefaultSettings.targets" />
 
-  <!-- ====================================================================================
-         Import Global Properties
-       ==================================================================================== -->
-
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-
-  <!-- ====================================================================================
-         Update Common Properties
-       ==================================================================================== -->
   <PropertyGroup>
-    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <SignAssembly Condition="'$(SignAssembly)' == ''">true</SignAssembly>
-    <OverwriteReadOnlyFiles Condition="'$(OverwriteReadOnlyFiles)' == ''">true</OverwriteReadOnlyFiles>
-    <SignAssembly Condition="'$(SignAssembly)' == ''">true</SignAssembly>
-    <FileAlignment>512</FileAlignment>
-    <HighEntropyVA>true</HighEntropyVA>
     <!-- 
     Suppress generating TFA so that projects targeting Portable Profile7 can reference the dll
     (see https://github.com/dotnet/roslyn/issues/11067).
     -->
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
-  </PropertyGroup>
-
-  <!-- ====================================================================================
-         C# Specific Settings
-       ==================================================================================== -->
-  <PropertyGroup>
-    <WarningLevel>4</WarningLevel>
-    <ErrorReport>prompt</ErrorReport>
-    <NoWarn>1591</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <DebugType>pdbonly</DebugType>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
   </PropertyGroup>
 </Project>
