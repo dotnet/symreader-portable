@@ -5,8 +5,6 @@
     <Import Project="..\..\build\Targets\Settings.targets" />
   </ImportGroup>
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{C4C4BEEA-6E4C-4C03-841A-BB085AF9E097}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>Microsoft.DiaSymReader.Tools</RootNamespace>
@@ -23,7 +21,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="Pdb2Pdb.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />

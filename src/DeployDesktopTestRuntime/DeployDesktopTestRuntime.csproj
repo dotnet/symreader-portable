@@ -30,6 +30,7 @@
     we need to copy xUnit dependencies and Desktop FX facades to all test project out directories.
     -->
     <PostBuildEvent>xcopy /q /y $(OutDir)\*.dll $(OutDirBase)\Microsoft.DiaSymReader.PortablePdb.Tests</PostBuildEvent>
+    <PostBuildEvent>xcopy /q /y $(OutDir)\*.dll $(OutDirBase)\Microsoft.DiaSymReader.Converter.Tests</PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <None Include="project.json" />
@@ -38,6 +39,10 @@
     <ProjectReference Include="..\Microsoft.DiaSymReader.PortablePdb.Tests\Microsoft.DiaSymReader.PortablePdb.UnitTests.csproj">
       <Project>{DEB3D675-5A3C-46DA-8945-F2EFAB135EA0}</Project>
       <Name>Microsoft.DiaSymReader.PortablePdb.UnitTests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Microsoft.DiaSymReader.Converter.Tests\Microsoft.DiaSymReader.Converter.UnitTests.csproj">
+      <Project>{12421910-7B1F-457A-8958-84DE13734F9B}</Project>
+      <Name>Microsoft.DiaSymReader.Converter.UnitTests</Name>
     </ProjectReference>
   </ItemGroup>
   <ImportGroup Label="Targets">
