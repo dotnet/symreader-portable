@@ -33,6 +33,10 @@
       <Project>{DEB3D675-5A3C-46DA-8945-F2EFAB135EA0}</Project>
       <Name>Microsoft.DiaSymReader.PortablePdb.UnitTests</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Microsoft.DiaSymReader.Converter.Tests\Microsoft.DiaSymReader.Converter.UnitTests.csproj">
+      <Project>{12421910-7B1F-457A-8958-84DE13734F9B}</Project>
+      <Name>Microsoft.DiaSymReader.Converter.UnitTests</Name>
+    </ProjectReference>
   </ItemGroup>
   <ImportGroup Label="Targets">
     <Import Project="..\..\build\Targets\Imports.targets" />

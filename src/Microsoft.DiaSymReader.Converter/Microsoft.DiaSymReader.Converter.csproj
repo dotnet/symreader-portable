@@ -23,12 +23,15 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <ItemGroup>
     <Compile Include="IMetadataImport.cs" />
-    <Compile Include="PdbToPdb.cs" />
+    <Compile Include="PdbConverter.cs" />
     <Compile Include="SymReaderFactory.cs" />
     <Compile Include="SymReaderMetadataImport.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Microsoft.DiaSymReader.Converter.UnitTests" />
   </ItemGroup>
   <ImportGroup Label="Targets">
     <Import Project="..\..\build\Targets\Imports.targets" />

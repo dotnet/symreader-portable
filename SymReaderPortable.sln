@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.DiaSymReader.Conv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pdb2Pdb", "src\Pdb2Pdb\Pdb2Pdb.csproj", "{C4C4BEEA-6E4C-4C03-841A-BB085AF9E097}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.DiaSymReader.Converter.UnitTests", "src\Microsoft.DiaSymReader.Converter.Tests\Microsoft.DiaSymReader.Converter.UnitTests.csproj", "{12421910-7B1F-457A-8958-84DE13734F9B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,14 @@ Global
 		{C4C4BEEA-6E4C-4C03-841A-BB085AF9E097}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C4C4BEEA-6E4C-4C03-841A-BB085AF9E097}.Release|x64.ActiveCfg = Release|Any CPU
 		{C4C4BEEA-6E4C-4C03-841A-BB085AF9E097}.Release|x64.Build.0 = Release|Any CPU
+		{12421910-7B1F-457A-8958-84DE13734F9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12421910-7B1F-457A-8958-84DE13734F9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12421910-7B1F-457A-8958-84DE13734F9B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{12421910-7B1F-457A-8958-84DE13734F9B}.Debug|x64.Build.0 = Debug|Any CPU
+		{12421910-7B1F-457A-8958-84DE13734F9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12421910-7B1F-457A-8958-84DE13734F9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12421910-7B1F-457A-8958-84DE13734F9B}.Release|x64.ActiveCfg = Release|Any CPU
+		{12421910-7B1F-457A-8958-84DE13734F9B}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

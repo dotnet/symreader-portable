@@ -12,10 +12,25 @@ using System.Text;
 
 namespace Microsoft.DiaSymReader.Tools
 {
-    public sealed class PdbToPdb
+    public sealed class PdbConverter
     {
         public static void Convert(Stream peStream, Stream sourcePdbStream, Stream targetPdbStream)
         {
+            if (peStream == null)
+            {
+                throw new ArgumentNullException(nameof(peStream));
+            }
+
+            if (sourcePdbStream == null)
+            {
+                throw new ArgumentNullException(nameof(sourcePdbStream));
+            }
+
+            if (targetPdbStream == null)
+            {
+                throw new ArgumentNullException(nameof(targetPdbStream));
+            }
+
             var metadataBuilder = new MetadataBuilder();
             ImmutableArray<int> typeSystemRowCounts;
             var debugEntryPointToken = default(MethodDefinitionHandle);

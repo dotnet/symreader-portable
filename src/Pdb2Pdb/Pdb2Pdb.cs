@@ -5,14 +5,14 @@ using System.IO;
 
 namespace Microsoft.DiaSymReader.Tools
 {
-    internal static class Program
+    internal static class Pdb2Pdb
     {
         public static int Main(string[] args)
         {
             if (args.Length != 1)
             {
                 Console.WriteLine("Usage: Pdb2Pdb <PE file>");
-                return 0;
+                return 1;
             }
 
             string peFile = args[0];
@@ -37,7 +37,7 @@ namespace Microsoft.DiaSymReader.Tools
                 {
                     using (var portablePdbStream = new FileStream(portablePdbFile, FileMode.Create, FileAccess.ReadWrite))
                     {
-                        PdbToPdb.Convert(peStream, nativePdbStream, portablePdbStream);
+                        PdbConverter.Convert(peStream, nativePdbStream, portablePdbStream);
                     }
                 }
             }
