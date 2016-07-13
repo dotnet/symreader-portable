@@ -24,14 +24,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
-  <PropertyGroup>
-    <!-- 
-    TestDriven.NET runs tests from the output directory of the test project,
-    we need to copy xUnit dependencies and Desktop FX facades to all test project out directories.
-    -->
-    <PostBuildEvent>xcopy /q /y $(OutDir)\*.dll $(OutDirBase)\Microsoft.DiaSymReader.PortablePdb.Tests</PostBuildEvent>
-    <PostBuildEvent>xcopy /q /y $(OutDir)\*.dll $(OutDirBase)\Microsoft.DiaSymReader.Converter.Tests</PostBuildEvent>
-  </PropertyGroup>
   <ItemGroup>
     <None Include="project.json" />
   </ItemGroup>
@@ -48,4 +40,16 @@
   <ImportGroup Label="Targets">
     <Import Project="..\..\build\Targets\Imports.targets" />
   </ImportGroup>
+  <!--
+    VS test runners run tests from the output directory of the test project.
+    We need to copy xUnit dependencies and Desktop FX facades to all test project out directories.
+    Under some circumstances, xUnit files will be locked by VS so we retry just once and only warn on error.
+  -->
+  <Target Name="DeployCopyForVSTests" AfterTargets="CopyFilesToOutputDirectory">
+    <ItemGroup>
+      <CopyForVSTests Include="$(OutDir)\*.dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(CopyForVSTests)" DestinationFolder="$(OutDirBase)\Microsoft.DiaSymReader.PortablePdb.Tests" Retries="1" ContinueOnError="WarnAndContinue" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(CopyForVSTests)" DestinationFolder="$(OutDirBase)\Microsoft.DiaSymReader.Converter.Tests" Retries="1" ContinueOnError="WarnAndContinue" SkipUnchangedFiles="true" />
+  </Target>
 </Project>
