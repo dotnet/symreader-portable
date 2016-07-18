@@ -3,11 +3,11 @@
 using Roslyn.Test.Utilities;
 using System;
 using System.Reflection.Metadata;
+using System.Runtime.InteropServices;
 using Xunit;
 
 namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 {
-    using System.Runtime.InteropServices;
     using static SymTestHelpers;
 
     public class SymReaderTests
