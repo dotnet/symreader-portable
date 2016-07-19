@@ -38,20 +38,26 @@
     <EmbeddedResource Include="Resources\Async.pdbx">
       <LogicalName>Async.pdbx</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Documents.dllx">
-      <LogicalName>Documents.dllx</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Documents.pdbx">
-      <LogicalName>Documents.pdbx</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="Resources\Documents.dll">
       <LogicalName>Documents.dll</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Documents.pdb">
       <LogicalName>Documents.pdb</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Documents.dllx">
+      <LogicalName>Documents.dllx</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Documents.pdbx">
+      <LogicalName>Documents.pdbx</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\Scopes.dll">
       <LogicalName>Scopes.dll</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Scopes.pdb">
+      <LogicalName>Scopes.pdb</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Scopes.dllx">
+      <LogicalName>Scopes.dllx</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Scopes.pdbx">
       <LogicalName>Scopes.pdbx</LogicalName>
@@ -89,7 +95,7 @@
     <Compile Include="SymReaderTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="project.json" />    
+    <None Include="project.json" />
     <None Include="Microsoft.DiaSymReader.PortablePdb.UnitTests.xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

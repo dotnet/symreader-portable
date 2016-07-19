@@ -22,10 +22,19 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <ItemGroup>
+    <Compile Include="ConstantSignatureConverter.cs" />
+    <Compile Include="MetadataModel.cs" />
+    <Compile Include="Utilities\ByteSequenceComparer.cs" />
+    <Compile Include="Utilities\ExceptionUtilities.cs" />
+    <Compile Include="Utilities\Hash.cs" />
     <Compile Include="IMetadataImport.cs" />
     <Compile Include="PdbConverter.cs" />
     <Compile Include="SymReaderFactory.cs" />
+    <Compile Include="Utilities\ImportDefinitionEncoder.cs" />
+    <Compile Include="Utilities\SerializedTypeDecoder.cs" />
+    <Compile Include="Utilities\SymReaderHelpers.cs" />
     <Compile Include="SymReaderMetadataImport.cs" />
+    <Compile Include="Utilities\MetadataHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />
@@ -33,6 +42,8 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.DiaSymReader.Converter.UnitTests" />
   </ItemGroup>
+  <Import Project="..\Microsoft.CodeAnalysis.Metadata\Microsoft.CodeAnalysis.Metadata.projitems" Label="Shared" />
+  <Import Project="..\Microsoft.CodeAnalysis.PooledObjects\Microsoft.CodeAnalysis.PooledObjects.projitems" Label="Shared" />
   <ImportGroup Label="Targets">
     <Import Project="..\..\build\Targets\Imports.targets" />
   </ImportGroup>

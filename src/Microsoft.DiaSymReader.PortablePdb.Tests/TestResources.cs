@@ -26,13 +26,13 @@ namespace TestResources
 
     public static class Scopes
     {
-        private static byte[] s_dll;
-        public static byte[] Dll => ResourceLoader.GetOrCreateResource(ref s_dll, nameof(Scopes) + ".dll");
+        private static byte[] s_portableDll;
+        public static byte[] PortableDll => ResourceLoader.GetOrCreateResource(ref s_portableDll, nameof(Scopes) + ".dllx");
 
-        private static byte[] s_pdb;
-        public static byte[] Pdb => ResourceLoader.GetOrCreateResource(ref s_pdb, nameof(Scopes) + ".pdbx");
+        private static byte[] s_portablePdb;
+        public static byte[] PortablePdb => ResourceLoader.GetOrCreateResource(ref s_portablePdb, nameof(Scopes) + ".pdbx");
 
-        public static KeyValuePair<byte[], byte[]> DllAndPdb => new KeyValuePair<byte[], byte[]>(Dll, Pdb);
+        public static KeyValuePair<byte[], byte[]> PortableDllAndPdb => new KeyValuePair<byte[], byte[]>(PortableDll, PortablePdb);
     }
 
     public static class Async

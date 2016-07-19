@@ -3,11 +3,11 @@
 using Roslyn.Test.Utilities;
 using System;
 using System.Reflection.Metadata;
+using System.Runtime.InteropServices;
 using Xunit;
 
 namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 {
-    using System.Runtime.InteropServices;
     using static SymTestHelpers;
 
     public class SymReaderTests
@@ -166,7 +166,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         [Fact]
         public void TestMethods1()
         {
-            var symReader = CreateSymReaderFromResource(TestResources.Scopes.DllAndPdb);
+            var symReader = CreateSymReaderFromResource(TestResources.Scopes.PortableDllAndPdb);
             int count;
 
             //
@@ -360,7 +360,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         [Fact]
         public void TestAsyncMethods_Errors()
         {
-            var symReader = CreateSymReaderFromResource(TestResources.Scopes.DllAndPdb);
+            var symReader = CreateSymReaderFromResource(TestResources.Scopes.PortableDllAndPdb);
 
             ISymUnmanagedMethod method;
             Assert.Equal(HResult.S_OK, symReader.GetMethod(0x06000002, out method));

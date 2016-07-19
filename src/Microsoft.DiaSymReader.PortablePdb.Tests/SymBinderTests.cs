@@ -334,11 +334,11 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         {
             bool importCreated = false;
             ISymUnmanagedReader symReader = SymBinder.GetReaderFromPdbStream(
-                new MemoryStream(TestResources.Scopes.Pdb),
+                new MemoryStream(TestResources.Scopes.PortablePdb),
                 new TestMetadataProvider(() =>
                 {
                     importCreated = true;
-                    return new SymMetadataImport(new MemoryStream(TestResources.Scopes.Dll));
+                    return new SymMetadataImport(new MemoryStream(TestResources.Scopes.PortableDll));
                 }));
 
             int count;
