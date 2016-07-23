@@ -1,16 +1,11 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
-using Roslyn.Utilities;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Reflection.PortableExecutable;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
-using System.Reflection.Metadata;
-using System.Collections.Immutable;
-using System.Reflection.PortableExecutable;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
 
 [assembly: Guid("CA89ACD1-A1D5-43DE-890A-5FDF50BC1F93")]
 
@@ -236,18 +231,32 @@ namespace Microsoft.DiaSymReader.PortablePdb
             LazyMetadataImport metadataImport,
             out ISymUnmanagedReader reader)
         {
-            try
+            if (PortableShim.File.Exists(pdbFilePath))
             {
-                if (PortableShim.File.Exists(pdbFilePath))
+                SymReader symReader;
+                try
                 {
-                    var symReader = SymReader.CreateFromFile(pdbFilePath, metadataImport);
-                    reader = symReader;
-                    return symReader.PdbReader.MatchesModule(guid, stamp, age);
+                    symReader = SymReader.CreateFromFile(pdbFilePath, metadataImport);
                 }
-            }
-            catch
-            {
-                // nop
+                catch
+                {
+                    reader = null;
+                    return false;
+                }
+
+                try
+                {
+                    if (symReader.PdbReader.MatchesModule(guid, stamp, age))
+                    {
+                        reader = symReader;
+                        symReader = null;
+                        return true;
+                    }
+                }
+                finally
+                {
+                    symReader?.Destroy();
+                }
             }
 
             reader = null;
@@ -258,7 +267,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         {
             try
             {
-                var peStream = PortableShim.File.OpenRead(peFilePath);
+                var peStream = PortableShim.FileStream.CreateReadShareDelete(peFilePath);
                 using (var peReader = new PEReader(peStream))
                 {
                     foreach (var entry in peReader.ReadDebugDirectory())

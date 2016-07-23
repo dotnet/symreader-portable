@@ -2,8 +2,6 @@
 
 using System;
 using System.IO;
-using Roslyn.Test.Utilities;
-using Roslyn.Utilities;
 using Xunit;
 
 namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
