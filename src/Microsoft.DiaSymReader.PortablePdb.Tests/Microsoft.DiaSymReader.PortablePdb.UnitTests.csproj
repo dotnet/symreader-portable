@@ -74,16 +74,25 @@
     <EmbeddedResource Include="Resources\MethodBoundaries.pdbx">
       <LogicalName>MethodBoundaries.pdbx</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\MiscEmbedded.dll">
+      <LogicalName>MiscEmbedded.dll</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Resources\Documents.cmd" />
-    <Content Include="Resources\Scopes.cmd" />
-    <Content Include="Resources\MethodBoundaries.cmd" />
-    <Content Include="Resources\Async.cmd" />
-    <Content Include="Resources\Scopes.cs" />
-    <Content Include="Resources\Async.cs" />
     <Content Include="Resources\Documents.cs" />
+    <Content Include="Resources\Scopes.cmd" />
+    <Content Include="Resources\Scopes.cs" />
+    <Content Include="Resources\Async.cmd" />
+    <Content Include="Resources\Async.cs" />
+    <Content Include="Resources\MethodBoundaries.cmd" />
+    <Content Include="Resources\MethodBoundaries.cs" />
+    <Content Include="Resources\MiscEmbedded.cmd" />
+    <Content Include="Resources\MiscEmbedded.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="MethodMapTests.cs" />
     <Compile Include="ResourceLoader.cs" />
-    <Content Include="Resources\MethodBoundaries.cs" />
     <Compile Include="SymBinderTests.cs" />
     <Compile Include="TestHelpers\SymTestHelpers.cs" />
     <Compile Include="TestResources.cs" />

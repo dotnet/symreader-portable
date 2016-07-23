@@ -290,6 +290,18 @@ namespace Microsoft.DiaSymReader.PortablePdb
             return false;
         }
 
+        /// <summary>
+        /// Creates a new <see cref="ISymUnmanagedReader"/> for the specified PDB stream.
+        /// </summary>
+        /// <param name="metadataImport">IMetadataImport reading metadata in PE file.</param>
+        /// <param name="stream">PDB stream. The implementation supports Portable PDB and Embedded Portable PDB formats.</param>
+        /// <param name="reader">The new reader instance.</param>
+        /// <returns>
+        /// E_INVALIDARG
+        ///   <paramref name="metadataImport"/> doesn't implement <see cref="IMetadataImport"/>, or
+        ///   <paramref name="stream"/> doesn't implement <see cref="IStream"/>.
+        /// Another error code describing failure to read the stream.
+        /// </returns>
         [PreserveSig]
         public int GetReaderFromStream(
             [MarshalAs(UnmanagedType.Interface)]object metadataImport,
@@ -337,7 +349,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         /// The importer is only constructed if the operation performed on the SymReader requires access
         /// to the metadata.
         /// </param>
-        /// <param name="pdbFilePath">PDB file path.</param>
+        /// <param name="pdbFilePath">PDB file path. The implementation supports Portable PDB format.</param>
         /// <param name="reader">The new reader instance.</param>
         /// <returns>
         /// E_INVALIDARG
@@ -369,7 +381,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         /// The importer is only constructed if the operation performed on the SymReader requires access
         /// to the metadata.
         /// </param>
-        /// <param name="stream">PDB stream.</param>
+        /// <param name="stream">PDB stream. The implementation supports Portable PDB and Embedded Portable PDB formats.</param>
         /// <param name="reader">The new reader instance.</param>
         /// <returns>
         /// E_INVALIDARG
@@ -395,6 +407,3 @@ namespace Microsoft.DiaSymReader.PortablePdb
         }
     }
 }
-
-// regasm /codebase C:\R0\Binaries\Debug\Microsoft.DiaSymReader.PortablePdb.dll
-// tlbexp C:\R0\Binaries\Debug\Microsoft.DiaSymReader.PortablePdb.dll

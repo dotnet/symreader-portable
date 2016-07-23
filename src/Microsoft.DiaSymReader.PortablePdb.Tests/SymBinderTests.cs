@@ -6,6 +6,9 @@ using Xunit;
 
 namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 {
+    using System.Linq;
+    using System.Reflection.PortableExecutable;
+    using Roslyn.Test.Utilities;
     using static SymTestHelpers;
 
     public class SymBinderTests
@@ -311,6 +314,26 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         }
 
         [Fact]
+        public void GetReaderFromStream_PortableEmbedded()
+        {
+            var importer = new SymMetadataImport(new MemoryStream(TestResources.MiscEmbedded.Dll));
+            var peStream = new MemoryStream(TestResources.MiscEmbedded.Dll);
+            var peReader = new PEReader(peStream);
+
+            var embeddedEntry = peReader.ReadDebugDirectory().Single(e => e.Type == DebugDirectoryEntryType.EmbeddedPortablePdb);
+            peStream.Position = embeddedEntry.DataPointer;
+
+            ISymUnmanagedReader symReader = SymBinder.GetReaderFromStream(peStream, importer);
+
+            AssertEx.Equal(new[] { @"C:\MiscEmbedded.cs" }, symReader.GetDocuments().Select(d => d.GetName()));
+
+            Assert.Equal(HResult.S_FALSE, ((ISymUnmanagedDispose)symReader).Destroy());
+            Assert.Equal(HResult.S_OK, ((ISymUnmanagedDispose)symReader).Destroy());
+
+            Assert.Throws<ObjectDisposedException>(() => symReader.GetDocuments());
+        }
+
+        [Fact]
         public void GetReaderFromPdbStream()
         {
             var stream = new MemoryStream(TestResources.Documents.PortablePdb);
@@ -325,6 +348,25 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Assert.Equal(HResult.S_OK, ((ISymUnmanagedDispose)symReader).Destroy());
 
             Assert.Throws<ObjectDisposedException>(() => symReader.GetDocuments(0, out actualCount, null));
+        }
+
+        [Fact]
+        public void GetReaderFromPdbStream_PortableEmbedded()
+        {
+            var peStream = new MemoryStream(TestResources.MiscEmbedded.Dll);
+            var peReader = new PEReader(peStream);
+
+            var embeddedEntry = peReader.ReadDebugDirectory().Single(e => e.Type == DebugDirectoryEntryType.EmbeddedPortablePdb);
+            peStream.Position = embeddedEntry.DataPointer;
+
+            ISymUnmanagedReader symReader = SymBinder.GetReaderFromPdbStream(peStream, NotImplementedMetadataProvider.Instance);
+
+            AssertEx.Equal(new[] { @"C:\MiscEmbedded.cs" }, symReader.GetDocuments().Select(d => d.GetName()));
+
+            Assert.Equal(HResult.S_FALSE, ((ISymUnmanagedDispose)symReader).Destroy());
+            Assert.Equal(HResult.S_OK, ((ISymUnmanagedDispose)symReader).Destroy());
+
+            Assert.Throws<ObjectDisposedException>(() => symReader.GetDocuments());
         }
 
         [Fact]

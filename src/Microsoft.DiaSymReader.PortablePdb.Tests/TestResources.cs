@@ -70,4 +70,10 @@ namespace TestResources
         public static KeyValuePair<byte[], byte[]> PortableDllAndPdb => new KeyValuePair<byte[], byte[]>(PortableDll, PortablePdb);
         public static KeyValuePair<byte[], byte[]> DllAndPdb => new KeyValuePair<byte[], byte[]>(Dll, Pdb);
     }
+
+    public static class MiscEmbedded
+    {
+        private static byte[] s_dll;
+        public static byte[] Dll => ResourceLoader.GetOrCreateResource(ref s_dll, nameof(MiscEmbedded) + ".dll");
+    }
 }

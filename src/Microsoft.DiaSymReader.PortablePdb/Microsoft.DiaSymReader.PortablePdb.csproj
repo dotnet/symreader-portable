@@ -46,6 +46,7 @@
     <Compile Include="SymReader.cs" />
     <Compile Include="SymVariable.cs" />
     <Compile Include="Utilities\PortableShim.cs" />
+    <Compile Include="Utilities\ReadOnlyInteropStream.cs" />
     <Compile Include="Utilities\ReflectionUtilities.cs" />
     <Compile Include="Utilities\StreamExtensions.cs" />
   </ItemGroup>
