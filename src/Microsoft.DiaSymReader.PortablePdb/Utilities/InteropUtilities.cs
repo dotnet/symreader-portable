@@ -2,7 +2,6 @@
 
 using System;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
 
 namespace Microsoft.DiaSymReader.PortablePdb
 {
@@ -55,42 +54,6 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
             Buffer.BlockCopy(bytes, 0, buffer, 0, count);
             return HResult.S_OK;
-        }
-
-        // TODO: use IUnsafeComStream (ComMemoryStream in tests)?
-        internal unsafe static void ReadAllBytes(this IStream stream, out byte[] bytes, out int size)
-        {
-            const int STREAM_SEEK_SET = 0;
-
-            size = GetStreamSize(stream);
-
-            stream.Seek(0, STREAM_SEEK_SET, IntPtr.Zero);
-
-            bytes = new byte[size];
-
-            int bytesRead = 0;
-            stream.Read(bytes, size, (IntPtr)(&bytesRead));
-
-            if (bytesRead != size)
-            {
-                // TODO:
-                throw new NotSupportedException();
-            }
-        }
-
-        private static int GetStreamSize(IStream stream)
-        {
-            const int STATFLAG_NONAME = 1;
-
-            STATSTG stats;
-            stream.Stat(out stats, STATFLAG_NONAME);
-            long result = stats.cbSize;
-            if (result < 0 || result > int.MaxValue)
-            {
-                throw new BadImageFormatException();
-            }
-
-            return (int)result;
         }
 
         internal static void TransferOwnershipOrRelease(ref object objectOpt, object newOwnerOpt)

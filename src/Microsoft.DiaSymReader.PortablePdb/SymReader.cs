@@ -2,6 +2,8 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
@@ -47,10 +49,65 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         internal static ISymUnmanagedReader CreateFromStream(IStream stream, LazyMetadataImport metadataImport)
         {
-            byte[] bytes;
-            int size;
-            stream.ReadAllBytes(out bytes, out size);
-            var provider = MetadataReaderProvider.FromPortablePdbImage(ImmutableByteArrayInterop.DangerousCreateFromUnderlyingArray(ref bytes));
+            var interopStream = new ReadOnlyInteropStream(stream);
+            var header = new byte[2 * sizeof(int)];
+            int bytesRead = interopStream.TryReadAll(header, 0, header.Length);
+
+            MetadataReaderProvider provider;
+
+            // detect Embedded Portable PDB signature:
+            if (bytesRead == header.Length && header[0] == 'M' && header[1] == 'P' && header[2] == 'D' && header[3] == 'B')
+            {
+                int size = BitConverter.ToInt32(header, startIndex: sizeof(int));
+
+                // TODO: We could avoid allocating managed memory here if FromPortablePdbImage accepted non-seekable stream in prefetch mode.
+                // The implemenation in S.R.M. allocates native memory. 
+                byte[] decompressed;
+                try
+                {
+                    decompressed = new byte[size];
+                }
+                catch
+                {
+                    throw new BadImageFormatException();
+                }
+
+                var deflate = new DeflateStream(interopStream, CompressionMode.Decompress, leaveOpen: true);
+                if (size > 0)
+                {
+                    int actualLength;
+
+                    try
+                    {
+                        actualLength = deflate.TryReadAll(decompressed, 0, decompressed.Length);
+                    }
+                    catch (InvalidDataException e)
+                    {
+                        throw new BadImageFormatException(e.Message, e.InnerException);
+                    }
+
+                    if (actualLength != decompressed.Length)
+                    {
+                        throw new BadImageFormatException();
+                    }
+                }
+
+                // Check that there is no more compressed data left, 
+                // in case the decompressed size specified in the header is smaller 
+                // than the actual decompressed size of the data.
+                if (deflate.ReadByte() != -1)
+                {
+                    throw new BadImageFormatException();
+                }
+
+                provider = MetadataReaderProvider.FromPortablePdbImage(ImmutableByteArrayInterop.DangerousCreateFromUnderlyingArray(ref decompressed));
+            }
+            else
+            {
+                interopStream.Position = 0;
+                provider = MetadataReaderProvider.FromPortablePdbStream(interopStream);
+            }
+
             return new SymReader(new PortablePdbReader(provider, metadataImport));
         }
 

@@ -1,0 +1,1 @@
+csc /target:library /debug:embedded /optimize- /deterministic MiscEmbedded.cs
