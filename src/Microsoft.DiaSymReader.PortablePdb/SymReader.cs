@@ -7,7 +7,6 @@ using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
-using Roslyn.Utilities;
 
 namespace Microsoft.DiaSymReader.PortablePdb
 {
@@ -40,18 +39,10 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         internal static SymReader CreateFromFile(string path, LazyMetadataImport metadataImport)
         {
-            byte[] bytes;
-            try
-            {
-                // TODO: use memory mapped files?
-                bytes = PortableShim.File.ReadAllBytes(path);
-            }
-            catch
-            {
-                return null;
-            }
+            var pdbStream = PortableShim.FileStream.CreateReadShareDelete(path);
+            var provider = MetadataReaderProvider.FromPortablePdbStream(pdbStream);
 
-            return new SymReader(new PortablePdbReader(bytes, bytes.Length, metadataImport));
+            return new SymReader(new PortablePdbReader(provider, metadataImport));
         }
 
         internal static ISymUnmanagedReader CreateFromStream(IStream stream, LazyMetadataImport metadataImport)
@@ -59,8 +50,8 @@ namespace Microsoft.DiaSymReader.PortablePdb
             byte[] bytes;
             int size;
             stream.ReadAllBytes(out bytes, out size);
-
-            return new SymReader(new PortablePdbReader(bytes, size, metadataImport));
+            var provider = MetadataReaderProvider.FromPortablePdbImage(ImmutableByteArrayInterop.DangerousCreateFromUnderlyingArray(ref bytes));
+            return new SymReader(new PortablePdbReader(provider, metadataImport));
         }
 
         internal MetadataReader MetadataReader => _pdbReader.MetadataReader;
@@ -409,19 +400,6 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 return HResult.E_INVALIDARG;
             }
 
-            if (name == "<PortablePdbImage>")
-            {
-                count = _pdbReader.ImageSize;
-
-                if (bufferLength == 0)
-                {
-                    return HResult.S_FALSE;
-                }
-
-                Marshal.Copy(_pdbReader.ImagePtr, customDebugInformation, 0, bufferLength);
-                return HResult.S_OK;
-            }
-
             count = 0;
             return HResult.S_FALSE;
         }
@@ -523,18 +501,9 @@ namespace Microsoft.DiaSymReader.PortablePdb
         [PreserveSig]
         public unsafe int GetPortableDebugMetadata(out byte* metadata, out int size)
         {
-            try
-            {
-                metadata = (byte*)_pdbReader.ImagePtr;
-            }
-            catch (InvalidOperationException)
-            {
-                metadata = null;
-                size = 0;
-                return HResult.E_UNEXPECTED;
-            }
-
-            size = _pdbReader.ImageSize;
+            var reader = _pdbReader.MetadataReader;
+            metadata = reader.MetadataPointer;
+            size = reader.MetadataLength;
             return HResult.S_OK;
         }
 

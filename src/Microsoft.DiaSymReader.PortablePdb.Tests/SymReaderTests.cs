@@ -153,14 +153,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             var symReader = CreateSymReaderFromResource(TestResources.Documents.PortableDllAndPdb);
 
             int actualCount;
-            int actualCount2;
             Assert.Equal(HResult.S_FALSE, symReader.GetSymAttribute(0, "<PortablePdbImage>", 0, out actualCount, null));
-
-            byte[] image = new byte[actualCount];
-            Assert.Equal(HResult.S_OK, symReader.GetSymAttribute(0, "<PortablePdbImage>", actualCount, out actualCount2, image));
-            Assert.Equal(actualCount, actualCount2);
-
-            AssertEx.Equal(TestResources.Documents.PortablePdb, image);
         }
 
         [Fact]

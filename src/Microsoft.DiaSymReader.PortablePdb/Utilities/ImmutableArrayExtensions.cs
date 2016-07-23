@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 
-namespace Roslyn.Utilities
+namespace Microsoft.DiaSymReader.PortablePdb
 {
     internal static class ImmutableArrayExtensions
     {

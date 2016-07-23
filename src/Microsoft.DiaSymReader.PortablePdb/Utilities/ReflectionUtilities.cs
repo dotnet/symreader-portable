@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 
-namespace Roslyn.Utilities
+namespace Microsoft.DiaSymReader.PortablePdb
 {
     internal static class ReflectionUtilities
     {
