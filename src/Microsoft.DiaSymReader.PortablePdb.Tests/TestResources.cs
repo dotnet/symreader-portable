@@ -1,7 +1,5 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
 using System.Collections.Generic;
 
 namespace TestResources
@@ -75,5 +73,29 @@ namespace TestResources
     {
         private static byte[] s_dll;
         public static byte[] Dll => ResourceLoader.GetOrCreateResource(ref s_dll, nameof(MiscEmbedded) + ".dll");
+    }
+
+    public static class EmbeddedSource
+    {
+        private static byte[] s_portableDll;
+        public static byte[] PortableDll => ResourceLoader.GetOrCreateResource(ref s_portableDll, nameof(EmbeddedSource) + ".dllx");
+
+        private static byte[] s_portablePdb;
+        public static byte[] PortablePdb => ResourceLoader.GetOrCreateResource(ref s_portablePdb, nameof(EmbeddedSource) + ".pdbx");
+
+        private static byte[] s_dll;
+        public static byte[] Dll => ResourceLoader.GetOrCreateResource(ref s_dll, nameof(EmbeddedSource) + ".dll");
+
+        private static byte[] s_pdb;
+        public static byte[] Pdb => ResourceLoader.GetOrCreateResource(ref s_pdb, nameof(EmbeddedSource) + ".pdb");
+
+        private static byte[] s_cs;
+        public static byte[] CS => ResourceLoader.GetOrCreateResource(ref s_cs, nameof(EmbeddedSource) + ".cs");
+
+        private static byte[] s_csSmall;
+        public static byte[] CSSmall => ResourceLoader.GetOrCreateResource(ref s_csSmall, nameof(EmbeddedSource) + "Small.cs");
+
+        public static KeyValuePair<byte[], byte[]> PortableDllAndPdb => new KeyValuePair<byte[], byte[]>(PortableDll, PortablePdb);
+        public static KeyValuePair<byte[], byte[]> DllAndPdb => new KeyValuePair<byte[], byte[]>(Dll, Pdb);
     }
 }

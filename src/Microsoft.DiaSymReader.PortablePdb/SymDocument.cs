@@ -122,9 +122,8 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         public int GetSourceLength(out int length)
         {
-            // SymReader doesn't support embedded source.
-            length = 0;
-            return HResult.E_NOTIMPL;
+            length = GetEmbeddedSourceBlobReader().Length;
+            return HResult.S_OK;
         }
 
         public int GetSourceRange(
@@ -136,9 +135,45 @@ namespace Microsoft.DiaSymReader.PortablePdb
             out int count,
             [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 4), Out]byte[] source)
         {
-            // SymReader doesn't support embedded source.
             count = 0;
-            return HResult.E_NOTIMPL;
+
+            // This function used to return E_NOTIMPL in all implementations. When filling in the
+            // implementation, it was deemed not very useful and impractical to actually decompress
+            // and decode text and interpret lines and columns here. A convention was adopted that 
+            // (0, 0, >= int.MaxValue, >= int.MaxValue) is a maximal range indicating that all
+            // source bytes should be returned. Anything else is rejected as invalid. This matches 
+            // the new native behavior.
+            if (startLine != 0 || 
+                startColumn != 0 ||
+                unchecked((uint)endLine) < int.MaxValue ||
+                unchecked((uint)endColumn) < int.MaxValue)
+            {
+                return HResult.E_INVALIDARG;
+            }
+
+            if (bufferLength < 0)
+            {
+                return HResult.E_INVALIDARG;
+            }
+
+            if (source == null && bufferLength > 0)
+            {
+                return HResult.E_INVALIDARG;
+            }
+
+            BlobReader reader = GetEmbeddedSourceBlobReader();
+            if (reader.Length == 0)
+            {
+                return HResult.S_FALSE;
+            }
+
+            // There is not currently a mechanism for reading from BlobReader to existing byte[]
+            // https://github.com/dotnet/corefx/issues/8004 tracks adding that API to corefx and
+            // this should be updated to use that when it's fixed. In the meantime, we are forced
+            // to make an extra copy here.
+            count = Math.Min(bufferLength, reader.Length);
+            Array.Copy(reader.ReadBytes(count), source, count);
+            return HResult.S_OK;
         }
 
         public int GetUrl(
@@ -152,9 +187,14 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         public int HasEmbeddedSource(out bool value)
         {
-            // SymReader doesn't support embedded source.
-            value = false;
-            return HResult.E_NOTIMPL;
+            value = GetEmbeddedSourceBlobReader().Length > 0;
+            return HResult.S_OK;
+        }
+
+        private BlobReader GetEmbeddedSourceBlobReader()
+        {
+            BlobHandle blobHandle = SymReader.MetadataReader.GetCustomDebugInformation(Handle, MetadataUtilities.EmbeddedSourceId);
+            return blobHandle.IsNil ? default(BlobReader) : SymReader.MetadataReader.GetBlobReader(blobHandle);
         }
     }
 }

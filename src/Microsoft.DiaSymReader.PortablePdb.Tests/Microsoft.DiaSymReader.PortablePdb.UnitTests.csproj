@@ -77,10 +77,29 @@
     <EmbeddedResource Include="Resources\MiscEmbedded.dll">
       <LogicalName>MiscEmbedded.dll</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EmbeddedSource.cs">
+      <LogicalName>EmbeddedSource.cs</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EmbeddedSourceSmall.cs">
+      <LogicalName>EmbeddedSourceSmall.cs</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EmbeddedSource.dll">
+      <LogicalName>EmbeddedSource.dll</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EmbeddedSource.pdb">
+      <LogicalName>EmbeddedSource.pdb</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EmbeddedSource.dllx">
+      <LogicalName>EmbeddedSource.dllx</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EmbeddedSource.pdbx">
+      <LogicalName>EmbeddedSource.pdbx</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Documents.cmd" />
     <Content Include="Resources\Documents.cs" />
+    <Content Include="Resources\EmbeddedSource.cmd" />
     <Content Include="Resources\Scopes.cmd" />
     <Content Include="Resources\Scopes.cs" />
     <Content Include="Resources\Async.cmd" />
@@ -91,6 +110,7 @@
     <Content Include="Resources\MiscEmbedded.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EmbeddedSourceTests.cs" />
     <Compile Include="MethodMapTests.cs" />
     <Compile Include="ResourceLoader.cs" />
     <Compile Include="SymBinderTests.cs" />
