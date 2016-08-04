@@ -11,7 +11,6 @@ using Xunit;
 
 namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 {
-    using System.Linq;
     using static SymTestHelpers;
 
     public class EmbeddedSourceTests
@@ -50,16 +49,9 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 
                 Assert.True(length >= sizeof(int));
 
-                int uncompressedSize;
-                unsafe
-                {
-                    fixed (byte* bytes = blob)
-                    {
-                        uncompressedSize = new BlobReader(bytes, length).ReadInt32();
-                    }
-                }
-
                 byte[] expectedContent;
+                int uncompressedSize = BitConverter.ToInt32(blob, 0);
+
                 if (uncompressedSize == 0)
                 {
                     Assert.Equal(@"C:\EmbeddedSourceSmall.cs", file);
@@ -69,7 +61,6 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
                 {
                     Assert.Equal(@"C:\EmbeddedSource.cs", file);
                     expectedContent = TestResources.EmbeddedSource.CS;
-                    
                 }
 
                 AssertEx.Equal(expectedContent, Decode(blob, uncompressedSize));
@@ -161,34 +152,6 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
                     return decompressed.ToArray();
                 }
             }
-        }
-
-        // Portable PDB has a leading format indicator that is not exposed via the COM API. Check it for consistency.
-        private static void CheckPortableFormatHeader(byte[] portablePdb, string file, bool isCompressed)
-        {
-            using (var provider = MetadataReaderProvider.FromPortablePdbImage(ImmutableArray.Create(portablePdb)))
-            {
-                var portablePdbReader = provider.GetMetadataReader();
-                var document = GetDocumentHandle(portablePdbReader, file);
-                var customDebugInfo = portablePdbReader.GetCustomDebugInformation(document, MetadataUtilities.EmbeddedSourceId);
-                var blobReader = portablePdbReader.GetBlobReader(customDebugInfo);
-                Assert.Equal(isCompressed ? 1 : 0, blobReader.ReadUInt16());
-            }
-        }
-
-        private static DocumentHandle GetDocumentHandle(MetadataReader portablePdbReader, string file)
-        {
-            foreach (var handle in portablePdbReader.Documents)
-            {
-                var document = portablePdbReader.GetDocument(handle);
-                if (portablePdbReader.StringComparer.Equals(document.Name, file))
-                {
-                    return handle;
-                }
-            }
-
-            Assert.False(true, "Document not found.");
-            throw null;
         }
     }
 }

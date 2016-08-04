@@ -122,15 +122,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         public int GetSourceLength(out int length)
         {
-            BlobReader reader;
-            int hr = GetEmbeddedSourceBlobReader(out reader);
-            if (hr != HResult.S_OK && hr != HResult.S_FALSE)
-            {
-                length = 0;
-                return hr;
-            }
-
-            length = reader.RemainingBytes;
+            length = GetEmbeddedSourceBlobReader().Length;
             return HResult.S_OK;
         }
 
@@ -169,23 +161,18 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 return HResult.E_INVALIDARG;
             }
 
-            BlobReader reader;
-            int hr = GetEmbeddedSourceBlobReader(out reader);
-            if (hr != HResult.S_OK)
+            BlobReader reader = GetEmbeddedSourceBlobReader();
+            if (reader.Length == 0)
             {
-                return hr;
+                return HResult.S_FALSE;
             }
 
-            count = Math.Min(bufferLength, reader.RemainingBytes);
-            if (count > 0)
-            {
-                // There is not currently a mechanism for reading from BlobReader to existing byte[]
-                // https://github.com/dotnet/corefx/issues/8004 tracks adding that API to corefx and
-                // this should be updated to use that when it's fixed. In the meantime, we are forced
-                // to make an extra copy here.
-                Array.Copy(reader.ReadBytes(count), source, count);
-            }
-
+            // There is not currently a mechanism for reading from BlobReader to existing byte[]
+            // https://github.com/dotnet/corefx/issues/8004 tracks adding that API to corefx and
+            // this should be updated to use that when it's fixed. In the meantime, we are forced
+            // to make an extra copy here.
+            count = Math.Min(bufferLength, reader.Length);
+            Array.Copy(reader.ReadBytes(count), source, count);
             return HResult.S_OK;
         }
 
@@ -200,24 +187,14 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         public int HasEmbeddedSource(out bool value)
         {
-            int hr;
-            int length;
-            hr = GetSourceLength(out length);
-            value = length > 0;
-            return hr == HResult.S_FALSE ? HResult.S_OK : hr;
+            value = GetEmbeddedSourceBlobReader().Length > 0;
+            return HResult.S_OK;
         }
 
-        private int GetEmbeddedSourceBlobReader(out BlobReader reader)
+        private BlobReader GetEmbeddedSourceBlobReader()
         {
             BlobHandle blobHandle = SymReader.MetadataReader.GetCustomDebugInformation(Handle, MetadataUtilities.EmbeddedSourceId);
-            if (blobHandle.IsNil)
-            {
-                reader = default(BlobReader);
-                return HResult.S_FALSE;
-            }
-
-            reader = SymReader.MetadataReader.GetBlobReader(blobHandle);
-            return HResult.S_OK;
+            return blobHandle.IsNil ? default(BlobReader) : SymReader.MetadataReader.GetBlobReader(blobHandle);
         }
     }
 }
