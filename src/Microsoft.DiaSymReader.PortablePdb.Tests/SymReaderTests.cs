@@ -68,7 +68,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         }
 
         [Fact]
-        public unsafe void GetSourceServerData()
+        public unsafe void GetSourceServerData_None()
         {
             var symReader = (ISymUnmanagedReader4)CreateSymReaderFromResource(TestResources.Documents.PortableDllAndPdb);
             byte* ptr;
@@ -76,6 +76,38 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Assert.Equal(HResult.S_OK, symReader.GetSourceServerData(out ptr, out size));
             Assert.Equal(size, 0);
             Assert.Equal(IntPtr.Zero, (IntPtr)ptr);
+        }
+
+        [Fact]
+        public unsafe void GetSourceServerData_Portable()
+        {
+            var symReader = (ISymUnmanagedReader4)CreateSymReaderFromResource(TestResources.SourceLink.PortableDllAndPdb);
+            byte* ptr;
+            int size;
+            Assert.Equal(HResult.S_OK, symReader.GetSourceServerData(out ptr, out size));
+            Assert.Equal(103, size);
+            Assert.NotEqual(IntPtr.Zero, (IntPtr)ptr);
+
+            var actual = new byte[size];
+            Marshal.Copy((IntPtr)ptr, actual, 0, actual.Length);
+
+            AssertEx.Equal(TestResources.SourceLink.Json, actual);
+        }
+
+        [Fact]
+        public unsafe void GetSourceServerData_PortableEmbedded()
+        {
+            var symReader = (ISymUnmanagedReader4)CreateSymReaderFromEmbeddedPortablePdb(TestResources.SourceLink.EmbeddedDll);
+            byte* ptr;
+            int size;
+            Assert.Equal(HResult.S_OK, symReader.GetSourceServerData(out ptr, out size));
+            Assert.Equal(103, size);
+            Assert.NotEqual(IntPtr.Zero, (IntPtr)ptr);
+
+            var actual = new byte[size];
+            Marshal.Copy((IntPtr)ptr, actual, 0, actual.Length);
+
+            AssertEx.Equal(TestResources.SourceLink.Json, actual);
         }
 
         [Fact]

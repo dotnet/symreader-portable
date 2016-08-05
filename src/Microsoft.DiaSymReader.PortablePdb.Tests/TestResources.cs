@@ -98,4 +98,21 @@ namespace TestResources
         public static KeyValuePair<byte[], byte[]> PortableDllAndPdb => new KeyValuePair<byte[], byte[]>(PortableDll, PortablePdb);
         public static KeyValuePair<byte[], byte[]> DllAndPdb => new KeyValuePair<byte[], byte[]>(Dll, Pdb);
     }
+
+    public static class SourceLink
+    {
+        private static byte[] s_portableDll;
+        public static byte[] PortableDll => ResourceLoader.GetOrCreateResource(ref s_portableDll, nameof(SourceLink) + ".dllx");
+
+        private static byte[] s_portablePdb;
+        public static byte[] PortablePdb => ResourceLoader.GetOrCreateResource(ref s_portablePdb, nameof(SourceLink) + ".pdbx");
+
+        private static byte[] s_EmbeddedDll;
+        public static byte[] EmbeddedDll => ResourceLoader.GetOrCreateResource(ref s_EmbeddedDll, nameof(SourceLink) + ".Embedded.dll");
+
+        private static byte[] s_json;
+        public static byte[] Json => ResourceLoader.GetOrCreateResource(ref s_json, nameof(SourceLink) + ".json");
+
+        public static KeyValuePair<byte[], byte[]> PortableDllAndPdb => new KeyValuePair<byte[], byte[]>(PortableDll, PortablePdb);
+    }
 }

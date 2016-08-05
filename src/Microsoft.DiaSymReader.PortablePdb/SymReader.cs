@@ -577,8 +577,21 @@ namespace Microsoft.DiaSymReader.PortablePdb
         [PreserveSig]
         public unsafe int GetSourceServerData(out byte* data, out int size)
         {
-            data = null;
-            size = 0;
+            var reader = _pdbReader.MetadataReader;
+
+            BlobHandle handle = MetadataUtilities.GetCustomDebugInformation(reader, EntityHandle.ModuleDefinition, MetadataUtilities.SourceLinkId);
+            if (!handle.IsNil)
+            {
+                var blobReader = reader.GetBlobReader(handle);
+                data = blobReader.StartPointer;
+                size = blobReader.Length;
+            }
+            else
+            {
+                data = null;
+                size = 0;
+            }
+
             return HResult.S_OK;
         }
     }

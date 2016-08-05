@@ -1,0 +1,7 @@
+{
+  "documents": 
+  {
+     "C:\\a*": "http://server1/*",
+     "C:\\A*": "http://server2/*",
+  }
+}
