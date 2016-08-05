@@ -8,6 +8,7 @@ using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using Roslyn.Test.Utilities;
 using Xunit;
+using System.Reflection.PortableExecutable;
 
 namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 {
@@ -64,6 +65,18 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         public static ISymUnmanagedReader CreateSymReaderFromResource(KeyValuePair<byte[], byte[]> peAndPdb)
         {
             return CreateReader(new MemoryStream(peAndPdb.Value), metadataImporter: new SymMetadataImport(new MemoryStream(peAndPdb.Key)));
+        }
+
+        public static ISymUnmanagedReader CreateSymReaderFromEmbeddedPortablePdb(byte[] peImage)
+        {
+            var importer = new SymMetadataImport(new MemoryStream(peImage));
+            var peStream = new MemoryStream(peImage);
+            var peReader = new PEReader(peStream);
+
+            var embeddedEntry = peReader.ReadDebugDirectory().Single(e => e.Type == DebugDirectoryEntryType.EmbeddedPortablePdb);
+            peStream.Position = embeddedEntry.DataPointer;
+
+            return new SymBinder().GetReaderFromStream(peStream, importer);
         }
 
         public static void ValidateDocumentUrl(ISymUnmanagedDocument document, string url)

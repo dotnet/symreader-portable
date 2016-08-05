@@ -95,6 +95,18 @@
     <EmbeddedResource Include="Resources\EmbeddedSource.pdbx">
       <LogicalName>EmbeddedSource.pdbx</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\SourceLink.dllx">
+      <LogicalName>SourceLink.dllx</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\SourceLink.pdbx">
+      <LogicalName>SourceLink.pdbx</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\SourceLink.json">
+      <LogicalName>SourceLink.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\SourceLink.Embedded.dll">
+      <LogicalName>SourceLink.Embedded.dll</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Documents.cmd" />
@@ -108,6 +120,7 @@
     <Content Include="Resources\MethodBoundaries.cs" />
     <Content Include="Resources\MiscEmbedded.cmd" />
     <Content Include="Resources\MiscEmbedded.cs" />
+    <Content Include="Resources\SourceLink.cmd" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EmbeddedSourceTests.cs" />
