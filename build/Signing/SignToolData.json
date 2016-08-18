@@ -1,0 +1,19 @@
+{
+  "sign": [
+    {
+      "certificate": "WindowsPhone623",
+      "strongName": "MsSharedLib72",
+      "values": [
+        "Microsoft.DiaSymReader.PortablePdb/Microsoft.DiaSymReader.PortablePdb.dll"
+      ]
+    },
+    {
+      "certificate": "Microsoft402",
+      "strongName": "MsSharedLib72",
+      "values": [
+        "Microsoft.DiaSymReader.Converter/Microsoft.DiaSymReader.Converter.dll",
+        "Pdb2Pdb/Pdb2Pdb.exe"
+      ]
+    }
+  ]
+}
