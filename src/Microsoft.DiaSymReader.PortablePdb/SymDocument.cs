@@ -167,12 +167,8 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 return HResult.S_FALSE;
             }
 
-            // There is not currently a mechanism for reading from BlobReader to existing byte[]
-            // https://github.com/dotnet/corefx/issues/8004 tracks adding that API to corefx and
-            // this should be updated to use that when it's fixed. In the meantime, we are forced
-            // to make an extra copy here.
             count = Math.Min(bufferLength, reader.Length);
-            Array.Copy(reader.ReadBytes(count), source, count);
+            reader.ReadBytes(count, source, 0);
             return HResult.S_OK;
         }
 

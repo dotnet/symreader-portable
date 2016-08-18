@@ -21,9 +21,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             EmbeddedSource(TestResources.EmbeddedSource.PortableDllAndPdb);
         }
 
-        // TODO: Once native PDB support is implemented, add /embed to EmbeddedSource.cmd 
-        // native command line, run it to regenerate native dll and PDB, and unskip this test.
-        [Fact(Skip = "Native support not yet implemented.")]
+        [Fact]
         public void EmbeddedSource_Native()
         {
             EmbeddedSource(TestResources.EmbeddedSource.DllAndPdb);
