@@ -574,6 +574,9 @@ namespace Microsoft.DiaSymReader.PortablePdb
         /// Null if the PDB doesn't contain Source Server data.
         /// </param>
         /// <param name="size">Size of the data in bytes.</param>
+        /// <returns>
+        /// S_OK if the PDB contains Source Server data, S_FALSE if it doesn't.
+        /// </returns>
         [PreserveSig]
         public unsafe int GetSourceServerData(out byte* data, out int size)
         {
@@ -585,14 +588,12 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 var blobReader = reader.GetBlobReader(handle);
                 data = blobReader.StartPointer;
                 size = blobReader.Length;
-            }
-            else
-            {
-                data = null;
-                size = 0;
+                return HResult.S_OK;
             }
 
-            return HResult.S_OK;
+            data = null;
+            size = 0;
+            return HResult.S_FALSE;
         }
     }
 }
