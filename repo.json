@@ -1,0 +1,12 @@
+﻿{
+    "generate": {
+        "msbuild": {
+            "path": "build\\Targets\\Dependencies.props",
+            "values": [
+                "Microsoft.Dia.*",
+                "System.*",
+                "xunit",
+            ]
+        }
+    },
+}
