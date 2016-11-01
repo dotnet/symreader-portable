@@ -14,6 +14,7 @@
     <SystemCollectionsImmutableVersion>1.3.0</SystemCollectionsImmutableVersion>
     <SystemDiagnosticsDebugVersion>4.3.0</SystemDiagnosticsDebugVersion>
     <SystemGlobalizationVersion>4.3.0</SystemGlobalizationVersion>
+    <SystemIOVersion>4.3.0</SystemIOVersion>
     <SystemIOFileSystemVersion>4.3.0</SystemIOFileSystemVersion>
     <SystemLinqVersion>4.3.0</SystemLinqVersion>
     <SystemReflectionVersion>4.3.0</SystemReflectionVersion>
