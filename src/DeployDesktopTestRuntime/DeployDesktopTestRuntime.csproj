@@ -52,4 +52,8 @@
     <Copy SourceFiles="@(CopyForVSTests)" DestinationFolder="$(OutDirBase)\Microsoft.DiaSymReader.PortablePdb.Tests" Retries="1" ContinueOnError="WarnAndContinue" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(CopyForVSTests)" DestinationFolder="$(OutDirBase)\Microsoft.DiaSymReader.Converter.Tests" Retries="1" ContinueOnError="WarnAndContinue" SkipUnchangedFiles="true" />
   </Target>
+  <Target Name="DeployConfigFiles" AfterTargets="CopyFilesToOutputDirectory">
+    <Copy SourceFiles="$(OutDirBase)\Microsoft.DiaSymReader.PortablePdb.Tests\Microsoft.DiaSymReader.PortablePdb.UnitTests.dll.config" DestinationFolder="$(OutDir)" Retries="1" ContinueOnError="WarnAndContinue" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(OutDirBase)\Microsoft.DiaSymReader.Converter.Tests\Microsoft.DiaSymReader.Converter.UnitTests.dll.config" DestinationFolder="$(OutDir)" Retries="1" ContinueOnError="WarnAndContinue" SkipUnchangedFiles="true" />
+  </Target>
 </Project>

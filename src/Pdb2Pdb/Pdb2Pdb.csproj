@@ -24,6 +24,7 @@
     <Compile Include="Pdb2Pdb.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Shared\App.config" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
