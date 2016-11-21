@@ -34,7 +34,7 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <version>$version$</version>
     <authors>Microsoft</authors>
-    <licenseUrl>http://go.microsoft.com/fwlink/?LinkId=394369</licenseUrl>
+    <licenseUrl>http://go.microsoft.com/fwlink/?LinkId=529443</licenseUrl>
     <projectUrl>https://github.com/dotnet/symreader-portable</projectUrl>
     <releaseNotes>Implementation of Microsoft DiaSymReader interfaces that reads debug information from Portable PDB format</releaseNotes>
     <tags>DiaSymReader ISymUnmanagedReader Portable PDB COM interop debugging</tags>

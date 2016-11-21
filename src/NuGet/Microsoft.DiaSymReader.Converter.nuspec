@@ -30,7 +30,7 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <version>$version$</version>
     <authors>Microsoft</authors>
-    <licenseUrl>http://go.microsoft.com/fwlink/?LinkId=394369</licenseUrl>
+    <licenseUrl>http://go.microsoft.com/fwlink/?LinkId=529443</licenseUrl>
     <projectUrl>https://github.com/dotnet/symreader-portable</projectUrl>
     <releaseNotes>Conversion tool between Windows PDB and Portable PDB</releaseNotes>
     <tags>DiaSymReader ISymUnmanagedReader Portable PDB debugging</tags>
