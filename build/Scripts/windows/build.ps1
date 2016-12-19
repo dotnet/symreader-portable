@@ -18,7 +18,7 @@ Param(
   [string] $target = "Build",
   [string] $testFilter = "*.UnitTests.dll",
   [string] $integrationTestFilter = "*.IntegrationTests.dll",
-  [string] $xUnitVersion = "2.1.0"
+  [string] $xUnitVersion = "2.2.0-beta4-build3444"
 )
 
 function Create-Directory([string[]] $path) {
