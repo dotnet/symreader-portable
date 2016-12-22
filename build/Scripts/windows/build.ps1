@@ -3,7 +3,7 @@ Param(
   [string] $configuration = "Debug",
   [string] $deployHive = "TestImpact",
   [string] $msbuildVersion = "14.0",
-  [string] $nugetVersion = "3.5.0-beta2",
+  [string] $nugetVersion = "3.6.0-beta1",
   [switch] $help,
   [switch] $official,
   [switch] $skipBuild,
@@ -18,7 +18,7 @@ Param(
   [string] $target = "Build",
   [string] $testFilter = "*.UnitTests.dll",
   [string] $integrationTestFilter = "*.IntegrationTests.dll",
-  [string] $xUnitVersion = "2.1.0"
+  [string] $xUnitVersion = "2.2.0-beta4-build3444"
 )
 
 function Create-Directory([string[]] $path) {
