@@ -228,12 +228,12 @@ namespace Microsoft.DiaSymReader.Tools
         private bool TryCalculateQualifiedTypeSpecificationName(BlobReader sigReader, Dictionary<EntityHandle, AQName> handleToName, out AQName name)
         {
             var builder = new ImportTypeSpecNameBuilder(handleToName, _lazyAssemblyRefMap.Value.Item2);
-            var decoder = new SignatureDecoder<AQName>(builder);
+            var decoder = new SignatureDecoder<AQName, object>(builder, null, null);
             name = decoder.DecodeType(ref sigReader);
             return builder.IsSupported;
         }
 
-        private sealed class ImportTypeSpecNameBuilder : ISignatureTypeProvider<AQName>
+        private sealed class ImportTypeSpecNameBuilder : ISignatureTypeProvider<AQName, object>
         {
             private readonly Dictionary<EntityHandle, AQName> _handleToName;
             private readonly string[] _assemblyRefDisplayNames;
@@ -311,7 +311,7 @@ namespace Microsoft.DiaSymReader.Tools
                 return elementType.WithTypeName(elementType.TypeName + "*");
             }
 
-            public AQName GetGenericInstance(AQName genericType, ImmutableArray<AQName> typeArguments)
+            public AQName GetGenericInstantiation(AQName genericType, ImmutableArray<AQName> typeArguments)
             {
                 var pooled = PooledStringBuilder.GetInstance();
                 var sb = pooled.Builder;
@@ -333,37 +333,14 @@ namespace Microsoft.DiaSymReader.Tools
                 return new AQName(GetPrimitiveTypeName(typeCode), null);
             }
 
-            public AQName GetFunctionPointerType(MethodSignature<AQName> signature)
-            {
-                _unsupported = true;
-                return AQName.Empty;
-            }
+            public AQName GetFunctionPointerType(MethodSignature<AQName> signature) => Unsupported();
+            public AQName GetGenericMethodParameter(object genericContext, int index) => Unsupported();
+            public AQName GetGenericTypeParameter(object genericContext, int index) => Unsupported();
+            public AQName GetModifiedType(AQName modifier, AQName unmodifiedType, bool isRequired) => Unsupported();
+            public AQName GetPinnedType(AQName elementType) => Unsupported();
+            public AQName GetTypeFromSpecification(MetadataReader reader, object genericContext, TypeSpecificationHandle handle, byte rawTypeKind) => Unsupported();
 
-            public AQName GetGenericMethodParameter(int index)
-            {
-                _unsupported = true;
-                return AQName.Empty;
-            }
-
-            public AQName GetGenericTypeParameter(int index)
-            {
-                _unsupported = true;
-                return AQName.Empty;
-            }
-
-            public AQName GetModifiedType(MetadataReader reader, bool isRequired, AQName modifier, AQName unmodifiedType)
-            {
-                _unsupported = true;
-                return AQName.Empty;
-            }
-
-            public AQName GetPinnedType(AQName elementType)
-            {
-                _unsupported = true;
-                return AQName.Empty;
-            }
-
-            public AQName GetTypeFromSpecification(MetadataReader reader, TypeSpecificationHandle handle, byte rawTypeKind)
+            private AQName Unsupported()
             {
                 _unsupported = true;
                 return AQName.Empty;

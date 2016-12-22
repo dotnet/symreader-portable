@@ -1,6 +1,6 @@
 ﻿{
   "dependencies": {
-    "xunit.console.netcore": "1.0.4-prerelease-01121-01",
+    "xunit.console.netcore": "1.0.2-prerelease-00104",
     "Microsoft.NETCore.Portable.Compatibility": "1.0.1",
     "Microsoft.NETCore.Platforms": "1.1.0",
     "Microsoft.NETCore.Runtime.CoreCLR": "1.1.0",
