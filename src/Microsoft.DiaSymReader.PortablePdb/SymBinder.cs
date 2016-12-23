@@ -90,9 +90,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 // Search policy: all is restricted unless explicitly allowed. 
                 // After opened store to cache if CACHE* given (only the first cache?)
 
-                CodeViewDebugDirectoryData codeViewData;
-                uint stamp;
-                if (!TryReadCodeViewData(fileName, out codeViewData, out stamp))
+                if (!TryReadCodeViewData(fileName, out var codeViewData, out uint stamp))
                 {
                     return HResult.E_FAIL; // TODO: specific error code (ecToHresult)?
                 }
@@ -150,7 +148,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             // 4b) registry
             if ((searchPolicy & SymUnmanagedSearchPolicy.AllowRegistryAccess) != 0)
             {
-                // TODO
+                // TODO: https://github.com/dotnet/symreader-portable/issues/48
             }
 
             // 5c) environment variables:
@@ -236,7 +234,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 PortablePdbReader pdbReader;
                 try
                 {
-                    pdbReader = new PortablePdbReader(SymReader.CreateProviderFromFile(pdbFilePath));
+                    pdbReader = new PortablePdbReader(SymReader.CreateProviderFromFile(pdbFilePath), version: 1, previousDocumentCount: 0);
                 }
                 catch
                 {

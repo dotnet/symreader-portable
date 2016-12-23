@@ -56,5 +56,13 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
             return ~low;
         }
+
+        internal static void AddSubRange<T>(this ImmutableArray<T>.Builder builder, ImmutableArray<T> items, int start)
+        {
+            for (int i = start; i < items.Length; i++)
+            {
+                builder.Add(items[i]);
+            }
+        }
     }
 }

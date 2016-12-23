@@ -72,4 +72,40 @@ public class C<S>
             }
         }
     }
+
+    public static void NestedScopesLocals()
+    {
+        int a = 0;
+        {
+            int b = 1;
+            {
+                int c = 2;
+            }
+            {
+                int d = 3;
+            }
+        }
+        {
+            int e = 4;
+            {
+                {
+                    int f = 2;
+                }
+                {
+                    int g = 3;
+                    {
+                        int h = 4;
+                        int d = 5;
+                    }
+                }
+                {
+                    int i = 6;
+                }
+            }
+            {
+                int j = 7;
+                int d = 8;
+            }
+        }
+    }
 }

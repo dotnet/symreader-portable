@@ -431,7 +431,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             var constants = GetAndValidateConstants(child, expectedCount: 29);
 
             Assert.False(importCreated);
-            ValidateConstant(constants[28], "D", 123456.78M, new byte[] { 0x11, 0x2D });
+            ValidateConstant(constants[28], "D", 123456.78M, new byte[] { 0x11, 0x29 });
             Assert.True(importCreated);
         }
     }

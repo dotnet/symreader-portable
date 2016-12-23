@@ -42,7 +42,6 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         protected override ImmutableArray<ChildScopeData> CreateChildren()
         {
-            // TODO: pool?
             var builder = ImmutableArray.CreateBuilder<ChildScopeData>();
 
             var children = SymMethod.MetadataReader.GetLocalScope(_handle).GetChildren();
@@ -56,9 +55,8 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         internal override int GetConstants(int bufferLength, out int count, ISymUnmanagedConstant[] constants)
         {
-            var symReader = SymMethod.SymReader;
-            var mdReader = symReader.MetadataReader;
-            var scope = mdReader.GetLocalScope(_handle);
+            var pdbReader = SymMethod.PdbReader;
+            var scope = pdbReader.MetadataReader.GetLocalScope(_handle);
 
             var handles = scope.GetLocalConstants();
 
@@ -70,7 +68,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
                     break;
                 }
 
-                constants[i++] = new SymConstant(symReader, handle);
+                constants[i++] = new SymConstant(pdbReader, handle);
             }
 
             count = (bufferLength == 0) ? handles.Count : i;

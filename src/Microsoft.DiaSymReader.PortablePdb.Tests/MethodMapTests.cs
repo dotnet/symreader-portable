@@ -791,7 +791,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         [Fact]
         public void FindClosestLine2_Native()
         {
-            var symReader = CreateSymReaderFromResource(TestResources.Documents.DllAndPdb);
+            var symReader = CreateSymReaderFromResource(TestResources.Documents.DllAndPdb(portable: false));
 
             ISymUnmanagedDocument document1;
             Assert.Equal(HResult.S_OK, symReader.GetDocument(@"C:\a\b\X.cs", default(Guid), default(Guid), default(Guid), out document1));

@@ -55,19 +55,6 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         }
 
         [Fact]
-        public unsafe void GetPortableDebugMetadata()
-        {
-            var symReader = (ISymUnmanagedReader4)CreateSymReaderFromResource(TestResources.Documents.DllAndPdb(portable: true));
-            byte* ptr;
-            int size;
-            Assert.Equal(HResult.S_OK, symReader.GetPortableDebugMetadata(out ptr, out size));
-            Assert.Equal(size, TestResources.Documents.PortablePdb.Length);
-            byte[] actual = new byte[size];
-            Marshal.Copy((IntPtr)ptr, actual, 0, size);
-            AssertEx.Equal(TestResources.Documents.PortablePdb, actual);
-        }
-
-        [Fact]
         public unsafe void GetSourceServerData_None()
         {
             var symReader = (ISymUnmanagedReader4)CreateSymReaderFromResource(TestResources.Documents.DllAndPdb(portable: true));
@@ -111,7 +98,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         }
 
         [Theory, ClassData(typeof(PdbTestData))]
-        public void TestGetDocuments(bool portable)
+        public void GetDocuments(bool portable)
         {
             var symReader = CreateSymReaderFromResource(TestResources.Documents.DllAndPdb(portable));
 
@@ -144,7 +131,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         }
 
         [Theory, ClassData(typeof(PdbTestData))]
-        public void TestGetDocument1(bool portable)
+        public void GetDocument1(bool portable)
         {
             var symReader = CreateSymReaderFromResource(TestResources.Documents.DllAndPdb(portable));
             TestGetDocument(symReader, @"x.cs", expectedUrl: @"C:\a\b\c\d\x.cs");
@@ -257,10 +244,10 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             // the consumers should be able to resolve it. If we find a case where that's not true we can
             // potentially expand the TypeSpec signature in ISymUnmanagedConstant.GetValue.
             ValidateConstant(constants[25], "NullTypeDef", 0, new byte[] { 0x12, 0x08 });
-            ValidateConstant(constants[26], "NullTypeRef", 0, new byte[] { 0x12, 0x1D });
+            ValidateConstant(constants[26], "NullTypeRef", 0, new byte[] { 0x12, 0x19 });
             ValidateConstant(constants[27], "NullTypeSpec", 0, new byte[] { 0x12, 0x26 });
 
-            ValidateConstant(constants[28], "D", 123456.78M, new byte[] { 0x11, 0x2D });
+            ValidateConstant(constants[28], "D", 123456.78M, new byte[] { 0x11, 0x29 });
 
             //
             //  C<S>.NestedScopes

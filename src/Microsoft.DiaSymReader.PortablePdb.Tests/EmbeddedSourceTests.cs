@@ -53,8 +53,6 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         }
 
         [Theory, ClassData(typeof(PdbTestData))]
-
-
         public void NoEmbeddedSource(bool portable)
         {
             var symReader = CreateSymReaderFromResource(TestResources.Documents.DllAndPdb(portable));

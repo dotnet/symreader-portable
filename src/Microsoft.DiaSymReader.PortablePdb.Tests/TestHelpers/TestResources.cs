@@ -31,7 +31,15 @@ namespace TestResources
         private static byte[] s_portablePdb;
         public static byte[] PortablePdb => ResourceLoader.GetOrCreateResource(ref s_portablePdb, nameof(Scopes) + ".pdbx");
 
+        private static byte[] s_windowsDll;
+        public static byte[] WindowsDll => ResourceLoader.GetOrCreateResource(ref s_windowsDll, nameof(Scopes) + ".dll");
+
+        private static byte[] s_windowsPdb;
+        public static byte[] WindowsPdb => ResourceLoader.GetOrCreateResource(ref s_windowsPdb, nameof(Scopes) + ".pdb");
+
         public static TestResource PortableDllAndPdb => new TestResource(PortableDll, PortablePdb);
+        public static TestResource WindowsDllAndPdb => new TestResource(WindowsDll, WindowsPdb);
+        public static TestResource DllAndPdb(bool portable) => portable ? PortableDllAndPdb : WindowsDllAndPdb;
     }
 
     public static class Async
@@ -118,5 +126,29 @@ namespace TestResources
         public static byte[] Json => ResourceLoader.GetOrCreateResource(ref s_json, nameof(SourceLink) + ".json");
 
         public static TestResource PortableDllAndPdb => new TestResource(PortableDll, PortablePdb);
+    }
+
+    public static class EncMethodExtents
+    {
+        private const int ImagesPerGeneration = 4;
+        private const int GenerationCount = 3;
+
+        private static byte[][] s_images = new byte[ImagesPerGeneration * GenerationCount][];
+
+        public static TestResource Baseline(bool portable) => portable ? 
+            new TestResource(
+                ResourceLoader.GetOrCreateResource(ref s_images[0], nameof(EncMethodExtents) + ".dllx"),
+                ResourceLoader.GetOrCreateResource(ref s_images[1], nameof(EncMethodExtents) + ".pdbx")) :
+            new TestResource(
+                ResourceLoader.GetOrCreateResource(ref s_images[2], nameof(EncMethodExtents) + ".dll"),
+                ResourceLoader.GetOrCreateResource(ref s_images[3], nameof(EncMethodExtents) + ".pdb"));
+
+        public static TestResource Diffs(int generation, bool portable) => portable ?
+            new TestResource(
+                ResourceLoader.GetOrCreateResource(ref s_images[generation * ImagesPerGeneration + 0], $"{nameof(EncMethodExtents)}.{generation}.metadatax"),
+                ResourceLoader.GetOrCreateResource(ref s_images[generation * ImagesPerGeneration + 1], $"{nameof(EncMethodExtents)}.{generation}.pdbx")) :
+            new TestResource(
+                ResourceLoader.GetOrCreateResource(ref s_images[generation * ImagesPerGeneration + 2], $"{nameof(EncMethodExtents)}.{generation}.metadata"),
+                ResourceLoader.GetOrCreateResource(ref s_images[generation * ImagesPerGeneration + 3], $"{nameof(EncMethodExtents)}.{generation}.pdb"));
     }
 }

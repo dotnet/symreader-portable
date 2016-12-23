@@ -13,6 +13,8 @@ namespace Microsoft.DiaSymReader.PortablePdb
         public const SignatureTypeCode SignatureTypeCode_ValueType = (SignatureTypeCode)0x11;
         public const SignatureTypeCode SignatureTypeCode_Class = (SignatureTypeCode)0x12;
         public static int MethodDefToken(int rowId) => 0x06000000 | rowId;
+        public static int GetRowId(int token) => token & 0xffffff;
+        public static bool IsMethodToken(int token) => unchecked((uint)token) >> 24 == 0x06;
 
         // Custom Attribute kinds:
         public static readonly Guid MethodSteppingInformationBlobId = new Guid("54FD2AC5-E925-401A-9C2A-F94F171072F8");

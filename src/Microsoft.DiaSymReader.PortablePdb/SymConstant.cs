@@ -10,7 +10,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
     [ComVisible(false)]
     public sealed class SymConstant : ISymUnmanagedConstant
     {
-        private readonly SymReader _symReader;
+        private readonly PortablePdbReader _pdbReader;
         private readonly LocalConstantHandle _handle;
 
         private object _lazyValue = s_uninitialized;
@@ -19,10 +19,10 @@ namespace Microsoft.DiaSymReader.PortablePdb
         private static readonly object s_nullReferenceValue = 0;
         private static readonly object s_uninitialized = new object();
 
-        internal SymConstant(SymReader symReader, LocalConstantHandle handle)
+        internal SymConstant(PortablePdbReader pdbReader, LocalConstantHandle handle)
         {
-            Debug.Assert(symReader != null);
-            _symReader = symReader;
+            Debug.Assert(pdbReader != null);
+            _pdbReader = pdbReader;
             _handle = handle;
         }
 
@@ -31,7 +31,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             out int count,
             [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0), Out]char[] name)
         {
-            var mdReader = _symReader.MetadataReader;
+            var mdReader = _pdbReader.MetadataReader;
             var constant = mdReader.GetLocalConstant(_handle);
 
             var str = mdReader.GetString(constant.Name);
@@ -64,7 +64,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         private void InitializeValueAndSignature()
         {
-            var mdReader = _symReader.MetadataReader;
+            var mdReader = _pdbReader.MetadataReader;
             var constant = mdReader.GetLocalConstant(_handle);
 
             var sigReader = mdReader.GetBlobReader(constant.Signature);
@@ -97,7 +97,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             {
                 var typeHandle = sigReader.ReadTypeHandle();
 
-                string qualifiedName = _symReader.GetMetadataImport().GetQualifiedTypeName(typeHandle);
+                string qualifiedName = _pdbReader.SymReader.GetMetadataImport().GetQualifiedTypeName(typeHandle);
                 if (qualifiedName == "System.Decimal")
                 {
                     translatedValue = sigReader.ReadDecimal();

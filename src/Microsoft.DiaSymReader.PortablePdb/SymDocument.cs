@@ -20,14 +20,17 @@ namespace Microsoft.DiaSymReader.PortablePdb
         private static Guid s_documentTypeGuid = new Guid("5a869d0b-6611-11d3-bd2a-0000f80849bd");
 
         internal DocumentHandle Handle { get; }
-        internal SymReader SymReader { get; }
+        internal PortablePdbReader PdbReader { get; }
 
-        internal SymDocument(SymReader symReader, DocumentHandle documentHandle)
+        internal SymDocument(PortablePdbReader pdbReader, DocumentHandle documentHandle)
         {
-            Debug.Assert(symReader != null);
-            SymReader = symReader;
+            Debug.Assert(pdbReader != null);
+            PdbReader = pdbReader;
             Handle = documentHandle;
         }
+
+        internal SymReader SymReader => PdbReader.SymReader;
+        internal DocumentId GetId() => PdbReader.GetDocumentId(Handle);
 
         public int FindClosestLine(int line, out int closestLine)
         {
@@ -35,11 +38,11 @@ namespace Microsoft.DiaSymReader.PortablePdb
             // that is greater than or equal to the given line.
 
             int result = int.MaxValue;
-            var map = SymReader.GetMethodMap();
-            var mdReader = SymReader.MetadataReader;
+            var methodMap = SymReader.GetMethodMap();
+            var methodExtents = SymReader.GetMethodExtents();
 
             // Note DiaSymReader searches across all documents with the same file name in CDiaWrapper::FindClosestLineAcrossFileIDs. We don't.
-            foreach (var extent in map.EnumerateContainingOrClosestFollowingMethodExtents(Handle, line))
+            foreach (var extent in methodExtents.EnumerateContainingOrClosestFollowingMethodExtents(GetId(), line))
             {
                 Debug.Assert(extent.MaxLine >= line);
 
@@ -50,19 +53,31 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 }
 
                 // enumerate method sequence points:
-                var body = mdReader.GetMethodDebugInformation(extent.Method);
-                foreach (var sequencePoint in body.GetSequencePoints())
+                var info = methodMap.GetInfo(extent.Method);
+                var pdbReader = SymReader.GetReader(info.Version);
+                var debugInfo = pdbReader.MetadataReader.GetMethodDebugInformation(info.Handle);
+
+                if (!SymReader.TryGetLineDeltas(extent.Method, out var deltas))
+                {
+                    deltas = default(MethodLineDeltas);
+                }
+
+                int sequencePointIndex = 0;
+                foreach (var sequencePoint in debugInfo.GetSequencePoints())
                 {
                     if (sequencePoint.IsHidden || sequencePoint.Document != Handle)
                     {
+                        sequencePointIndex++;
                         continue;
                     }
 
-                    int startLine = sequencePoint.StartLine;
+                    int startLine = sequencePoint.StartLine + deltas.GetDeltaForSequencePoint(sequencePointIndex);
                     if (startLine >= line && startLine < result)
                     {
                         result = startLine;
                     }
+
+                    sequencePointIndex++;
                 }
             }
 
@@ -81,21 +96,35 @@ namespace Microsoft.DiaSymReader.PortablePdb
             out int count,
             [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0), Out]byte[] checksum)
         {
-            var document = SymReader.MetadataReader.GetDocument(Handle);
+            // diasymreader returns no checksum for documents once EnC has been performed:
+            if (SymReader.Version > 1)
+            {
+                count = 0;
+                return HResult.S_FALSE;
+            }
+
+            var document = PdbReader.MetadataReader.GetDocument(Handle);
             if (document.Hash.IsNil)
             {
                 count = 0;
                 return HResult.S_FALSE;
             }
 
-            var hash = SymReader.MetadataReader.GetBlobBytes(document.Hash);
+            var hash = PdbReader.MetadataReader.GetBlobBytes(document.Hash);
             return InteropUtilities.BytesToBuffer(hash, bufferLength, out count, checksum);
         }
 
         public int GetChecksumAlgorithmId(ref Guid algorithm)
         {
-            var document = SymReader.MetadataReader.GetDocument(Handle);
-            algorithm = SymReader.MetadataReader.GetGuid(document.HashAlgorithm);
+            // diasymreader returns no checksum for documents once EnC has been performed:
+            if (SymReader.Version > 1)
+            {
+                algorithm = default(Guid);
+                return HResult.S_FALSE;
+            }
+
+            var document = PdbReader.MetadataReader.GetDocument(Handle);
+            algorithm = PdbReader.MetadataReader.GetGuid(document.HashAlgorithm);
             return HResult.S_OK;
         }
 
@@ -107,15 +136,15 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         public int GetLanguage(ref Guid language)
         {
-            var document = SymReader.MetadataReader.GetDocument(Handle);
-            language = SymReader.MetadataReader.GetGuid(document.Language);
+            var document = PdbReader.MetadataReader.GetDocument(Handle);
+            language = PdbReader.MetadataReader.GetGuid(document.Language);
             return HResult.S_OK;
         }
 
         public int GetLanguageVendor(ref Guid vendor)
         {
-            var document = SymReader.MetadataReader.GetDocument(Handle);
-            Guid languageId = SymReader.MetadataReader.GetGuid(document.Language);
+            var document = PdbReader.MetadataReader.GetDocument(Handle);
+            Guid languageId = PdbReader.MetadataReader.GetGuid(document.Language);
             vendor = s_vendorMicrosoftGuid;
             return HResult.S_OK;
         }
@@ -177,7 +206,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             out int count,
             [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0), Out]char[] url)
         {
-            string name = SymReader.MetadataReader.GetString(SymReader.MetadataReader.GetDocument(Handle).Name);
+            string name = PdbReader.MetadataReader.GetString(PdbReader.MetadataReader.GetDocument(Handle).Name);
             return InteropUtilities.StringToBuffer(name, bufferLength, out count, url);
         }
 
@@ -189,8 +218,8 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         private BlobReader GetEmbeddedSourceBlobReader()
         {
-            BlobHandle blobHandle = SymReader.MetadataReader.GetCustomDebugInformation(Handle, MetadataUtilities.EmbeddedSourceId);
-            return blobHandle.IsNil ? default(BlobReader) : SymReader.MetadataReader.GetBlobReader(blobHandle);
+            BlobHandle blobHandle = PdbReader.MetadataReader.GetCustomDebugInformation(Handle, MetadataUtilities.EmbeddedSourceId);
+            return blobHandle.IsNil ? default(BlobReader) : PdbReader.MetadataReader.GetBlobReader(blobHandle);
         }
     }
 }

@@ -10,5 +10,11 @@ namespace Microsoft.DiaSymReader.PortablePdb
         {
             return new KeyValuePair<K, V>(key, value);
         }
+
+        public static void Deconstruct<K, V>(this KeyValuePair<K, V> pair, out K key, out V value)
+        {
+            key = pair.Key;
+            value = pair.Value;
+        }
     }
 }
