@@ -161,7 +161,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         private static IEnumerable<KeyValuePair<DocumentHandle, MethodLineExtent>> GetMethodExtents(MetadataReader reader)
         {
-            // Perf consideration:
+            // Perf consideration (https://github.com/dotnet/symreader-portable/issues/46):
             // We read and decode all sequence points in the file, which might be megabytes of data that need to be paged in.
             // If we stored the primary document of single-document methods in a field of MethodBody table we would only need to decode 
             // sequence point of methods that span multiple documents to build a map from Document -> Methods.

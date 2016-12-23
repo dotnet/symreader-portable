@@ -23,31 +23,43 @@ namespace Microsoft.DiaSymReader.PortablePdb
         private readonly Lazy<DocumentMap> _lazyDocumentMap;
         private readonly Lazy<bool> _lazyVbSemantics;
         private readonly Lazy<MethodMap> _lazyMethodMap;
+        private readonly LazyMetadataImport _metadataImport;
 
         private int _version;
 
-        // Takes ownership of <paramref name="pdbReader"/>.
-        private SymReader(PortablePdbReader pdbReader)
+        /// Takes ownership of <paramref name="pdbReader"/> and <paramref name="metadataImport"/>.
+        internal SymReader(PortablePdbReader pdbReader, LazyMetadataImport metadataImport)
         {
             Debug.Assert(pdbReader != null);
+            Debug.Assert(metadataImport != null);
 
             _pdbReader = pdbReader;
             _version = 1;
 
-            _lazyDocumentMap = new Lazy<DocumentMap>(() => new DocumentMap(MetadataReader));
+            _metadataImport = metadataImport;
             _lazyVbSemantics = new Lazy<bool>(() => IsVisualBasicAssembly());
-            _lazyMethodMap = new Lazy<MethodMap>(() => new MethodMap(MetadataReader));
+
+            _lazyDocumentMap = new Lazy<DocumentMap>(() => new DocumentMap(pdbReader.MetadataReader));
+            _lazyMethodMap = new Lazy<MethodMap>(() => new MethodMap(pdbReader.MetadataReader));
         }
 
         internal static SymReader CreateFromFile(string path, LazyMetadataImport metadataImport)
         {
-            var pdbStream = PortableShim.FileStream.CreateReadShareDelete(path);
-            var provider = MetadataReaderProvider.FromPortablePdbStream(pdbStream);
-
-            return new SymReader(new PortablePdbReader(provider, metadataImport));
+            return new SymReader(new PortablePdbReader(CreateProviderFromFile(path)), metadataImport);
         }
-
-        internal static ISymUnmanagedReader CreateFromStream(IStream stream, LazyMetadataImport metadataImport)
+		
+        internal static MetadataReaderProvider CreateProviderFromFile(string path)
+        {
+            var pdbStream = PortableShim.FileStream.CreateReadShareDelete(path);
+            return MetadataReaderProvider.FromPortablePdbStream(pdbStream);
+        }
+		
+		internal static ISymUnmanagedReader CreateFromStream(IStream stream, LazyMetadataImport metadataImport)
+        {
+		    return new SymReader(new PortablePdbReader(CreateProviderFromStream(stream)), metadataImport);
+		}
+		
+		internal static MetadataReaderProvider CreateProviderFromStream(IStream stream)
         {
             var interopStream = new ReadOnlyInteropStream(stream);
             var header = new byte[2 * sizeof(int)];
@@ -108,21 +120,35 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 provider = MetadataReaderProvider.FromPortablePdbStream(interopStream);
             }
 
-            return new SymReader(new PortablePdbReader(provider, metadataImport));
+            return provider;
         }
 
         internal MetadataReader MetadataReader => _pdbReader.MetadataReader;
         internal PortablePdbReader PdbReader => _pdbReader;
         internal Lazy<bool> VbSemantics => _lazyVbSemantics;
 
+        internal bool IsDisposed => _pdbReader.IsDisposed;
+
+        internal IMetadataImport GetMetadataImport()
+        {
+            if (IsDisposed)
+            {
+                throw new ObjectDisposedException(nameof(SymReader));
+            }
+
+            return _metadataImport.GetMetadataImport();
+        }
+
         public int Destroy()
         {
-            if (_pdbReader.IsDisposed)
+            if (IsDisposed)
             {
                 return HResult.S_OK;
             }
 
             _pdbReader.Dispose();
+            _metadataImport.Dispose();
+
             return HResult.S_FALSE;
         }
 
@@ -555,6 +581,13 @@ namespace Microsoft.DiaSymReader.PortablePdb
         /// Null if the PDB is not portable.
         /// </param>
         /// <param name="size">Size of the metadata block.</param>
+        /// <returns>
+        /// S_OK if the PDB is portable, S_FALSE if it isn't.
+        /// </returns>
+        /// <remarks>
+        /// If the store was updated via <see cref="UpdateSymbolStore(string, IStream)"/> 
+        /// returns the metadata of the latest update.
+        /// </remarks>
         [PreserveSig]
         public unsafe int GetPortableDebugMetadata(out byte* metadata, out int size)
         {

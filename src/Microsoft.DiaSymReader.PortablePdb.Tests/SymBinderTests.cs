@@ -2,13 +2,13 @@
 
 using System;
 using System.IO;
+using System.Linq;
+using System.Reflection.PortableExecutable;
+using Roslyn.Test.Utilities;
 using Xunit;
 
 namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 {
-    using System.Linq;
-    using System.Reflection.PortableExecutable;
-    using Roslyn.Test.Utilities;
     using static SymTestHelpers;
 
     public class SymBinderTests
@@ -59,6 +59,9 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Assert.Equal(HResult.S_OK, symReader.GetDocuments(0, out actualCount, null));
             Assert.Equal(13, actualCount);
 
+            // check that metadata import hasn't been disposed:
+            Assert.NotNull(((SymReader)symReader).GetMetadataImport());
+
             ((ISymUnmanagedDispose)symReader).Destroy();
 
             Directory.Delete(tempDir, recursive: true);
@@ -87,6 +90,9 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             int actualCount;
             Assert.Equal(HResult.S_OK, symReader.GetDocuments(0, out actualCount, null));
             Assert.Equal(13, actualCount);
+
+            // check that metadata import hasn't been disposed:
+            Assert.NotNull(((SymReader)symReader).GetMetadataImport());
 
             ((ISymUnmanagedDispose)symReader).Destroy();
 
@@ -117,6 +123,9 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Assert.Equal(HResult.S_OK, symReader.GetDocuments(0, out actualCount, null));
             Assert.Equal(13, actualCount);
 
+            // check that metadata import hasn't been disposed:
+            Assert.NotNull(((SymReader)symReader).GetMetadataImport());
+
             ((ISymUnmanagedDispose)symReader).Destroy();
 
             Directory.Delete(tempDir, recursive: true);
@@ -145,6 +154,9 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             int actualCount;
             Assert.Equal(HResult.S_OK, symReader.GetDocuments(0, out actualCount, null));
             Assert.Equal(13, actualCount);
+
+            // check that metadata import hasn't been disposed:
+            Assert.NotNull(((SymReader)symReader).GetMetadataImport());
 
             ((ISymUnmanagedDispose)symReader).Destroy();
 
@@ -180,6 +192,9 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Assert.Equal(HResult.S_OK, symReader.GetDocuments(0, out actualCount, null));
             Assert.Equal(13, actualCount);
 
+            // check that metadata import hasn't been disposed:
+            Assert.NotNull(((SymReader)symReader).GetMetadataImport());
+
             ((ISymUnmanagedDispose)symReader).Destroy();
 
             Directory.Delete(tempDir, recursive: true);
@@ -213,6 +228,9 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Assert.Equal(HResult.S_OK, symReader.GetDocuments(0, out actualCount, null));
             Assert.Equal(13, actualCount);
 
+            // check that metadata import hasn't been disposed:
+            Assert.NotNull(((SymReader)symReader).GetMetadataImport());
+
             ((ISymUnmanagedDispose)symReader).Destroy();
 
             Directory.Delete(tempDir, recursive: true);
@@ -244,6 +262,9 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             int actualCount;
             Assert.Equal(HResult.S_OK, symReader.GetDocuments(0, out actualCount, null));
             Assert.Equal(13, actualCount);
+
+            // check that metadata import hasn't been disposed:
+            Assert.NotNull(((SymReader)symReader).GetMetadataImport());
 
             ((ISymUnmanagedDispose)symReader).Destroy();
 

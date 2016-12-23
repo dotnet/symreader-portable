@@ -233,10 +233,10 @@ namespace Microsoft.DiaSymReader.PortablePdb
         {
             if (PortableShim.File.Exists(pdbFilePath))
             {
-                SymReader symReader;
+                PortablePdbReader pdbReader;
                 try
                 {
-                    symReader = SymReader.CreateFromFile(pdbFilePath, metadataImport);
+                    pdbReader = new PortablePdbReader(SymReader.CreateProviderFromFile(pdbFilePath));
                 }
                 catch
                 {
@@ -246,16 +246,16 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
                 try
                 {
-                    if (symReader.PdbReader.MatchesModule(guid, stamp, age))
+                    if (pdbReader.MatchesModule(guid, stamp, age))
                     {
-                        reader = symReader;
-                        symReader = null;
+                        reader = new SymReader(pdbReader, metadataImport);
+                        pdbReader = null;
                         return true;
                     }
                 }
                 finally
                 {
-                    symReader?.Destroy();
+                    pdbReader?.Dispose();
                 }
             }
 
@@ -320,7 +320,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 }
 
                 reader = SymReader.CreateFromStream(comStream, new LazyMetadataImport(mdImport));
-                return (reader != null) ? HResult.S_OK : HResult.E_FAIL;
+                return HResult.S_OK;
             }
             finally
             {
@@ -370,7 +370,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             }
 
             reader = SymReader.CreateFromFile(pdbFilePath, new LazyMetadataImport(metadataImportProvider));
-            return (reader != null) ? HResult.S_OK : HResult.E_FAIL;
+            return HResult.S_OK;
         }
 
         /// <summary>
@@ -403,7 +403,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             }
 
             reader = SymReader.CreateFromStream(comStream, new LazyMetadataImport(metadataImportProvider));
-            return (reader != null) ? HResult.S_OK : HResult.E_FAIL;
+            return HResult.S_OK;
         }
     }
 }

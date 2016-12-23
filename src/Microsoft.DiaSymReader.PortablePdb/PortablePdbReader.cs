@@ -9,15 +9,15 @@ namespace Microsoft.DiaSymReader.PortablePdb
     internal sealed class PortablePdbReader : IDisposable
     {
         private readonly MetadataReader _metadataReader;
+
+        // null when disposed
         private MetadataReaderProvider _metadataReaderProvider;
-        private LazyMetadataImport _lazyMetadataImport;
 
         /// <summary>
         /// The method takes ownership of the <paramref name="provider"/> upon entry and disposes it in case of a failure to construct the reader.
         /// </summary>
-        internal PortablePdbReader(MetadataReaderProvider provider, LazyMetadataImport metadataImport)
+        internal PortablePdbReader(MetadataReaderProvider provider)
         {
-            Debug.Assert(metadataImport != null);
             Debug.Assert(provider != null);
 
             try
@@ -34,7 +34,6 @@ namespace Microsoft.DiaSymReader.PortablePdb
             }
 
             _metadataReaderProvider = provider;
-            _lazyMetadataImport = metadataImport;
         }
 
         internal bool MatchesModule(Guid guid, uint stamp, int age)
@@ -46,16 +45,6 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
             var id = new BlobContentId(MetadataReader.DebugMetadataHeader.Id);
             return id.Guid == guid && id.Stamp == stamp;
-        }
-
-        internal IMetadataImport GetMetadataImport()
-        {
-            if (IsDisposed)
-            {
-                throw new ObjectDisposedException(nameof(SymReader));
-            }
-
-            return _lazyMetadataImport.GetMetadataImport();
         }
 
         internal MetadataReader MetadataReader
@@ -71,15 +60,12 @@ namespace Microsoft.DiaSymReader.PortablePdb
             }
         }
 
-        internal bool IsDisposed => _lazyMetadataImport == null;
+        internal bool IsDisposed => _metadataReaderProvider == null;
 
         public void Dispose()
         {
             _metadataReaderProvider?.Dispose();
             _metadataReaderProvider = null;
-
-            _lazyMetadataImport?.Dispose();
-            _lazyMetadataImport = null;
         }
     }
 }
