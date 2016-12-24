@@ -6,6 +6,7 @@
 *.user
 *.sln.docstates
 .vs/
+*.VC.db
 
 # Build results
 [Aa]rtifacts/

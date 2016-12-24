@@ -1,9 +1,9 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <MicroBuildCoreVersion>0.2.0</MicroBuildCoreVersion>
-    <RoslynToolsMicrosoftSignToolVersion>0.2.0-beta</RoslynToolsMicrosoftSignToolVersion>
-    <ToolsetCompilerPackageVersion>2.0.0-beta3-60616-03</ToolsetCompilerPackageVersion>
-    <XUnitConsoleRunnerPackageVersion>2.2.0-beta4-build3444</XUnitConsoleRunnerPackageVersion>
+    <RoslynToolsMicrosoftSignToolVersion>0.2.1-beta</RoslynToolsMicrosoftSignToolVersion>
+    <ToolsetCompilerPackageVersion>2.0.0-rc2-61110-03</ToolsetCompilerPackageVersion>
+    <XUnitConsoleRunnerPackageVersion>2.2.0-beta3-build3402</XUnitConsoleRunnerPackageVersion>
   
     <!-- symreader -->
     <MicrosoftDiaSymReaderVersion>1.1.0-beta1-60818-02</MicrosoftDiaSymReaderVersion>

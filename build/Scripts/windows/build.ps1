@@ -1,25 +1,28 @@
 [CmdletBinding(PositionalBinding=$false)]
 Param(
+  [switch] $clearPackageCache,
   [string] $configuration = "Debug",
-  [string] $deployHive = "TestImpact",
-  [string] $msbuildVersion = "14.0",
+  [string] $deployHive = "SymReaderPortable",
+  [string] $locateVsApiVersion = "0.2.4-beta",
+  [string] $msbuildVersion = "15.0",
   [string] $nugetVersion = "3.6.0-beta1",
-  [switch] $help,
   [switch] $official,
+  [switch] $realSign,
+  [string] $signToolVersion = "0.2.4-beta",
   [switch] $skipBuild,
   [switch] $skipDeploy,
   [switch] $skipRestore,
-  [switch] $skipInstallRoslyn,
   [switch] $skipTest,
   [switch] $skipTest32,
   [switch] $skipTest64,
   [switch] $skipTestCore,
-  [switch] $integration,
   [string] $target = "Build",
   [string] $testFilter = "*.UnitTests.dll",
-  [string] $integrationTestFilter = "*.IntegrationTests.dll",
-  [string] $xUnitVersion = "2.2.0-beta4-build3444"
+  [string] $xUnitVersion = "2.2.0-beta3-build3402"
 )
+
+set-strictmode -version 2.0
+$ErrorActionPreference = "Stop"
 
 function Create-Directory([string[]] $path) {
   if (!(Test-Path -path $path)) {
@@ -48,10 +51,37 @@ function Get-RegistryValue([string] $keyName, [string] $valueName) {
 
 function Locate-ArtifactsPath {
   $rootPath = Locate-RootPath
-  $artifactsPath = Join-Path -path $rootPath -ChildPath "artifacts\"
+  $artifactsPath = Join-Path -path $rootPath -ChildPath "artifacts\$configuration\"
 
   Create-Directory -path $artifactsPath
   return Resolve-Path -path $artifactsPath
+}
+
+function Locate-BinariesPath {
+  $artifactsPath = Locate-ArtifactsPath
+  $binariesPath = Join-Path -path $artifactsPath -ChildPath "bin\"
+
+  Create-Directory -path $binariesPath
+  return Resolve-Path -path $binariesPath
+}
+
+function Locate-IntermediatesPath {
+  $artifactsPath = Locate-ArtifactsPath
+  $intermediatesPath = Join-Path -path $artifactsPath -ChildPath "obj\"
+
+  Create-Directory -path $intermediatesPath
+  return Resolve-Path -path $intermediatesPath
+}
+
+function Locate-LocateVsApi {
+  $packagesPath = Locate-PackagesPath
+  $locateVsApi = Join-Path -path $packagesPath -ChildPath "RoslynTools.Microsoft.LocateVS\$locateVsApiVersion\tools\LocateVS.dll"
+
+  if (!(Test-Path -path $locateVsApi)) {
+    throw "The specified LocateVS API version ($locateVsApiVersion) could not be located."
+  }
+
+  return Resolve-Path -path $locateVsApi
 }
 
 function Locate-MSBuild {
@@ -67,30 +97,16 @@ function Locate-MSBuild {
 
 function Locate-MSBuildLogPath {
   $artifactsPath = Locate-ArtifactsPath
-  $msbuildLogPath = Join-Path -path $artifactsPath -ChildPath "$configuration\log\"
+  $msbuildLogPath = Join-Path -path $artifactsPath -ChildPath "log\"
 
   Create-Directory -path $msbuildLogPath
   return Resolve-Path -path $msbuildLogPath
 }
 
 function Locate-MSBuildPath {
-  $msbuildVersionPath = Locate-MSBuildVersionPath
-  $msbuildPath = Get-RegistryValue -keyName $msbuildVersionPath -valueName "MSBuildToolsPath"
+  $vsInstallPath = Locate-VsInstallPath
+  $msbuildPath = Join-Path -path $vsInstallPath -childPath "MSBuild\$msbuildVersion\Bin"
   return Resolve-Path -path $msbuildPath
-}
-
-function Locate-MSBuildVersionPath {
-  $msbuildVersionPath = "HKLM:\SOFTWARE\WOW6432Node\Microsoft\MSBuild\ToolsVersions\$msbuildVersion"
-
-  if (!(Test-Path -path $msbuildVersionPath)) {
-    $msbuildVersionPath = "HKLM:\SOFTWARE\Microsoft\MSBuild\ToolsVersions\$msbuildVersion"
-
-    if (!(Test-Path -path $msbuildVersionPath)) {
-      throw "The specified MSBuild version ($msbuildVersion) could not be located."
-    }
-  }
-
-  return Resolve-Path -path $msbuildVersionPath
 }
 
 function Locate-NuGet {
@@ -146,9 +162,31 @@ function Locate-ScriptPath {
   return Resolve-Path -path $scriptPath
 }
 
+function Locate-SignConfig {
+  $rootPath = Locate-RootPath
+  $signConfig = Join-Path -path $rootPath -childPath "build\Signing\SignToolData.json"
+
+  if (!(Test-Path -path $signConfig)) {
+    throw "The sign tool configuration file could not be located."
+  }
+
+  return Resolve-Path -path $signConfig
+}
+
+function Locate-SignTool {
+  $packagesPath = Locate-PackagesPath
+  $signTool = Join-Path -path $packagesPath -childPath "RoslynTools.Microsoft.SignTool\$signToolVersion\tools\SignTool.exe"
+
+  if (!(Test-Path -path $signTool)) {
+    throw "The specified sign tool version ($signToolVersion) could not be located."
+  }
+
+  return Resolve-Path -path $signTool
+}
+
 function Locate-Solution {
   $rootPath = Locate-RootPath
-  $solution = Join-Path -path $rootPath -childPath "SymReaderPortable.sln"
+  $solution = Join-Path -path $rootPath -childPath "*.sln"
   return Resolve-Path -path $solution
 }
 
@@ -156,6 +194,20 @@ function Locate-Toolset {
   $rootPath = Locate-RootPath
   $toolset = Join-Path -path $rootPath -childPath "build\Toolset\project.json"
   return Resolve-Path -path $toolset
+}
+
+function Locate-VsInstallPath {
+  $locateVsApi = Locate-LocateVsApi
+  $requiredPackageIds = @()
+
+  $requiredPackageIds += "Microsoft.Component.MSBuild"
+  $requiredPackageIds += "Microsoft.Net.Component.4.6.TargetingPack"
+  $requiredPackageIds += "Microsoft.VisualStudio.Component.PortableLibrary"
+  $requiredPackageIds += "Microsoft.VisualStudio.Component.Roslyn.Compiler"
+
+  Add-Type -path $locateVsApi
+  $vsInstallPath = [LocateVS.Instance]::GetInstallPath($msbuildVersion, $requiredPackageIds)
+  return Resolve-Path -path $vsInstallPath
 }
 
 function Locate-xUnit-x86 {
@@ -190,16 +242,15 @@ function Locate-xUnitPath {
 
 function Locate-xUnitLogPath {
   $artifactsPath = Locate-ArtifactsPath
-  $xUnitLogPath = Join-Path -path $artifactsPath -ChildPath "$configuration\log\"
+  $xUnitLogPath = Join-Path -path $artifactsPath -ChildPath "log\"
 
   Create-Directory -path $xUnitLogPath
   return Resolve-Path -path $xUnitLogPath
 }
 
 function Locate-xUnitTestBinaries {
-  $artifactsPath = Locate-ArtifactsPath
-
-  $binariesPath = Join-Path -path $artifactsPath -childPath "$configuration\bin\DesktopTests"
+  $binariesPath = Locate-BinariesPath
+  $binariesPath = Join-Path -path $binariesPath -childPath "DesktopTests"
   $testBinaries = Get-ChildItem -path $binariesPath -filter $testFilter -recurse -force
 
   $xUnitTestBinaries = @()
@@ -211,28 +262,6 @@ function Locate-xUnitTestBinaries {
   return $xUnitTestBinaries
 }
 
-function Locate-VsixDeployExe {
-  $artifactsPath = Locate-ArtifactsPath
-  
-  $binariesPath = Join-Path -path $artifactsPath -childPath "$configuration\bin\DesktopTests"
-
-  return Join-Path $binariesPath "DeployIntegrationTestVsixes\DeployIntegrationTestVsixes.exe"
-}
-
-function Locate-xUnitIntegrationTestBinaries {
-  $artifactsPath = Locate-ArtifactsPath
-  
-  $binariesPath = Join-Path -path $artifactsPath -childPath "$configuration\bin\"
-  $testBinaries = Get-ChildItem -path $binariesPath -filter $integrationTestFilter -recurse -force
-
-  $xUnitTestBinaries = @()
-
-  foreach ($xUnitTestBinary in $testBinaries) {
-    $xUnitTestBinaries += $xUnitTestBinary.FullName
-  }
-
-  return $xUnitTestBinaries
-}
 
 function Perform-Build {
   Write-Host -object ""
@@ -242,25 +271,56 @@ function Perform-Build {
     return
   }
 
-  $artifactsPath = Locate-ArtifactsPath
   $msbuild = Locate-MSBuild
   $msbuildLogPath = Locate-MSBuildLogPath
-  $solution = Locate-Solution
-
-  $msbuildSummaryLog = Join-Path -path $msbuildLogPath -childPath "MSBuild.log"
-  $msbuildWarningLog = Join-Path -path $msbuildLogPath -childPath "MSBuild.wrn"
-  $msbuildFailureLog = Join-Path -path $msbuildLogPath -childPath "MSBuild.err"
 
   $deploy = (-not $skipDeploy)
+  $solution = Locate-Solution
 
-  Write-Host -object "Starting build..."
-  & $msbuild /t:$target /p:Configuration=$configuration /p:DeployExtension=$deploy /p:DeployHive=$deployHive /p:OfficialBuild=$official /m /tv:$msbuildVersion /v:m /flp1:Summary`;Verbosity=diagnostic`;Encoding=UTF-8`;LogFile=$msbuildSummaryLog /flp2:WarningsOnly`;Verbosity=diagnostic`;Encoding=UTF-8`;LogFile=$msbuildWarningLog /flp3:ErrorsOnly`;Verbosity=diagnostic`;Encoding=UTF-8`;LogFile=$msbuildFailureLog /nr:false $solution
+  $solutionSummaryLog = Join-Path -path $msbuildLogPath -childPath "MSBuild.log"
+  $solutionWarningLog = Join-Path -path $msbuildLogPath -childPath "MSBuild.wrn"
+  $solutionFailureLog = Join-Path -path $msbuildLogPath -childPath "MSBuild.err"
+
+
+  Write-Host -object "Starting solution build..."
+  & $msbuild /t:$target /p:Configuration=$configuration /p:DeployExtension=$deploy /p:DeployHive=$deployHive /p:OfficialBuild=$official /m /tv:$msbuildVersion /v:m /flp1:Summary`;Verbosity=diagnostic`;Encoding=UTF-8`;LogFile=$solutionSummaryLog /flp2:WarningsOnly`;Verbosity=diagnostic`;Encoding=UTF-8`;LogFile=$solutionWarningLog /flp3:ErrorsOnly`;Verbosity=diagnostic`;Encoding=UTF-8`;LogFile=$solutionFailureLog /nr:false $solution
 
   if ($lastExitCode -ne 0) {
     throw "The build failed with an exit code of '$lastExitCode'."
   }
 
   Write-Host -object "The build completed successfully." -foregroundColor Green
+}
+
+function Perform-RealSign {
+  Write-Host -object ""
+
+  if ($skipBuild) {
+    Write-Host -object "Skipping real signing..."
+    return
+  }
+
+  $binariesPath = Locate-BinariesPath
+  $intermediatesPath = Locate-IntermediatesPath
+  $packagesPath = Locate-PackagesPath
+  $msbuild = Locate-MSBuild
+  $signConfig = Locate-SignConfig
+  $signTool = Locate-SignTool
+
+  if ($realSign) {
+    Write-Host -object "Starting real signing..."
+    & $signTool -intermediateOutputPath $intermediatesPath -msbuildPath $msbuild -nugetPackagesPath $packagesPath -config $signConfig $binariesPath
+  }
+  else {
+    Write-Host -object "Starting test signing..."
+    & $signTool -test -intermediateOutputPath $intermediatesPath -msbuildPath $msbuild -nugetPackagesPath $packagesPath -config $signConfig $binariesPath
+  }
+
+  if ($lastExitCode -ne 0) {
+    throw "The real sign task failed with an exit code of '$lastExitCode'."
+  }
+
+  Write-Host -object "The real sign task completed successfully." -foregroundColor Green
 }
 
 function Perform-Restore {
@@ -276,10 +336,24 @@ function Perform-Restore {
   $packagesPath = Locate-PackagesPath
   $toolset = Locate-Toolset
   $solution = Locate-Solution
+  
+  if ($clearPackageCache) {
+    Write-Host -object "Clearing local package cache..."
+    & $nuget locals all -clear
+  }
 
-  Write-Host -object "Starting restore..."
+  Write-Host -object "Starting toolset restore..."
   & $nuget restore -packagesDirectory $packagesPath -msbuildVersion $msbuildVersion -verbosity quiet -nonInteractive -configFile $nugetConfig $toolset
-  & $nuget restore -packagesDirectory $packagesPath -msbuildVersion $msbuildVersion -verbosity quiet -nonInteractive -configFile $nugetConfig $solution
+
+  if ($lastExitCode -ne 0) {
+    throw "The restore failed with an exit code of '$lastExitCode'."
+  }
+
+  Write-Host -object "Locating MSBuild install path..."
+  $msbuildPath = Locate-MSBuildPath
+
+  Write-Host -object "Starting solution restore..."
+  & $nuget restore -packagesDirectory $packagesPath -msbuildPath $msbuildPath -verbosity quiet -nonInteractive -configFile $nugetConfig $solution
 
   if ($lastExitCode -ne 0) {
     throw "The restore failed with an exit code of '$lastExitCode'."
@@ -299,7 +373,6 @@ function Perform-Test-x86 {
   $xUnit = Locate-xUnit-x86
   $xUnitLogPath = Locate-xUnitLogPath
   $xUnitTestBinaries = @(Locate-xUnitTestBinaries)
-  Write-Host $xUnitTestBinaries
 
   $xUnitResultLog = Join-Path -path $xUnitLogPath -childPath "xUnit-x86.xml"
 
@@ -345,14 +418,13 @@ function Perform-Test-Core {
     return
   }
 
-  $artifactsPath = Locate-ArtifactsPath
-  $binariesPath = Join-Path $artifactsPath "$configuration\bin\CoreTests"
+  $binariesPath = Locate-BinariesPath
+  $binariesPath = Join-Path $binariesPath "CoreTests"
  
   $corerun = Join-Path $binariesPath "CoreRun.exe"
   $xUnit = Join-Path $binariesPath "xunit.console.netcore.exe"
   $xUnitLogPath = Locate-xUnitLogPath
   $xUnitTestBinaries = @(Locate-xUnitTestBinaries)
-  Write-Host $xUnitTestBinaries
 
   $xUnitResultLog = Join-Path -path $xUnitLogPath -childPath "xUnit-Core.xml"
 
@@ -366,90 +438,9 @@ function Perform-Test-Core {
   Write-Host -object "The test completed successfully." -foregroundColor Green
 }
 
-function Perform-Install-Roslyn-Vsixes {
-  Write-Host -object ""
-
-  if ($skipInstallRoslyn -or $skipTest -or (-not $integration)) {
-    Write-Host -object "Skipping installation of integration test vsixes..."
-    return
-  }
-  
-  Write-Host "Starting to install vsixes..."
-  
-  $vsixDeployExe = Locate-VsixDeployExe
-  
-  & $vsixDeployExe
-  
-  Write-Host -object "Installed integration test vsixes successfully." -foregroundColor Green
-}
-
-function Perform-Test-Integration {
-  Write-Host -object ""
-
-  if ($skipTest -or (-not $integration)) {
-    Write-Host -object "Skipping integration tests..."
-    return
-  }
-  
-  $xUnit = Locate-xUnit-x64
-  $xUnitLogPath = Locate-xUnitLogPath
-  $xUnitTestBinaries = @(Locate-xUnitIntegrationTestBinaries)
-
-  $xUnitResultLog = Join-Path -path $xUnitLogPath -childPath "xUnit-integration.xml"
-
-  Write-Host -object "Starting integration tests..."
-  & $xUnit @xUnitTestBinaries -xml $xUnitResultLog -noshadow
-
-  if ($lastExitCode -ne 0) {
-    throw "The test failed with an exit code of '$lastExitCode'."
-  }
-
-  Write-Host -object "The test completed successfully." -foregroundColor Green
-}
-
-function Print-Help {
-  if (-not $help) {
-    return
-  }
-  
-  Write-Host -object "TestImpact Build Script"
-  Write-Host -object "    Help                  - [Switch] - Prints this help message."
-  Write-Host -object ""
-  Write-Host -object "    Configuration         - [String] - Specifies the build configuration. Defaults to 'Debug'."
-  Write-Host -object "    DeployHive            - [String] - Specifies the VSIX deployment hive. Defaults to 'TestImpact'."
-  Write-Host -object "    MSBuildVersion        - [String] - Specifies the MSBuild version. Defaults to '14.0'."
-  Write-Host -object "    NuGetVersion          - [String] - Specifies the NuGet version. Defaults to '3.5.0-beta'."
-  Write-Host -object "    Target                - [String] - Specifies the build target. Defaults to 'Build'."
-  Write-Host -object "    TestFilter            - [String] - Specifies the test filter. Defaults to '*.UnitTests.dll'."
-  Write-Host -object "    IntegrationTestFilter - [String] - Specifies the integration test filter. Defaults to '*.IntegrationTests.dll'"
-  Write-Host -object "    xUnitVersion          - [String] - Specifies the xUnit version. Defaults to '2.1.0'."
-  Write-Host -object ""
-  Write-Host -object "    Official              - [Switch] - Indicates this is an official build which changes the semantic version."
-  Write-Host -object "    SkipBuild             - [Switch] - Indicates the build step should be skipped."
-  Write-Host -object "    SkipDeploy            - [Switch] - Indicates the VSIX deployment step should be skipped."
-  Write-Host -object "    SkipInstallRoslyn     - [Switch] - Indicates the installation of Roslyn VSIX step should be skipped."
-  Write-Host -object "    SkipRestore           - [Switch] - Indicates the restore step should be skipped."
-  Write-Host -object "    SkipTest              - [Switch] - Indicates the test step should be skipped."
-  Write-Host -object "    SkipTest32            - [Switch] - Indicates the 32-bit Unit Tests should be skipped."
-  Write-Host -object "    SkipTest64            - [Switch] - Indicates the 64-bit Unit Tests should be skipped."
-  Write-Host -object "    SkipTestCore          - [Switch] - Indicates the Core CLR Unit Tests should be skipped."
-  Write-Host -object "    Integration           - [Switch] - Indicates the Integration Tests should be run."
-  
-  Exit 0
-}
-
-# Enforce deployment when running integration tests.
-# This ensures that installed extension's timestamp is the same as in the artifacts folder.
-if ((-not $skipTest) -and $integration) {
-  $skipBuild = $false
-  $skipDeploy = $false
-}
-
-Print-Help
 Perform-Restore
 Perform-Build
-Perform-Install-Roslyn-Vsixes
+Perform-RealSign
 Perform-Test-x86
 Perform-Test-x64
 Perform-Test-Core
-Perform-Test-Integration
