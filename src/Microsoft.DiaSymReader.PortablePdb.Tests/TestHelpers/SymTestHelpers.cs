@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
+using System.Reflection.PortableExecutable;
 using System.Runtime.InteropServices;
 using Roslyn.Test.Utilities;
 using Xunit;
-using System.Reflection.PortableExecutable;
 
 namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 {
@@ -62,9 +62,9 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             }
         }
 
-        public static ISymUnmanagedReader CreateSymReaderFromResource(KeyValuePair<byte[], byte[]> peAndPdb)
+        public static ISymUnmanagedReader CreateSymReaderFromResource(TestResource artifacts)
         {
-            return CreateReader(new MemoryStream(peAndPdb.Value), metadataImporter: new SymMetadataImport(new MemoryStream(peAndPdb.Key)));
+            return CreateReader(new MemoryStream(artifacts.Pdb), metadataImporter: new SymMetadataImport(new MemoryStream(artifacts.PE)));
         }
 
         public static ISymUnmanagedReader CreateSymReaderFromEmbeddedPortablePdb(byte[] peImage)

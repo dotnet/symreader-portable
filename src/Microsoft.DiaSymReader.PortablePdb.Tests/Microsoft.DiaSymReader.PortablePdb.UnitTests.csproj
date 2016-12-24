@@ -125,10 +125,12 @@
   <ItemGroup>
     <Compile Include="EmbeddedSourceTests.cs" />
     <Compile Include="MethodMapTests.cs" />
-    <Compile Include="ResourceLoader.cs" />
+    <Compile Include="TestHelpers\TestResource.cs" />
+    <Compile Include="TestHelpers\ResourceLoader.cs" />
     <Compile Include="SymBinderTests.cs" />
+    <Compile Include="TestHelpers\PdbTestData.cs" />
     <Compile Include="TestHelpers\SymTestHelpers.cs" />
-    <Compile Include="TestResources.cs" />
+    <Compile Include="TestHelpers\TestResources.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TestHelpers\AssertEx.cs" />

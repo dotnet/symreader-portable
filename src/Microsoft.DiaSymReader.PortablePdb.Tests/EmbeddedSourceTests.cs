@@ -1,12 +1,10 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
-using Roslyn.Test.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.IO.Compression;
-using System.Reflection.Metadata;
+using Roslyn.Test.Utilities;
 using Xunit;
 
 namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
@@ -15,21 +13,10 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 
     public class EmbeddedSourceTests
     {
-        [Fact]
-        public void EmbeddedSource_Portable()
+        [Theory, ClassData(typeof(PdbTestData))]
+        private void EmbeddedSource(bool portable)
         {
-            EmbeddedSource(TestResources.EmbeddedSource.PortableDllAndPdb);
-        }
-
-        [Fact]
-        public void EmbeddedSource_Native()
-        {
-            EmbeddedSource(TestResources.EmbeddedSource.DllAndPdb);
-        }
-
-        private void EmbeddedSource(KeyValuePair<byte[], byte[]> dllAndPdb)
-        {
-            ISymUnmanagedReader symReader = CreateSymReaderFromResource(dllAndPdb);
+            var symReader = CreateSymReaderFromResource(TestResources.EmbeddedSource.DllAndPdb(portable));
 
             foreach (string file in new[] { @"C:\EmbeddedSource.cs", @"C:\EmbeddedSourceSmall.cs" })
             {
@@ -65,21 +52,12 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             }
         }
 
-        [Fact]
-        public void NoEmbeddedSource_Portable()
-        {
-            NoEmbeddedSource(TestResources.Documents.PortableDllAndPdb);
-        }
+        [Theory, ClassData(typeof(PdbTestData))]
 
-        [Fact]
-        public void NoEmbeddedSource_Native()
-        {
-            NoEmbeddedSource(TestResources.Documents.DllAndPdb);
-        }
 
-        private void NoEmbeddedSource(KeyValuePair<byte[], byte[]> dllAndPdb)
+        public void NoEmbeddedSource(bool portable)
         {
-            ISymUnmanagedReader symReader = CreateSymReaderFromResource(dllAndPdb);
+            var symReader = CreateSymReaderFromResource(TestResources.Documents.DllAndPdb(portable));
 
             ISymUnmanagedDocument doc;
             Assert.Equal(HResult.S_OK, symReader.GetDocument(@"C:\Documents.cs", default(Guid), default(Guid), default(Guid), out doc));
@@ -96,21 +74,10 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Assert.Equal(HResult.S_FALSE, doc.GetSourceRange(0, 0, int.MaxValue, int.MaxValue, 0, out length, null));
         }
 
-        [Fact]
-        public void BadArgs_Portable()
+        [Theory, ClassData(typeof(PdbTestData))]
+        public void BadArgs(bool portable)
         {
-            BadArgs(TestResources.EmbeddedSource.PortableDllAndPdb);
-        }
-
-        [Fact]
-        public void BadArgs_Native()
-        {
-            BadArgs(TestResources.EmbeddedSource.DllAndPdb);
-        }
-
-        private void BadArgs(KeyValuePair<byte[], byte[]> dllAndPdb)
-        {
-            ISymUnmanagedReader symReader = CreateSymReaderFromResource(dllAndPdb);
+            var symReader = CreateSymReaderFromResource(TestResources.EmbeddedSource.DllAndPdb(portable));
 
             ISymUnmanagedDocument doc;
             Assert.Equal(HResult.S_OK, symReader.GetDocument(@"C:\EmbeddedSource.cs", default(Guid), default(Guid), default(Guid), out doc));
@@ -123,7 +90,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Assert.Equal(HResult.E_INVALIDARG, doc.GetSourceRange(0, 0, int.MaxValue, int.MaxValue, 1, out count, null));
 
             // negative bufferLength test does not apply to native as it uses uint arguments.
-            if (dllAndPdb.Equals(TestResources.EmbeddedSource.PortableDllAndPdb))
+            if (portable)
             {
                 Assert.Equal(HResult.E_INVALIDARG, doc.GetSourceRange(0, 0, int.MaxValue, int.MaxValue, -1, out count, new byte[1]));
             }

@@ -181,7 +181,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Directory.CreateDirectory(Path.GetDirectoryName(nativePdbFilePath));
             File.WriteAllBytes(peFilePath, TestResources.Documents.PortableDll);
             File.WriteAllBytes(pdbFilePath, TestResources.Documents.PortablePdb);
-            File.WriteAllBytes(nativePdbFilePath, TestResources.Documents.Pdb);
+            File.WriteAllBytes(nativePdbFilePath, TestResources.Documents.WindowsPdb);
 
             string searchPath = searchDir;
 
@@ -217,7 +217,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Directory.CreateDirectory(Path.GetDirectoryName(nativePdbFilePath));
             File.WriteAllBytes(peFilePath, TestResources.Documents.PortableDll);
             File.WriteAllBytes(pdbFilePath, TestResources.Documents.PortablePdb);
-            File.WriteAllBytes(nativePdbFilePath, TestResources.Documents.Pdb);
+            File.WriteAllBytes(nativePdbFilePath, TestResources.Documents.WindowsPdb);
 
             string searchPath = searchDir1 + ";" + searchDir2;
 
