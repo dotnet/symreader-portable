@@ -16,7 +16,7 @@ static addArchival(def job, def filesToArchive, def filesToExclude) {
 
 static addGithubPRTriggerForBranch(def job, def branchName, def jobName, def testName) {
   def prContext = "prtest/${jobName.replace('_', '/')}"
-  def triggerPhrase = "(?i).*test\\W+${prContext}.*"
+  def triggerPhrase = "(?i)^\\s*(@?dotnet-bot\\s+)?(re)?test\\s+(${prContext})(\\s+please)?\\s*\$"
   def triggerOnPhraseOnly = (testName != 'build')
 
   Utilities.addGithubPRTriggerForBranch(job, branchName, prContext, triggerPhrase, triggerOnPhraseOnly)
@@ -98,7 +98,7 @@ static addBuildSteps(def job, def projectName, def opsysName, def configName, de
       batchFile("""set TEMP=%WORKSPACE%\\artifacts\\${configName}\\tmp
 mkdir %TEMP%
 set TMP=%TEMP%
-.\\Build.cmd -Configuration ${configName} -msbuildVersion '14.0' ${officialSwitch} -SkipDeploy -SkipTest
+.\\Build.cmd -Configuration ${configName} -msbuildVersion '15.0' ${officialSwitch} -SkipDeploy -SkipTest
 """)
       publishers {
         downstreamParameterized {
