@@ -139,7 +139,7 @@ static addTestSteps(def job, def projectName, def opsysName, def configName, def
       batchFile("""set TEMP=%WORKSPACE%\\artifacts\\${configName}\\tmp
 mkdir %TEMP%
 set TMP=%TEMP%
-.\\Build.cmd -Configuration ${configName} -msbuildVersion '14.0' ${officialSwitch} -SkipBuild ${testName == 'unit32' ? '-SkipTest64 -SkipTestCore' : (testName == 'core' ? '-SkipTest32 -SkipTest64' : '-SkipTest32 -SkipTestCore')}
+.\\Build.cmd -Configuration ${configName} -msbuildVersion '15.0' ${officialSwitch} -SkipBuild ${testName == 'unit32' ? '-SkipTest64 -SkipTestCore' : (testName == 'core' ? '-SkipTest32 -SkipTest64' : '-SkipTest32 -SkipTestCore')}
 """)
     }
   }
@@ -168,8 +168,7 @@ set TMP=%TEMP%
           } else {
             Utilities.addGithubPushTrigger(myJob)
           }
-        }
-        else {
+        } else {
           if (isPR) {
             addGithubPRCommitStatusForBranch(myJob, branchName, jobName, testName)
           }
@@ -181,7 +180,7 @@ set TMP=%TEMP%
           addXUnitDotNETResults(myJob, configName)
         }
 
-        Utilities.setMachineAffinity(myJob, 'Windows_NT', 'latest-or-auto')
+        Utilities.setMachineAffinity(myJob, 'Windows_NT', 'latest-or-auto-dev15')
 
         if (!isPR) {
           addExtendedEmailPublisher(myJob)
