@@ -1,0 +1,51 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Copyright (c)  Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information. -->
+
+  <!--
+  
+  Requires the following properties to be set:
+    AssemblyVersion
+    NuGetMoniker (empty for release build)
+    
+  Defines the following properties:
+    BuildVersion
+    NuGetVersion
+    VsixVersion
+    
+  -->
+  
+  <Choose>
+    <When Condition="$(BUILD_BUILDNUMBER) == ''">
+      <PropertyGroup>
+        <NuGetMoniker>dev</NuGetMoniker>
+        <NuGetVersionSuffix>dev</NuGetVersionSuffix>
+        <BuildVersion>$(AssemblyVersion).0</BuildVersion>
+        <VsixVersion>$(AssemblyVersion).9000000</VsixVersion>
+      </PropertyGroup>
+    </When>
+
+    <Otherwise>
+      <PropertyGroup>
+        <BuildNumberFiveDigitDateStamp>$([MSBuild]::Subtract($(BUILD_BUILDNUMBER.Split('.')[0].Substring(3).Trim()), 8800))</BuildNumberFiveDigitDateStamp>
+        <BuildNumberBuildOfTheDayPadded>$(BUILD_BUILDNUMBER.Split('.')[1].PadLeft(2,'0'))</BuildNumberBuildOfTheDayPadded>
+        <NuGetVersionSuffix>$(NuGetMoniker)-$(BuildNumberFiveDigitDateStamp)-$(BuildNumberBuildOfTheDayPadded)</NuGetVersionSuffix>
+        <BuildVersion>$(AssemblyVersion).$(BuildNumberFiveDigitDateStamp)</BuildVersion>
+        <VsixVersion>$(AssemblyVersion).$(BuildNumberFiveDigitDateStamp)$(BuildNumberBuildOfTheDayPadded)</VsixVersion>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+  
+  <Choose>
+    <When Condition="'$(NuGetMoniker)' == ''" >
+      <PropertyGroup>
+        <NuGetVersion>$(AssemblyVersion)</NuGetVersion>
+      </PropertyGroup>
+    </When>
+    
+    <Otherwise>
+      <PropertyGroup>
+        <NuGetVersion>$(AssemblyVersion)-$(NuGetVersionSuffix)</NuGetVersion>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+</Project>
