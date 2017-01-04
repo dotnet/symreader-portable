@@ -8,7 +8,7 @@ Param(
   [string] $nugetVersion = "3.6.0-beta1",
   [switch] $official,
   [switch] $realSign,
-  [string] $signToolVersion = "0.2.4-beta",
+  [string] $signToolVersion = "0.2.1-beta",
   [switch] $skipBuild,
   [switch] $skipDeploy,
   [switch] $skipRestore,

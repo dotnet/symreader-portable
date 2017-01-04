@@ -2,7 +2,7 @@
   <PropertyGroup>
     <MicroBuildCoreVersion>0.2.0</MicroBuildCoreVersion>
     <RoslynToolsMicrosoftSignToolVersion>0.2.1-beta</RoslynToolsMicrosoftSignToolVersion>
-    <ToolsetCompilerPackageVersion>2.0.0-rc2-61110-03</ToolsetCompilerPackageVersion>
+    <ToolsetCompilerPackageVersion>2.0.0-rc3-61228-03</ToolsetCompilerPackageVersion>
     <XUnitConsoleRunnerPackageVersion>2.2.0-beta3-build3402</XUnitConsoleRunnerPackageVersion>
   
     <!-- symreader -->

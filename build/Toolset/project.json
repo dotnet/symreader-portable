@@ -5,7 +5,7 @@
     "MicroBuild.Plugins.SwixBuild": "1.0.101",
     "Microsoft.Net.Compilers": "2.0.0-rc3-61228-03",
     "RoslynTools.Microsoft.LocateVS": "0.2.1-beta",
-    "RoslynTools.Microsoft.SignTool": "0.2.4-beta",
+    "RoslynTools.Microsoft.SignTool": "0.2.1-beta",
     "xunit.runner.console": "2.2.0-beta3-build3402"
   },
   "frameworks": {
