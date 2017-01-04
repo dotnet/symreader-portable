@@ -180,7 +180,7 @@ set TMP=%TEMP%
           addXUnitDotNETResults(myJob, configName)
         }
 
-        Utilities.setMachineAffinity(myJob, 'Windows_NT', 'latest-or-auto-dev15')
+        Utilities.setMachineAffinity(myJob, 'Windows_NT', 'latest-or-auto-dev15-rc')
 
         if (!isPR) {
           addExtendedEmailPublisher(myJob)
