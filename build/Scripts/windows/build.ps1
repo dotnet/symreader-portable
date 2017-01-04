@@ -75,7 +75,7 @@ function Locate-IntermediatesPath {
 
 function Locate-LocateVsApi {
   $packagesPath = Locate-PackagesPath
-  $locateVsApi = Join-Path -path $packagesPath -ChildPath "RoslynTools.Microsoft.LocateVS\$locateVsApiVersion\tools\LocateVS.dll"
+  $locateVsApi = Join-Path -path $packagesPath -ChildPath "RoslynTools.Microsoft.LocateVS\$locateVsApiVersion\lib\net46\LocateVS.dll"
 
   if (!(Test-Path -path $locateVsApi)) {
     throw "The specified LocateVS API version ($locateVsApiVersion) could not be located."
