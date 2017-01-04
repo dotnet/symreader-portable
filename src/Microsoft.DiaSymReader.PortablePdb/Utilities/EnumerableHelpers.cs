@@ -11,34 +11,33 @@ namespace Microsoft.DiaSymReader.PortablePdb
         /// Groups specified entries by key optimizing for single-item groups. 
         /// The ordering of values within each bucket is the same as their ordering in the <paramref name="entries"/> sequence.
         /// </summary>
-        public static IReadOnlyDictionary<K, KeyValuePair<V, ImmutableArray<V>>> GroupBy<K, V>(this IEnumerable<KeyValuePair<K, V>> entries, IEqualityComparer<K> keyComparer)
+        public static Dictionary<K, (V Single, ImmutableArray<V> Multiple)> GroupBy<K, V>(this IEnumerable<KeyValuePair<K, V>> entries, IEqualityComparer<K> keyComparer)
         {
-            var builder = new Dictionary<K, KeyValuePair<V, ImmutableArray<V>.Builder>>(keyComparer);
+            var builder = new Dictionary<K, (V Single, ImmutableArray<V>.Builder Multiple)>(keyComparer);
 
             foreach (var entry in entries)
             {
-                KeyValuePair<V, ImmutableArray<V>.Builder> existing;
-                if (!builder.TryGetValue(entry.Key, out existing))
+                if (!builder.TryGetValue(entry.Key, out var existing))
                 {
-                    builder[entry.Key] = KeyValuePair.Create(entry.Value, default(ImmutableArray<V>.Builder));
+                    builder[entry.Key] = (entry.Value, default(ImmutableArray<V>.Builder));
                 }
-                else if (existing.Value == null)
+                else if (existing.Multiple == null)
                 {
                     var list = ImmutableArray.CreateBuilder<V>();
-                    list.Add(existing.Key);
+                    list.Add(existing.Single);
                     list.Add(entry.Value);
-                    builder[entry.Key] = KeyValuePair.Create(default(V), list);
+                    builder[entry.Key] = (default(V), list);
                 }
                 else
                 {
-                    existing.Value.Add(entry.Value);
+                    existing.Multiple.Add(entry.Value);
                 }
             }
 
-            var result = new Dictionary<K, KeyValuePair<V, ImmutableArray<V>>>(builder.Count, keyComparer);
+            var result = new Dictionary<K, (V, ImmutableArray<V>)>(builder.Count, keyComparer);
             foreach (var entry in builder)
             {
-                result.Add(entry.Key, KeyValuePair.Create(entry.Value.Key, entry.Value.Value?.ToImmutable() ?? default(ImmutableArray<V>)));
+                result.Add(entry.Key, (entry.Value.Single, entry.Value.Multiple?.ToImmutable() ?? default(ImmutableArray<V>)));
             }
 
             return result;

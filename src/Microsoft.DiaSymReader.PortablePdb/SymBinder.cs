@@ -90,9 +90,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 // Search policy: all is restricted unless explicitly allowed. 
                 // After opened store to cache if CACHE* given (only the first cache?)
 
-                CodeViewDebugDirectoryData codeViewData;
-                uint stamp;
-                if (!TryReadCodeViewData(fileName, out codeViewData, out stamp))
+                if (!TryReadCodeViewData(fileName, out var codeViewData, out uint stamp))
                 {
                     return HResult.E_FAIL; // TODO: specific error code (ecToHresult)?
                 }
@@ -150,7 +148,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             // 4b) registry
             if ((searchPolicy & SymUnmanagedSearchPolicy.AllowRegistryAccess) != 0)
             {
-                // TODO
+                // TODO: https://github.com/dotnet/symreader-portable/issues/48
             }
 
             // 5c) environment variables:
@@ -233,10 +231,10 @@ namespace Microsoft.DiaSymReader.PortablePdb
         {
             if (PortableShim.File.Exists(pdbFilePath))
             {
-                SymReader symReader;
+                PortablePdbReader pdbReader;
                 try
                 {
-                    symReader = SymReader.CreateFromFile(pdbFilePath, metadataImport);
+                    pdbReader = new PortablePdbReader(SymReader.CreateProviderFromFile(pdbFilePath), version: 1, previousDocumentCount: 0);
                 }
                 catch
                 {
@@ -246,16 +244,16 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
                 try
                 {
-                    if (symReader.PdbReader.MatchesModule(guid, stamp, age))
+                    if (pdbReader.MatchesModule(guid, stamp, age))
                     {
-                        reader = symReader;
-                        symReader = null;
+                        reader = new SymReader(pdbReader, metadataImport);
+                        pdbReader = null;
                         return true;
                     }
                 }
                 finally
                 {
-                    symReader?.Destroy();
+                    pdbReader?.Dispose();
                 }
             }
 
@@ -320,7 +318,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 }
 
                 reader = SymReader.CreateFromStream(comStream, new LazyMetadataImport(mdImport));
-                return (reader != null) ? HResult.S_OK : HResult.E_FAIL;
+                return HResult.S_OK;
             }
             finally
             {
@@ -370,7 +368,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             }
 
             reader = SymReader.CreateFromFile(pdbFilePath, new LazyMetadataImport(metadataImportProvider));
-            return (reader != null) ? HResult.S_OK : HResult.E_FAIL;
+            return HResult.S_OK;
         }
 
         /// <summary>
@@ -403,7 +401,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             }
 
             reader = SymReader.CreateFromStream(comStream, new LazyMetadataImport(metadataImportProvider));
-            return (reader != null) ? HResult.S_OK : HResult.E_FAIL;
+            return HResult.S_OK;
         }
     }
 }

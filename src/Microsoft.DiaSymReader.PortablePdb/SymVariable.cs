@@ -90,7 +90,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0), Out]byte[] signature)
         {
             var localSignatureHandle = _symMethod.MetadataReader.GetMethodDebugInformation(_symMethod.DebugHandle).LocalSignature;
-            var metadataImport = _symMethod.SymReader.PdbReader.GetMetadataImport();
+            var metadataImport = _symMethod.SymReader.GetMetadataImport();
             var local = _symMethod.MetadataReader.GetLocalVariable(_handle);
 
             byte* signaturePtr;

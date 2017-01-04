@@ -1,24 +1,39 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Reflection.Metadata;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Microsoft.DiaSymReader.PortablePdb
 {
     internal sealed class PortablePdbReader : IDisposable
     {
+        internal SymReader _symReader;
+        internal readonly int Version;
+
+        /// <summary>
+        /// Aggregate number of unique documents in all previous generations.
+        /// </summary>
+        internal readonly int PreviousDocumentCount;
+
         private readonly MetadataReader _metadataReader;
+
+        // null when disposed
         private MetadataReaderProvider _metadataReaderProvider;
-        private LazyMetadataImport _lazyMetadataImport;
+
+        private ImmutableArray<DocumentId> _documentHandleToIdMapOpt;
+        private ImmutableArray<MethodId> _methodHandleToIdMapOpt;
 
         /// <summary>
         /// The method takes ownership of the <paramref name="provider"/> upon entry and disposes it in case of a failure to construct the reader.
         /// </summary>
-        internal PortablePdbReader(MetadataReaderProvider provider, LazyMetadataImport metadataImport)
+        internal PortablePdbReader(MetadataReaderProvider provider, int version, int previousDocumentCount)
         {
-            Debug.Assert(metadataImport != null);
             Debug.Assert(provider != null);
+            Debug.Assert(version >= 1);
 
             try
             {
@@ -34,7 +49,88 @@ namespace Microsoft.DiaSymReader.PortablePdb
             }
 
             _metadataReaderProvider = provider;
-            _lazyMetadataImport = metadataImport;
+            Version = version;
+            PreviousDocumentCount = previousDocumentCount;
+        }
+
+        /// <summary>
+        /// Maps <see cref="DocumentHandle"/> relative to this reader to the corresponding global <see cref="DocumentId"/>.
+        /// Null if handles correspond to ids 1:1 (baseline).
+        /// </summary>
+        internal DocumentId GetDocumentId(DocumentHandle handle)
+        {
+            int rowId = MetadataTokens.GetRowNumber(handle);
+            return _documentHandleToIdMapOpt.IsDefault ? new DocumentId(rowId) : _documentHandleToIdMapOpt[rowId - 1];
+        }
+
+        /// <summary>
+        /// Maps <see cref="MethodDebugInformationHandle"/> relative to this reader to the corresponding global <see cref="MethodId"/>.
+        /// Null if handles correspond to ids 1:1 (baseline).
+        /// </summary>
+        internal MethodId GetMethodId(MethodDebugInformationHandle handle)
+        {
+            int rowId = MetadataTokens.GetRowNumber(handle);
+            return _methodHandleToIdMapOpt.IsDefault ? new MethodId(rowId) : _methodHandleToIdMapOpt[rowId - 1];
+        }
+        
+        internal bool TryGetMethodHandle(MethodId id, out MethodDebugInformationHandle handle)
+        {
+            if (id.IsDefault)
+            {
+                handle = default(MethodDebugInformationHandle);
+                return false;
+            }
+
+            if (_methodHandleToIdMapOpt.IsDefault)
+            {
+                if (id.Value > _metadataReader.MethodDebugInformation.Count)
+                {
+                    handle = default(MethodDebugInformationHandle);
+                    return false;
+                }
+
+                handle = MetadataTokens.MethodDebugInformationHandle(id.Value);
+                return true;
+            }
+
+            int index = _methodHandleToIdMapOpt.BinarySearch(id);
+            if (index >= 0)
+            {
+                handle = MetadataTokens.MethodDebugInformationHandle(index + 1);
+                return true;
+            }
+
+            handle = default(MethodDebugInformationHandle);
+            return false;
+        }
+
+        internal bool HasDebugInfo(MethodDebugInformationHandle handle)
+            => !MetadataReader.GetMethodDebugInformation(handle).SequencePointsBlob.IsNil;
+
+        internal void InitializeHandleToIdMaps(ImmutableArray<DocumentId> documentIds, ImmutableArray<MethodId> methodIds)
+        {
+            Debug.Assert(_documentHandleToIdMapOpt.IsDefault);
+            Debug.Assert(_methodHandleToIdMapOpt.IsDefault);
+            Debug.Assert(!documentIds.IsDefault);
+            Debug.Assert(!methodIds.IsDefault);
+
+            _documentHandleToIdMapOpt = documentIds;
+            _methodHandleToIdMapOpt = methodIds;
+        }
+
+        internal SymReader SymReader
+        {
+            get
+            {
+                Debug.Assert(_symReader != null);
+                return _symReader;
+            }
+            set
+            {
+                Debug.Assert(_symReader == null);
+                Debug.Assert(value != null);
+                _symReader = value;
+            }
         }
 
         internal bool MatchesModule(Guid guid, uint stamp, int age)
@@ -46,16 +142,6 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
             var id = new BlobContentId(MetadataReader.DebugMetadataHeader.Id);
             return id.Guid == guid && id.Stamp == stamp;
-        }
-
-        internal IMetadataImport GetMetadataImport()
-        {
-            if (IsDisposed)
-            {
-                throw new ObjectDisposedException(nameof(SymReader));
-            }
-
-            return _lazyMetadataImport.GetMetadataImport();
         }
 
         internal MetadataReader MetadataReader
@@ -71,15 +157,31 @@ namespace Microsoft.DiaSymReader.PortablePdb
             }
         }
 
-        internal bool IsDisposed => _lazyMetadataImport == null;
+        internal bool IsDisposed => _metadataReaderProvider == null;
 
         public void Dispose()
         {
             _metadataReaderProvider?.Dispose();
             _metadataReaderProvider = null;
+        }
 
-            _lazyMetadataImport?.Dispose();
-            _lazyMetadataImport = null;
+        internal int GetMethodSourceExtentInDocument(ISymUnmanagedDocument document, SymMethod method, out int startLine, out int endLine)
+        {
+            var symDocument = SymReader.AsSymDocument(document);
+            if (symDocument == null)
+            {
+                startLine = endLine = 0;
+                return HResult.E_INVALIDARG;
+            }
+
+            var methodExtents = SymReader.GetMethodExtents();
+            if (!methodExtents.TryGetMethodSourceExtent(symDocument.GetId(), method.GetId(), out startLine, out endLine))
+            {
+                startLine = endLine = 0;
+                return HResult.E_FAIL;
+            }
+
+            return HResult.S_OK;
         }
     }
 }

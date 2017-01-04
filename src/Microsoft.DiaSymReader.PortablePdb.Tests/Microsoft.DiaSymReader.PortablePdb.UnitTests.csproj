@@ -107,6 +107,42 @@
     <EmbeddedResource Include="Resources\SourceLink.Embedded.dll">
       <LogicalName>SourceLink.Embedded.dll</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EncMethodExtents\EncMethodExtents.dll">
+      <LogicalName>EncMethodExtents.dll</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EncMethodExtents\EncMethodExtents.pdb">
+      <LogicalName>EncMethodExtents.pdb</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EncMethodExtents\EncMethodExtents.dllx">
+      <LogicalName>EncMethodExtents.dllx</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EncMethodExtents\EncMethodExtents.pdbx">
+      <LogicalName>EncMethodExtents.pdbx</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EncMethodExtents\EncMethodExtents.1.metadata">
+      <LogicalName>EncMethodExtents.1.metadata</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EncMethodExtents\EncMethodExtents.1.pdb">
+      <LogicalName>EncMethodExtents.1.pdb</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EncMethodExtents\EncMethodExtents.1.metadatax">
+      <LogicalName>EncMethodExtents.1.metadatax</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EncMethodExtents\EncMethodExtents.1.pdbx">
+      <LogicalName>EncMethodExtents.1.pdbx</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EncMethodExtents\EncMethodExtents.2.metadata">
+      <LogicalName>EncMethodExtents.2.metadata</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EncMethodExtents\EncMethodExtents.2.pdb">
+      <LogicalName>EncMethodExtents.2.pdb</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EncMethodExtents\EncMethodExtents.2.metadatax">
+      <LogicalName>EncMethodExtents.2.metadatax</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EncMethodExtents\EncMethodExtents.2.pdbx">
+      <LogicalName>EncMethodExtents.2.pdbx</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Documents.cmd" />
@@ -121,14 +157,18 @@
     <Content Include="Resources\MiscEmbedded.cmd" />
     <Content Include="Resources\MiscEmbedded.cs" />
     <Content Include="Resources\SourceLink.cmd" />
+    <Content Include="Resources\EncMethodExtents\Readme.txt" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EmbeddedSourceTests.cs" />
+    <Compile Include="EncTests.cs" />
     <Compile Include="MethodMapTests.cs" />
-    <Compile Include="ResourceLoader.cs" />
+    <Compile Include="TestHelpers\TestResource.cs" />
+    <Compile Include="TestHelpers\ResourceLoader.cs" />
     <Compile Include="SymBinderTests.cs" />
+    <Compile Include="TestHelpers\PdbTestData.cs" />
     <Compile Include="TestHelpers\SymTestHelpers.cs" />
-    <Compile Include="TestResources.cs" />
+    <Compile Include="TestHelpers\TestResources.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TestHelpers\AssertEx.cs" />
@@ -142,6 +182,9 @@
     <None Include="Microsoft.DiaSymReader.PortablePdb.UnitTests.xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ImportGroup>
     <Import Project="..\..\build\Targets\Imports.targets" />

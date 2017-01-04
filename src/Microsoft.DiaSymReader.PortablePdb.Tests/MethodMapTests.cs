@@ -70,7 +70,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         [Fact]
         public void GetMethodFromDocumentPosition_UsingDIA_Native()
         {
-            var symReader = CreateSymReaderFromResource(TestResources.MethodBoundaries.DllAndPdb);
+            var symReader = CreateSymReaderFromResource(TestResources.MethodBoundaries.WindowsDllAndPdb);
 
             ISymUnmanagedDocument document1, document2, document3;
             Assert.Equal(HResult.S_OK, symReader.GetDocument("MethodBoundaries1.cs", default(Guid), default(Guid), default(Guid), out document1));
@@ -183,21 +183,10 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             }, tokens, itemInspector: s_tokenInspector, comparer: (x, y) => x.SequenceEqual(y));
         }
 
-        [Fact]
-        public void GetMethodFromDocumentPosition_UsingBoundaries_Native()
+        [Theory, ClassData(typeof(PdbTestData))]
+        public void GetMethodFromDocumentPosition_UsingBoundaries(bool portable)
         {
-            GetMethodFromDocumentPosition_UsingBoundaries(TestResources.MethodBoundaries.DllAndPdb);
-        }
-
-        [Fact]
-        public void GetMethodFromDocumentPosition_UsingBoundaries_Portable()
-        {
-            GetMethodFromDocumentPosition_UsingBoundaries(TestResources.MethodBoundaries.PortableDllAndPdb);
-        }
-
-        private void GetMethodFromDocumentPosition_UsingBoundaries(KeyValuePair<byte[], byte[]> dllAndPdb)
-        {
-            var symReader = CreateSymReaderFromResource(dllAndPdb);
+            var symReader = CreateSymReaderFromResource(TestResources.MethodBoundaries.DllAndPdb(portable));
 
             ISymUnmanagedDocument document1, document2, document3;
             Assert.Equal(HResult.S_OK, symReader.GetDocument("MethodBoundaries1.cs", default(Guid), default(Guid), default(Guid), out document1));
@@ -316,21 +305,10 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
              }, tokens, itemInspector: s_tokenInspector, comparer: (x, y) => x.SequenceEqual(y));
         }
 
-        [Fact]
-        public void GetSourceExtentInDocument_Native()
+        [Theory, ClassData(typeof(PdbTestData))]
+        public void GetSourceExtentInDocument(bool portable)
         {
-            GetSourceExtentInDocument(TestResources.MethodBoundaries.DllAndPdb);
-        }
-
-        [Fact]
-        public void GetSourceExtentInDocument_Portable()
-        {
-            GetSourceExtentInDocument(TestResources.MethodBoundaries.PortableDllAndPdb);
-        }
-
-        private void GetSourceExtentInDocument(KeyValuePair<byte[], byte[]> dllAndPdb)
-        {
-            var symReader = CreateSymReaderFromResource(dllAndPdb);
+            var symReader = CreateSymReaderFromResource(TestResources.MethodBoundaries.DllAndPdb(portable));
 
             ValidateMethodExtent(symReader, tokenCtor, "MethodBoundaries1.cs", 5, 14);
             ValidateNoMethodExtent(symReader, tokenCtor, "MethodBoundaries2.cs");
@@ -362,7 +340,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         [Fact]
         public void GetOffset_Native()
         {
-            var symReader = CreateSymReaderFromResource(TestResources.MethodBoundaries.DllAndPdb);
+            var symReader = CreateSymReaderFromResource(TestResources.MethodBoundaries.WindowsDllAndPdb);
 
             ISymUnmanagedDocument document1;
             Assert.Equal(HResult.S_OK, symReader.GetDocument("MethodBoundaries1.cs", default(Guid), default(Guid), default(Guid), out document1));
@@ -536,21 +514,10 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             }, offsets, itemInspector: s_ilOffsetInspector);
         }
 
-        [Fact]
-        public void GetRanges_Portable()
+        [Theory, ClassData(typeof(PdbTestData))]
+        public void GetRanges(bool portable)
         {
-            GetRanges(TestResources.MethodBoundaries.PortableDllAndPdb);
-        }
-
-        [Fact]
-        public void GetRanges_Native()
-        {
-            GetRanges(TestResources.MethodBoundaries.DllAndPdb);
-        }
-
-        public void GetRanges(KeyValuePair<byte[], byte[]> dllAndPdb)
-        {
-            var symReader = CreateSymReaderFromResource(dllAndPdb);
+            var symReader = CreateSymReaderFromResource(TestResources.MethodBoundaries.DllAndPdb(portable));
             bool isPortable = (symReader as SymReader) != null;
 
             ISymUnmanagedDocument document1, document3;
@@ -628,21 +595,10 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             }, ranges, itemInspector: s_rangeInspector, comparer: (x, y) => x.SequenceEqual(y));
         }
 
-        [Fact]
-        public void GetRangesHiddenSP_Portable()
+        [Theory, ClassData(typeof(PdbTestData))]
+        public void GetRangesHiddenSP(bool portable)
         {
-            GetRangesHiddenSP(TestResources.Async.PortableDllAndPdb);
-        }
-
-        [Fact]
-        public void GetRangesHiddenSP_Native()
-        {
-            GetRangesHiddenSP(TestResources.Async.DllAndPdb);
-        }
-
-        public void GetRangesHiddenSP(KeyValuePair<byte[], byte[]> dllAndPdb)
-        {
-            var symReader = CreateSymReaderFromResource(dllAndPdb);
+            var symReader = CreateSymReaderFromResource(TestResources.Async.DllAndPdb(portable));
 
             const int M1_MoveNext = 0x06000005;
 
@@ -667,21 +623,10 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             }, ranges, itemInspector: s_rangeInspector, comparer: (x, y) => x.SequenceEqual(y));
         }
 
-        [Fact]
-        public void FindClosestLine1_Portable()
+        [Theory, ClassData(typeof(PdbTestData))]
+        public void FindClosestLine1(bool portable)
         {
-            FindClosestLine1(TestResources.MethodBoundaries.PortableDllAndPdb);
-        }
-
-        [Fact]
-        public void FindClosestLine1_Native()
-        {
-            FindClosestLine1(TestResources.MethodBoundaries.DllAndPdb);
-        }
-
-        private void FindClosestLine1(KeyValuePair<byte[], byte[]> dllAndPdb)
-        {
-            var symReader = CreateSymReaderFromResource(dllAndPdb);
+            var symReader = CreateSymReaderFromResource(TestResources.MethodBoundaries.DllAndPdb(portable));
 
             ISymUnmanagedDocument document1, document2, document3;
             Assert.Equal(HResult.S_OK, symReader.GetDocument(@"MethodBoundaries1.cs", default(Guid), default(Guid), default(Guid), out document1));
@@ -794,7 +739,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         [Fact]
         public void FindClosestLine2_Portable()
         {
-            var symReader = CreateSymReaderFromResource(TestResources.Documents.PortableDllAndPdb);
+            var symReader = CreateSymReaderFromResource(TestResources.Documents.DllAndPdb(portable: true));
 
             ISymUnmanagedDocument document1, document2;
             Assert.Equal(HResult.S_OK, symReader.GetDocument(@"C:\a\b\X.cs", default(Guid), default(Guid), default(Guid), out document1));
@@ -846,7 +791,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         [Fact]
         public void FindClosestLine2_Native()
         {
-            var symReader = CreateSymReaderFromResource(TestResources.Documents.DllAndPdb);
+            var symReader = CreateSymReaderFromResource(TestResources.Documents.DllAndPdb(portable: false));
 
             ISymUnmanagedDocument document1;
             Assert.Equal(HResult.S_OK, symReader.GetDocument(@"C:\a\b\X.cs", default(Guid), default(Guid), default(Guid), out document1));

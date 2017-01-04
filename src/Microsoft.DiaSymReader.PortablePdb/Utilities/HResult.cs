@@ -9,6 +9,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         internal const int E_NOTIMPL = unchecked((int)0x80004001);
         internal const int E_FAIL = unchecked((int)0x80004005);
         internal const int E_INVALIDARG = unchecked((int)0x80070057);
+        internal const int E_WIN32_NOT_ENOUGH_MEMORY = unchecked((int)0x80070008);
         internal const int E_OUTOFMEMORY = unchecked((int)0x8007000E);
         internal const int E_UNEXPECTED = unchecked((int)0x8000FFFF);
 

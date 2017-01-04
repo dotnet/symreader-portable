@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
+using System.Reflection.PortableExecutable;
 using System.Runtime.InteropServices;
 using Roslyn.Test.Utilities;
 using Xunit;
-using System.Reflection.PortableExecutable;
 
 namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 {
@@ -62,11 +62,21 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             }
         }
 
-        public static ISymUnmanagedReader CreateSymReaderFromResource(KeyValuePair<byte[], byte[]> peAndPdb)
+        public static ISymUnmanagedReader3 CreateSymReaderFromResource(TestResource artifacts)
         {
-            return CreateReader(new MemoryStream(peAndPdb.Value), metadataImporter: new SymMetadataImport(new MemoryStream(peAndPdb.Key)));
+            return CreateReader(new MemoryStream(artifacts.Pdb), metadataImporter: new SymMetadataImport(new MemoryStream(artifacts.PE)));
         }
 
+        public static void UpdateSymReaderFromResource(ISymUnmanagedReader symReader, TestResource artifacts, SymUnmanagedLineDelta[] lineDeltas = null)
+        {
+            lineDeltas = lineDeltas ?? Array.Empty<SymUnmanagedLineDelta>();
+
+            var symUpdate = (ISymUnmanagedEncUpdate)symReader;
+            var deltaPdb = SymUnmanagedStreamFactory.CreateStream(new MemoryStream(artifacts.Pdb));
+
+            Assert.Equal(HResult.S_OK, symUpdate.UpdateSymbolStore2(deltaPdb, lineDeltas, lineDeltas.Length));
+        }
+        
         public static ISymUnmanagedReader CreateSymReaderFromEmbeddedPortablePdb(byte[] peImage)
         {
             var importer = new SymMetadataImport(new MemoryStream(peImage));
@@ -294,7 +304,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             }
         }
 
-        internal static int[] GetMethodTokensFromDocumentPosition(
+        internal static ISymUnmanagedMethod[] GetMethodsFromDocumentPosition(
             ISymUnmanagedReader symReader,
             ISymUnmanagedDocument symDocument,
             int line,
@@ -303,18 +313,23 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Assert.True(line >= 1);
             Assert.True(column >= 0);
 
-            int count;
-            Assert.Equal(HResult.S_OK, symReader.GetMethodsFromDocumentPosition(symDocument, line, column, 0, out count, null));
+            Assert.Equal(HResult.S_OK, symReader.GetMethodsFromDocumentPosition(symDocument, line, column, 0, out int count, null));
 
             var methods = new ISymUnmanagedMethod[count];
-            int count2;
-            Assert.Equal(HResult.S_OK, symReader.GetMethodsFromDocumentPosition(symDocument, line, column, count, out count2, methods));
+            Assert.Equal(HResult.S_OK, symReader.GetMethodsFromDocumentPosition(symDocument, line, column, count, out int count2, methods));
             Assert.Equal(count, count2);
+            return methods;
+        }
 
-            return methods.Select(m =>
+        internal static int[] GetMethodTokensFromDocumentPosition(
+           ISymUnmanagedReader symReader,
+           ISymUnmanagedDocument symDocument,
+           int line,
+           int column)
+        {
+            return GetMethodsFromDocumentPosition(symReader, symDocument, line, column).Select(m =>
             {
-                int token;
-                Assert.Equal(HResult.S_OK, m.GetToken(out token));
+                Assert.Equal(HResult.S_OK, m.GetToken(out int token));
                 return token;
             }).ToArray();
         }
@@ -412,6 +427,46 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             return result.ToArray();
         }
 
+        public static List<string> GetFileNameForEachILOffset(int startOffset, int endOffset, ISymEncUnmanagedMethod method)
+        {
+            var name = new char[100];
+            var names = new List<string>();
+            for (int offset = startOffset; offset < endOffset; offset++)
+            {
+                int hr = method.GetFileNameFromOffset(offset, name.Length, out int count, name);
+                if (hr == HResult.S_OK)
+                {
+                    Assert.Equal('\0', name[count - 1]);
+                    names.Add(new string(name, 0, count - 1));
+                }
+                else
+                {
+                    names.Add($"<error: 0x{hr:X8}>");
+                }
+            }
+
+            return names;
+        }
+
+        public static List<string> GetLineForEachILOffset(int startOffset, int endOffset, ISymEncUnmanagedMethod method)
+        {
+            var results = new List<string>();
+            for (int offset = startOffset; offset < endOffset; offset++)
+            {
+                int hr = method.GetLineFromOffset(offset, out int startLine, out int startColumn, out int endLine, out int endColumn, out int spOffset);
+                if (hr == HResult.S_OK)
+                {
+                    results.Add($"IL_{spOffset:X4} ({startLine}, {startColumn}) - ({endLine}, {endColumn})");
+                }
+                else
+                {
+                    results.Add($"<error: 0x{hr:X8}>");
+                }
+            }
+
+            return results;
+        }
+
         public static void ValidateMethodExtent(ISymUnmanagedReader symReader, int methodDef, string documentName, int minLine, int maxLine)
         {
             Assert.True(minLine >= 1);
@@ -464,6 +519,21 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             }
 
             return result.ToArray();
+        }
+
+        public static void VerifySequencePoints(ISymUnmanagedMethod method, params string[] expected)
+        {
+            AssertEx.Equal(expected, method.GetSequencePoints().Select(sp => sp.IsHidden ? "<hidden>" :
+                $"({sp.StartLine}, {sp.StartColumn}) - ({sp.EndLine}, {sp.EndColumn}) '{sp.Document.GetName()}'"));
+        }
+
+        internal static void VerifyLocalVariables(ISymUnmanagedEncUpdate symEncUpdate, int methodToken, params string[] expected)
+        {
+            Assert.Equal(HResult.S_OK, symEncUpdate.GetLocalVariableCount(methodToken, out int count));
+            var vars = new ISymUnmanagedVariable[count];
+            Assert.Equal(HResult.S_OK, symEncUpdate.GetLocalVariables(methodToken, count, vars, out count));
+
+            AssertEx.Equal(expected, vars.Select(v => v.GetName()));
         }
     }
 }

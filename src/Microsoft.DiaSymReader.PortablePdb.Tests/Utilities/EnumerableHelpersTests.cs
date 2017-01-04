@@ -25,17 +25,17 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             var groups = pairs.GroupBy(StringComparer.OrdinalIgnoreCase);
             AssertEx.SetEqual(new[] { "A", "B", "C", "d" }, groups.Keys);
 
-            Assert.Equal(0, groups["A"].Key);
-            AssertEx.Equal(new[] { 1, 4, 6 }, groups["A"].Value);
+            Assert.Equal(0, groups["A"].Single);
+            AssertEx.Equal(new[] { 1, 4, 6 }, groups["A"].Multiple);
 
-            Assert.Equal(0, groups["B"].Key);
-            AssertEx.Equal(new[] { 2, 5 }, groups["B"].Value);
+            Assert.Equal(0, groups["B"].Single);
+            AssertEx.Equal(new[] { 2, 5 }, groups["B"].Multiple);
 
-            Assert.Equal(3, groups["C"].Key);
-            Assert.True(groups["C"].Value.IsDefault);
+            Assert.Equal(3, groups["C"].Single);
+            Assert.True(groups["C"].Multiple.IsDefault);
 
-            Assert.Equal(7, groups["d"].Key);
-            Assert.True(groups["d"].Value.IsDefault);
+            Assert.Equal(7, groups["d"].Single);
+            Assert.True(groups["d"].Multiple.IsDefault);
         }
     }
 }

@@ -33,7 +33,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         [Fact]
         public void MatchesModule()
         {
-            var symReader = (ISymUnmanagedReader4)CreateSymReaderFromResource(TestResources.Documents.PortableDllAndPdb);
+            var symReader = (ISymUnmanagedReader4)CreateSymReaderFromResource(TestResources.Documents.DllAndPdb(portable: true));
 
             var expectedGuid = new Guid(new byte[] { 0x89, 0x03, 0x86, 0xAD, 0xFF, 0x27, 0x56, 0x46, 0x9F, 0x3F, 0xE2, 0x18, 0x4B, 0xEF, 0xFC, 0xC0 });
             uint expectedStamp = 0xA0520CBE;
@@ -55,22 +55,9 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         }
 
         [Fact]
-        public unsafe void GetPortableDebugMetadata()
-        {
-            var symReader = (ISymUnmanagedReader4)CreateSymReaderFromResource(TestResources.Documents.PortableDllAndPdb);
-            byte* ptr;
-            int size;
-            Assert.Equal(HResult.S_OK, symReader.GetPortableDebugMetadata(out ptr, out size));
-            Assert.Equal(size, TestResources.Documents.PortablePdb.Length);
-            byte[] actual = new byte[size];
-            Marshal.Copy((IntPtr)ptr, actual, 0, size);
-            AssertEx.Equal(TestResources.Documents.PortablePdb, actual);
-        }
-
-        [Fact]
         public unsafe void GetSourceServerData_None()
         {
-            var symReader = (ISymUnmanagedReader4)CreateSymReaderFromResource(TestResources.Documents.PortableDllAndPdb);
+            var symReader = (ISymUnmanagedReader4)CreateSymReaderFromResource(TestResources.Documents.DllAndPdb(portable: true));
             byte* ptr;
             int size;
             Assert.Equal(HResult.S_FALSE, symReader.GetSourceServerData(out ptr, out size));
@@ -110,10 +97,10 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             AssertEx.Equal(TestResources.SourceLink.Json, actual);
         }
 
-        [Fact]
-        public void TestGetDocuments1()
+        [Theory, ClassData(typeof(PdbTestData))]
+        public void GetDocuments(bool portable)
         {
-            var symReader = CreateSymReaderFromResource(TestResources.Documents.PortableDllAndPdb);
+            var symReader = CreateSymReaderFromResource(TestResources.Documents.DllAndPdb(portable));
 
             int actualCount;
             Assert.Equal(HResult.S_OK, symReader.GetDocuments(0, out actualCount, null));
@@ -143,13 +130,13 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             ValidateDocument(actualDocuments[12], url: @"C:\a\B\x.cs", algorithmId: null, checksum: null);
         }
 
-        [Fact]
-        public void TestGetDocument1()
+        [Theory, ClassData(typeof(PdbTestData))]
+        public void GetDocument1(bool portable)
         {
-            var symReader = CreateSymReaderFromResource(TestResources.Documents.PortableDllAndPdb);
+            var symReader = CreateSymReaderFromResource(TestResources.Documents.DllAndPdb(portable));
             TestGetDocument(symReader, @"x.cs", expectedUrl: @"C:\a\b\c\d\x.cs");
             TestGetDocument(symReader, @"X.CS", expectedUrl: @"C:\a\b\c\d\x.cs");
-            TestGetDocument(symReader, @"X.cs", expectedUrl: @"C:\a\b\X.cs");
+            TestGetDocument(symReader, @"X.cs", expectedUrl: portable ? @"C:\a\b\X.cs" : @"C:\a\b\c\d\x.cs");
             TestGetDocument(symReader, @"1.cs", expectedUrl: @"C:\a\b\c\d\1.cs");
             TestGetDocument(symReader, @"2.cs", expectedUrl: @"C:\a\b\c\D\2.cs");
             TestGetDocument(symReader, @"3.cs", expectedUrl: @"C:\a\b\C\d\3.cs");
@@ -158,8 +145,8 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             TestGetDocument(symReader, @"C:\*\5.cs", expectedUrl: @"C:\*\5.cs");
             TestGetDocument(symReader, @"5.cs", expectedUrl: @"C:\*\5.cs");
             TestGetDocument(symReader, @":6.cs", expectedUrl: @":6.cs");
-            TestGetDocument(symReader, @"C:\a\B\x.cs", expectedUrl: @"C:\a\B\x.cs");
-            TestGetDocument(symReader, @"C:\a\b\X.cs", expectedUrl: @"C:\a\b\X.cs");
+            TestGetDocument(symReader, @"C:\a\B\x.cs", expectedUrl: portable ? @"C:\a\B\x.cs" : @"C:\a\b\x.cs");
+            TestGetDocument(symReader, @"C:\a\b\X.cs", expectedUrl: portable ? @"C:\a\b\X.cs" : @"C:\a\b\x.cs");
         }
 
         private void TestGetDocument(ISymUnmanagedReader symReader, string name, string expectedUrl)
@@ -182,10 +169,9 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         [Fact]
         public void TestSymGetAttribute()
         {
-            var symReader = CreateSymReaderFromResource(TestResources.Documents.PortableDllAndPdb);
+            var symReader = CreateSymReaderFromResource(TestResources.Documents.DllAndPdb(portable: true));
 
-            int actualCount;
-            Assert.Equal(HResult.S_FALSE, symReader.GetSymAttribute(0, "<PortablePdbImage>", 0, out actualCount, null));
+            Assert.Equal(HResult.S_FALSE, symReader.GetSymAttribute(0, "<PortablePdbImage>", 0, out var _, null));
         }
 
         [Fact]
@@ -258,10 +244,10 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             // the consumers should be able to resolve it. If we find a case where that's not true we can
             // potentially expand the TypeSpec signature in ISymUnmanagedConstant.GetValue.
             ValidateConstant(constants[25], "NullTypeDef", 0, new byte[] { 0x12, 0x08 });
-            ValidateConstant(constants[26], "NullTypeRef", 0, new byte[] { 0x12, 0x1D });
+            ValidateConstant(constants[26], "NullTypeRef", 0, new byte[] { 0x12, 0x19 });
             ValidateConstant(constants[27], "NullTypeSpec", 0, new byte[] { 0x12, 0x26 });
 
-            ValidateConstant(constants[28], "D", 123456.78M, new byte[] { 0x11, 0x2D });
+            ValidateConstant(constants[28], "D", 123456.78M, new byte[] { 0x11, 0x29 });
 
             //
             //  C<S>.NestedScopes
@@ -315,10 +301,10 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             // f.GetScopeFromOffset()
         }
 
-        [Fact]
-        public void TestAsyncMethods()
+        [Theory, ClassData(typeof(PdbTestData))]
+        public void TestAsyncMethods(bool portable)
         {
-            var symReader = CreateSymReaderFromResource(TestResources.Async.DllAndPdb);
+            var symReader = CreateSymReaderFromResource(TestResources.Async.DllAndPdb(portable));
 
             ValidateAsyncMethod(
                 symReader,
@@ -337,10 +323,10 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
                 resumeOffsets: new[] { 0x48 });
         }
 
-        [Fact]
-        public void TestAsyncMethods_GetAsyncStepInfo()
+        [Theory, ClassData(typeof(PdbTestData))]
+        public void TestAsyncMethods_GetAsyncStepInfo(bool portable)
         {
-            var symReader = CreateSymReaderFromResource(TestResources.Async.DllAndPdb);
+            var symReader = CreateSymReaderFromResource(TestResources.Async.DllAndPdb(portable));
 
             ISymUnmanagedMethod method;
             Assert.Equal(HResult.S_OK, symReader.GetMethod(0x06000005, out method));
