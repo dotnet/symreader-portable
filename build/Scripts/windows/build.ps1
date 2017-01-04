@@ -3,7 +3,7 @@ Param(
   [switch] $clearPackageCache,
   [string] $configuration = "Debug",
   [string] $deployHive = "SymReaderPortable",
-  [string] $locateVsApiVersion = "0.2.4-beta",
+  [string] $locateVsApiVersion = "0.2.1-beta",
   [string] $msbuildVersion = "15.0",
   [string] $nugetVersion = "3.6.0-beta1",
   [switch] $official,
