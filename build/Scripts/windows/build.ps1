@@ -204,7 +204,8 @@ function Locate-VsInstallPath {
   $requiredPackageIds += "Microsoft.Net.Component.4.6.TargetingPack"
   $requiredPackageIds += "Microsoft.VisualStudio.Component.PortableLibrary"
   $requiredPackageIds += "Microsoft.VisualStudio.Component.Roslyn.Compiler"
-
+  $requiredPackageIds += "Microsoft.VisualStudio.Component.VSSDK"
+  
   Add-Type -path $locateVsApi
   $vsInstallPath = [LocateVS.Instance]::GetInstallPath($msbuildVersion, $requiredPackageIds)
   return Resolve-Path -path $vsInstallPath
