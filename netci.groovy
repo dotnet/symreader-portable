@@ -14,6 +14,7 @@ static addArchival(def job, def filesToArchive, def filesToExclude) {
   Utilities.addArchival(job, filesToArchive, filesToExclude, doNotFailIfNothingArchived, archiveOnlyIfSuccessful)
 }
 
+// For example: test prtest/debug/core
 static addGithubPRTriggerForBranch(def job, def branchName, def jobName, def testName) {
   def prContext = "prtest/${jobName.replace('_', '/')}"
   def triggerPhrase = "(?i)^\\s*(@?dotnet-bot\\s+)?(re)?test\\s+(${prContext})(\\s+please)?\\s*\$"
