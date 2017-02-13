@@ -37,12 +37,6 @@
          We invalidate the cache by changing the value of __BuildPhase property.
     -->
 
-    <!--<MSBuild Projects="$(SolutionPath)"
-          Properties="$(Props);__BuildPhase=Restore"
-          Targets="Restore"
-          BuildInParallel="true"
-          Condition="'$(Restore)' == 'true'"/>-->
-
     <MSBuild Projects="$(SolutionPath)"
              Properties="$(Props);__BuildPhase=PreSign"
              Targets="@(PreSignTargets)"
