@@ -1,0 +1,43 @@
+<!-- Copyright (c)  Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information. -->
+<Project>
+  <PropertyGroup Condition="'$(IsTestProject)' == 'true'">
+    <TestArchitectures Condition="'$(TestArchitectures)' == ''">x64</TestArchitectures>
+    <AutoGenerateBindingRedirects Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">true</AutoGenerateBindingRedirects>
+    <_TestTargetName Condition="'$(TargetFrameworks)' == ''">InnerTest</_TestTargetName>
+    <_TestTargetName Condition="'$(TargetFrameworks)' != ''">OuterTest</_TestTargetName>
+  </PropertyGroup>
+  
+  <Target Name="Test" DependsOnTargets="$(_TestTargetName)" Condition="'$(IsTestProject)' == 'true'" />
+
+  <Target Name="InnerTest">
+    <ItemGroup>
+      <_TestArchitectureItems Include="$(TestArchitectures)" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <_TestLogPath>$(ArtifactsTestResultsDir)$(MSBuildProjectName)_$(TargetFramework)_%(_TestArchitectureItems.Identity).txt</_TestLogPath>
+    </PropertyGroup>
+
+    <Delete Files="$(_TestLogPath)" />
+    <MakeDir Directories="$(ArtifactsTestResultsDir)"/>
+
+    <Exec Command='"$(DotNetTool)" test "$(MSBuildProjectFullPath)" --no-build --framework:$(TargetFramework) -- --platform:%(_TestArchitectureItems.Identity) > $(_TestLogPath)'
+          LogStandardErrorAsError="true"
+          WorkingDirectory="$(OutDir)"
+          IgnoreExitCode="true">
+
+      <Output TaskParameter="ExitCode" PropertyName="ExitCode" />
+    </Exec>
+
+    <Message Text="Test succeeded: $(MSBuildProjectName) [$(TargetFramework)|%(_TestArchitectureItems.Identity)]" Condition="'$(ExitCode)' == '0'" />
+    <Error Text="Test failed with exit code: $(ExitCode); log: $(_TestLogPath)" Condition="'$(ExitCode)' != '0'" />
+  </Target>
+
+  <Target Name="OuterTest" DependsOnTargets="_SetTestInnerTarget;DispatchToInnerBuilds" />
+
+  <Target Name="_SetTestInnerTarget" Returns="@(InnerOutput)">
+    <PropertyGroup Condition="'$(InnerTargets)' == ''">
+      <InnerTargets>InnerTest</InnerTargets>
+    </PropertyGroup>
+  </Target>
+</Project>

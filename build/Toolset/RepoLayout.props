@@ -1,0 +1,22 @@
+<!-- Copyright (c)  Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information. -->
+<Project>
+  <!--
+     Properties describing the layout of the repo.
+  -->
+  
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <RepoRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\..\..\'))</RepoRoot>
+    <DotNetRoot>$(RepoRoot).dotnet\</DotNetRoot>
+    <DotNetTool>$(DotNetRoot)dotnet.exe</DotNetTool>
+    <ArtifactsDir>$(RepoRoot)artifacts\</ArtifactsDir>
+    <ArtifactsBinDir>$(ArtifactsDir)$(Configuration)\bin\</ArtifactsBinDir>
+    <ArtifactsObjDir>$(ArtifactsDir)$(Configuration)\obj\</ArtifactsObjDir>
+    <ArtifactsTestResultsDir>$(ArtifactsDir)$(Configuration)\TestResults\</ArtifactsTestResultsDir>
+    <PackageOutputPath>$(ArtifactsDir)$(Configuration)\packages\</PackageOutputPath>
+    <!-- The following files are expected to be present in the repo -->
+    <SignToolDataPath>$(RepoRoot)build\Targets\SignToolData.json</SignToolDataPath>
+    <DependenciesPropsPath>$(RepoRoot)build\Targets\Dependencies.props</DependenciesPropsPath>
+    <VersionPropsPath>$(RepoRoot)build\Targets\Version.props</VersionPropsPath>
+  </PropertyGroup>
+</Project>

@@ -76,21 +76,15 @@ static addExtendedEmailPublisher(def job) {
 }
 
 static addBuildSteps(def job, def projectName, def opsysName, def configName, def isPR) {
-  def unit32JobName = getJobName(opsysName, configName, 'unit32')
-  def unit32FullJobName = Utilities.getFullJobName(projectName, unit32JobName, isPR)
+  def testJobName = getJobName(opsysName, configName, 'test')
+  def testFullJobName = Utilities.getFullJobName(projectName, testJobName, isPR)
 
-  def unit64JobName = getJobName(opsysName, configName, 'unit64')
-  def unit64FullJobName = Utilities.getFullJobName(projectName, unit64JobName, isPR)
-
-  def coreJobName = getJobName(opsysName, configName, 'core')
-  def coreFullJobName = Utilities.getFullJobName(projectName, coreJobName, isPR)
-
-  def downstreamFullJobNames = "${unit32FullJobName}, ${unit64FullJobName}, ${coreFullJobName}"
+  def downstreamFullJobNames = "${testFullJobName}"
 
   def officialSwitch = ''
 
   if (!isPR) {
-    officialSwitch = '-Official'
+    officialSwitch = '-official'
   }
 
   job.with {
@@ -98,7 +92,7 @@ static addBuildSteps(def job, def projectName, def opsysName, def configName, de
       batchFile("""set TEMP=%WORKSPACE%\\artifacts\\${configName}\\tmp
 mkdir %TEMP%
 set TMP=%TEMP%
-.\\Build.cmd -Configuration ${configName} -msbuildVersion '15.0' ${officialSwitch} -SkipDeploy -SkipTest
+.\\CIBuild.cmd -configuration ${configName} ${officialSwitch}
 """)
       publishers {
         downstreamParameterized {
@@ -122,7 +116,7 @@ static addTestSteps(def job, def projectName, def opsysName, def configName, def
   def officialSwitch = ''
 
   if (!isPR) {
-    officialSwitch = '-Official'
+    officialSwitch = '-official'
   }
 
   job.with {
@@ -139,7 +133,7 @@ static addTestSteps(def job, def projectName, def opsysName, def configName, def
       batchFile("""set TEMP=%WORKSPACE%\\artifacts\\${configName}\\tmp
 mkdir %TEMP%
 set TMP=%TEMP%
-.\\Build.cmd -Configuration ${configName} -msbuildVersion '15.0' ${officialSwitch} -SkipBuild ${testName == 'unit32' ? '-SkipTest64 -SkipTestCore' : (testName == 'core' ? '-SkipTest32 -SkipTest64' : '-SkipTest32 -SkipTestCore')}
+.\\Test.cmd -configuration ${configName} ${officialSwitch}
 """)
     }
   }
@@ -148,7 +142,7 @@ set TMP=%TEMP%
 [true, false].each { isPR ->
   ['windows'].each { opsysName ->
     ['debug', 'release'].each { configName ->
-        ['build', 'unit32', 'unit64', 'core'].each { testName ->
+        ['build', 'test'].each { testName ->
         def projectName = GithubProject
 
         def branchName = GithubBranchName
