@@ -3,8 +3,8 @@
 
 import jobs.generation.Utilities;
 
-static getJobName(def opsysName, def configName, def testName) {
-  return "${opsysName}_${configName}_${testName}"
+static getJobName(def opsysName, def configName) {
+  return "${opsysName}_${configName}"
 }
 
 static addArchival(def job, def filesToArchive, def filesToExclude) {
@@ -14,15 +14,15 @@ static addArchival(def job, def filesToArchive, def filesToExclude) {
   Utilities.addArchival(job, filesToArchive, filesToExclude, doNotFailIfNothingArchived, archiveOnlyIfSuccessful)
 }
 
-static addGithubPRTriggerForBranch(def job, def branchName, def jobName, def testName) {
+static addGithubPRTriggerForBranch(def job, def branchName, def jobName) {
   def prContext = "prtest/${jobName.replace('_', '/')}"
   def triggerPhrase = "(?i)^\\s*(@?dotnet-bot\\s+)?(re)?test\\s+(${prContext})(\\s+please)?\\s*\$"
-  def triggerOnPhraseOnly = (testName != 'build')
+  def triggerOnPhraseOnly = true
 
   Utilities.addGithubPRTriggerForBranch(job, branchName, prContext, triggerPhrase, triggerOnPhraseOnly)
 }
 
-static addGithubPRCommitStatusForBranch(def job, def branchName, def jobName, def testName) {
+static addGithubPRCommitStatusForBranch(def job, def branchName, def jobName) {
   def prContext = "prtest/${jobName.replace('_', '/')}"
 
   job.with {
@@ -35,9 +35,9 @@ static addGithubPRCommitStatusForBranch(def job, def branchName, def jobName, de
 }
 
 static addXUnitDotNETResults(def job, def configName) {
-  def resultFilePattern = "**/artifacts/${configName}/log/xUnit-*.xml"
+  def resultFilePattern = "**/artifacts/${configName}/TestResults/xUnit-*.xml"
   def skipIfNoTestFiles = false
-
+    
   Utilities.addXUnitDotNETResults(job, resultFilePattern, skipIfNoTestFiles)
 }
 
@@ -75,42 +75,8 @@ static addExtendedEmailPublisher(def job) {
   }
 }
 
-static addBuildSteps(def job, def projectName, def opsysName, def configName, def isPR) {
-  def testJobName = getJobName(opsysName, configName, 'test')
-  def testFullJobName = Utilities.getFullJobName(projectName, testJobName, isPR)
-
-  def downstreamFullJobNames = "${testFullJobName}"
-
-  def officialSwitch = ''
-
-  if (!isPR) {
-    officialSwitch = '-official'
-  }
-
-  job.with {
-    steps {
-      batchFile("""set TEMP=%WORKSPACE%\\artifacts\\${configName}\\tmp
-mkdir %TEMP%
-set TMP=%TEMP%
-.\\CIBuild.cmd -configuration ${configName} ${officialSwitch}
-""")
-      publishers {
-        downstreamParameterized {
-          trigger(downstreamFullJobNames) {
-            condition('UNSTABLE_OR_BETTER')
-            parameters {
-              currentBuild()
-              gitRevision()
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-static addTestSteps(def job, def projectName, def opsysName, def configName, def testName, def isPR, def filesToArchive, def filesToExclude) {
-  def buildJobName = getJobName(opsysName, configName, 'build')
+static addBuildSteps(def job, def projectName, def opsysName, def configName, def isPR, def filesToArchive, def filesToExclude) {
+  def buildJobName = getJobName(opsysName, configName)
   def buildFullJobName = Utilities.getFullJobName(projectName, buildJobName, isPR)
 
   def officialSwitch = ''
@@ -130,11 +96,7 @@ static addTestSteps(def job, def projectName, def opsysName, def configName, def
           }
         }
       }
-      batchFile("""set TEMP=%WORKSPACE%\\artifacts\\${configName}\\tmp
-mkdir %TEMP%
-set TMP=%TEMP%
-.\\Test.cmd -configuration ${configName} ${officialSwitch}
-""")
+      batchFile(""".\\CIBuild.cmd -configuration ${configName} ${officialSwitch}""")
     }
   }
 }
@@ -142,50 +104,35 @@ set TMP=%TEMP%
 [true, false].each { isPR ->
   ['windows'].each { opsysName ->
     ['debug', 'release'].each { configName ->
-        ['build', 'test'].each { testName ->
-        def projectName = GithubProject
+      def projectName = GithubProject
 
-        def branchName = GithubBranchName
+      def branchName = GithubBranchName
 
-        def filesToArchive = "**/artifacts/${configName}/**"
-        def filesToExclude = "**/artifacts/${configName}/obj/**"
+      def filesToArchive = "**/artifacts/${configName}/**"
+      def filesToExclude = "**/artifacts/${configName}/obj/**"
 
-        def jobName = getJobName(opsysName, configName, testName)
-        def fullJobName = Utilities.getFullJobName(projectName, jobName, isPR)
-        def myJob = job(fullJobName)
+      def jobName = getJobName(opsysName, configName)
+      def fullJobName = Utilities.getFullJobName(projectName, jobName, isPR)
+      def myJob = job(fullJobName)
 
-        Utilities.standardJobSetup(myJob, projectName, isPR, "*/${branchName}")
+      Utilities.standardJobSetup(myJob, projectName, isPR, "*/${branchName}")
 
-        if (testName == 'build') {
-          if (isPR) {
-            addGithubPRTriggerForBranch(myJob, branchName, jobName, testName)
-          } else {
-            Utilities.addGithubPushTrigger(myJob)
-          }
-        } else {
-          if (isPR) {
-            addGithubPRCommitStatusForBranch(myJob, branchName, jobName, testName)
-          }
-        }
-
-        addArchival(myJob, filesToArchive, filesToExclude)
-
-        if (testName != 'build') {
-          addXUnitDotNETResults(myJob, configName)
-        }
-
-        Utilities.setMachineAffinity(myJob, 'Windows_NT', 'latest-or-auto-dev15-rc')
-
-        if (!isPR) {
-          addExtendedEmailPublisher(myJob)
-        }
-
-        if (testName == 'build') {
-          addBuildSteps(myJob, projectName, opsysName, configName, isPR)
-        } else {
-          addTestSteps(myJob, projectName, opsysName, configName, testName, isPR, filesToArchive, filesToExclude)
-        }
+      if (isPR) {
+        addGithubPRTriggerForBranch(myJob, branchName, jobName)
+      } else {
+        Utilities.addGithubPushTrigger(myJob)
       }
+      
+      addArchival(myJob, filesToArchive, filesToExclude)
+      addXUnitDotNETResults(myJob, configName)
+
+      Utilities.setMachineAffinity(myJob, 'Windows_NT', 'latest-or-auto-dev15-rc')
+
+      if (!isPR) {
+        addExtendedEmailPublisher(myJob)
+      }
+
+      addBuildSteps(myJob, projectName, opsysName, configName, isPR, filesToArchive, filesToExclude)
     }
   }
 }

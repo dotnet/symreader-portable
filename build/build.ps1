@@ -8,6 +8,7 @@ Param(
   [switch] $test,
   [switch] $sign,
   [switch] $pack,
+  [switch] $ci,
   [switch] $official
 )
 
@@ -21,6 +22,7 @@ $BuildProj = Join-Path $PSScriptRoot "build.proj"
 $DependenciesProps = Join-Path $PSScriptRoot "Targets\Dependencies.props"
 $ArtifactsDir = Join-Path $RepoRoot "artifacts"
 $LogDir = Join-Path $ArtifactsDir "log"
+$TempDir = Join-Path (Join-Path $ArtifactsDir $configuration) "tmp"
 
 function Create-Directory([string[]] $path) {
   if (!(Test-Path -path $path)) {
@@ -59,6 +61,12 @@ function Build {
   if ($lastExitCode -ne 0) {
     throw "Build failed (exit code '$lastExitCode')."
   }
+}
+
+if ($ci) {
+  Create-Directory $TempDir
+  $env:TEMP = $TempDir
+  $env:TMP = $TempDir
 }
 
 if ($restore) {
