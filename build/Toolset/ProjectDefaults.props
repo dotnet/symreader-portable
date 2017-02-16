@@ -5,7 +5,11 @@
     <HighEntropyVA>true</HighEntropyVA>
     <Company>Microsoft Corporation</Company>
     <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
-    
+    <Authors>Microsoft</Authors>
+    <Serviceable>true</Serviceable>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageLicenseUrl>http://go.microsoft.com/fwlink/?LinkId=529443</PackageLicenseUrl>
+
     <!-- By default do not build nuget package for a project. Project may override. -->
     <IsPackable>false</IsPackable>
   </PropertyGroup>
