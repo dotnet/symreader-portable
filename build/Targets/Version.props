@@ -1,7 +1,7 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project>
   <PropertyGroup>
-    <AssemblyVersion>1.2.0</AssemblyVersion>
-    <NuGetMoniker></NuGetMoniker>
+    <VersionBase>1.2.0</VersionBase>
+    <PreReleaseVersionLabel></PreReleaseVersionLabel>
   </PropertyGroup>
   <Import Project="..\Toolset\Version.props"/>
 </Project>

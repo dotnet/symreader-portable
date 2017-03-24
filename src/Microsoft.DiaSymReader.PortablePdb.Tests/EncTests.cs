@@ -10,6 +10,7 @@ using Xunit;
 
 namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 {
+    using System.Reflection;
     using static SymTestHelpers;
 
     public class EncTests
@@ -83,7 +84,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Assert.Equal(@"C:\F\B.cs", docB1.GetName());
             Assert.Equal(@"C:\F\C.cs", docC1.GetName());
 
-            Guid alg;
+            Guid alg = default(Guid);
             int count;
             Assert.Equal(HResult.S_FALSE, docMain1.GetChecksum(0, out count, null));
             Assert.Equal(0, count);

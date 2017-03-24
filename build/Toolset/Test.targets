@@ -1,0 +1,52 @@
+<!-- Copyright (c)  Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information. -->
+<Project>
+  <PropertyGroup Condition="'$(IsTestProject)' == 'true'">
+    <TestArchitectures Condition="'$(TestArchitectures)' == ''">x64</TestArchitectures>
+    <AutoGenerateBindingRedirects Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">true</AutoGenerateBindingRedirects>
+    <_TestTargetName Condition="'$(TargetFrameworks)' == ''">InnerTest</_TestTargetName>
+    <_TestTargetName Condition="'$(TargetFrameworks)' != ''">OuterTest</_TestTargetName>
+  </PropertyGroup>
+  
+  <Target Name="Test" DependsOnTargets="$(_TestTargetName)" Condition="'$(IsTestProject)' == 'true'" />
+
+  <Target Name="InnerTest">
+    <ItemGroup>
+      <_TestArchitectureItems Include="$(TestArchitectures)" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <_TestOutPathNoExt>$(ArtifactsTestResultsDir)$(MSBuildProjectName)_$(TargetFramework)_%(_TestArchitectureItems.Identity)</_TestOutPathNoExt>
+      <_TestStdOutPath>$(_TestOutPathNoExt).txt</_TestStdOutPath>
+      <_TestLogPath>$(_TestOutPathNoExt).xml</_TestLogPath>
+    </PropertyGroup>
+
+    <MakeDir Directories="$(ArtifactsTestResultsDir)"/>
+    <Delete Files="$(_TestOutPathNoExt)" />
+    <Delete Files="$(_TestStdOutPath)" />
+
+    <Exec Command='"$(DotNetTool)" test "$(MSBuildProjectFullPath)" --no-build --framework:$(TargetFramework) -- --platform:%(_TestArchitectureItems.Identity) > $(_TestStdOutPath)'
+          LogStandardErrorAsError="true"
+          WorkingDirectory="$(OutDir)"
+          IgnoreExitCode="true">
+
+      <Output TaskParameter="ExitCode" PropertyName="ExitCode" />
+    </Exec>
+
+    <!-- 
+       Work around the lack of xUnit logger: https://github.com/Microsoft/vstest/issues/254 
+       Jenkins currently supports xUnit and trx. trx is supported by dotnet test but it's 10x larger.
+    -->
+    <Exec Command='"$(ToolsetCompilerPackageDir)tools\csi.exe" "$(MSBuildThisFileDirectory)Test.StdOutToXml.csx" "$(_TestStdOutPath)" "$(_TestLogPath)"' />
+
+    <Message Text="Test succeeded: $(MSBuildProjectName) [$(TargetFramework)|%(_TestArchitectureItems.Identity)]" Condition="'$(ExitCode)' == '0'" />
+    <Error Text="Test failed with exit code $(ExitCode); log: $(_TestStdOutPath)" Condition="'$(ExitCode)' != '0'" />
+  </Target>
+
+  <Target Name="OuterTest" DependsOnTargets="_SetTestInnerTarget;DispatchToInnerBuilds" />
+
+  <Target Name="_SetTestInnerTarget" Returns="@(InnerOutput)">
+    <PropertyGroup Condition="'$(InnerTargets)' == ''">
+      <InnerTargets>InnerTest</InnerTargets>
+    </PropertyGroup>
+  </Target>
+</Project>

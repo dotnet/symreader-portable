@@ -1,0 +1,58 @@
+<Project DefaultTargets="Execute">
+  <!--
+  
+  Required parameters:
+    SolutionPath     Path to the solution to build
+  
+  Optional parameters:
+    Configuration    Build configuration: "Debug", "Release", etc.
+    OfficialBuild    "true" if building an official build in lab
+    Restore          "true" to restore toolset and solution
+    Build            "true" to build solution
+    Test             "true" to run tests
+    Sign             "true" to sign built binaries
+    
+  -->
+
+  <Target Name="Execute">
+
+    <PropertyGroup>
+      <!-- Needs to be set here since msbuild looks confiuration up in the .sln file -->
+      <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+
+      <Props>Configuration=$(Configuration);OfficialBuild=$(OfficialBuild)</Props>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PreSignTargets Include="Restore" Condition="'$(Restore)' == 'true'" />
+      <PreSignTargets Include="Build" Condition="'$(Build)' == 'true'" />
+      <PreSignTargets Include="Test" Condition="'$(Test)' == 'true'" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PostSignTargets Include="Pack" Condition="'$(Pack)' == 'true'" />
+    </ItemGroup>
+
+    <!-- Note: msbuild caches the metaproject for the solution. 
+         We invalidate the cache by changing the value of __BuildPhase property.
+    -->
+
+    <MSBuild Projects="$(SolutionPath)"
+             Properties="$(Props);__BuildPhase=PreSign"
+             Targets="@(PreSignTargets)"
+             BuildInParallel="true"
+             Condition="'@(PreSignTargets)' != ''"/>
+
+    <MSBuild Projects="Sign.proj"
+             Properties="$(Props)"
+             Targets="Sign"
+             BuildInParallel="true"
+             Condition="'$(Sign)' == 'true'"/>
+
+    <MSBuild Projects="$(SolutionPath)"
+             Properties="$(Props);__BuildPhase=PostSign"
+             Targets="@(PostSignTargets)"
+             BuildInParallel="true"
+             Condition="'@(PostSignTargets)' != ''"/>
+  </Target>
+</Project>
