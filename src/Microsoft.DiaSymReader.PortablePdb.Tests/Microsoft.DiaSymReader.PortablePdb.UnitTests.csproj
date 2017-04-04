@@ -1,29 +1,25 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (c)  Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information. -->
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ImportGroup>
-    <Import Project="..\..\build\Targets\Settings.targets" />
-  </ImportGroup>
+﻿<!-- Copyright (c)  Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information. -->
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <ProjectGuid>{DEB3D675-5A3C-46DA-8945-F2EFAB135EA0}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>Microsoft.DiaSymReader.PortablePdb.UnitTests</RootNamespace>
-    <AssemblyName>Microsoft.DiaSymReader.PortablePdb.UnitTests</AssemblyName>
+    <TargetFrameworks>netcoreapp1.0;net46</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <TargetFrameworkIdentifier>.NETPortable</TargetFrameworkIdentifier>
-    <NuGetTargetMoniker>.NETStandard,Version=v1.3</NuGetTargetMoniker>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <!-- 
+      We would need to download 32bit dotnet cli, which would add extra time to PR runs 
+      Testing 64bit only on Desktop suffixiently covers our interop code paths.  
+    -->
+    <TestArchitectures Condition="'$(TargetFramework)' == 'net46'">x64;x86</TestArchitectures>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.DiaSymReader.PortablePdb\Microsoft.DiaSymReader.PortablePdb.csproj">
-      <Project>{f83343ba-b4ea-451c-b6db-5d645e6171bc}</Project>
-      <Name>Microsoft.DiaSymReader.PortablePdb</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\Microsoft.DiaSymReader.PortablePdb\Microsoft.DiaSymReader.PortablePdb.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.DiaSymReader.Native" Version="$(MicrosoftDiaSymReaderNativeVersion)" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Resources\**\*.cs" />
+    <Content Include="Resources\**\*.cs" />
+    <Content Include="Resources\**\*.cmd" />
+    <Content Include="Resources\**\*.txt" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Async.dll">
@@ -144,50 +140,20 @@
       <LogicalName>EncMethodExtents.2.pdbx</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
+  
   <ItemGroup>
-    <Content Include="Resources\Documents.cmd" />
-    <Content Include="Resources\Documents.cs" />
-    <Content Include="Resources\EmbeddedSource.cmd" />
-    <Content Include="Resources\Scopes.cmd" />
-    <Content Include="Resources\Scopes.cs" />
-    <Content Include="Resources\Async.cmd" />
-    <Content Include="Resources\Async.cs" />
-    <Content Include="Resources\MethodBoundaries.cmd" />
-    <Content Include="Resources\MethodBoundaries.cs" />
-    <Content Include="Resources\MiscEmbedded.cmd" />
-    <Content Include="Resources\MiscEmbedded.cs" />
-    <Content Include="Resources\SourceLink.cmd" />
-    <Content Include="Resources\EncMethodExtents\Readme.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="EmbeddedSourceTests.cs" />
-    <Compile Include="EncTests.cs" />
-    <Compile Include="MethodMapTests.cs" />
-    <Compile Include="TestHelpers\TestResource.cs" />
-    <Compile Include="TestHelpers\ResourceLoader.cs" />
-    <Compile Include="SymBinderTests.cs" />
-    <Compile Include="TestHelpers\PdbTestData.cs" />
-    <Compile Include="TestHelpers\SymTestHelpers.cs" />
-    <Compile Include="TestHelpers\TestResources.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="TestHelpers\AssertEx.cs" />
-    <Compile Include="Utilities\EnumerableHelpersTests.cs" />
-    <Compile Include="Utilities\SymMetadataImport.cs" />
-    <Compile Include="SymReaderTests.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\Shared\App.config" />
-    <None Include="project.json" />
-    <None Include="Microsoft.DiaSymReader.PortablePdb.UnitTests.xunit.runner.json">
+    <Content Include="$(NuGetPackageRoot)\Microsoft.DiaSymReader.Native\$(MicrosoftDiaSymReaderNativeVersion)\runtimes\win\native\Microsoft.DiaSymReader.Native.x86.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+      <Visible>false</Visible>
+      <Link>Microsoft.DiaSymReader.Native.x86.dll</Link>
+    </Content>
+    <Content Include="$(NuGetPackageRoot)\Microsoft.DiaSymReader.Native\$(MicrosoftDiaSymReaderNativeVersion)\runtimes\win\native\Microsoft.DiaSymReader.Native.amd64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+      <Link>Microsoft.DiaSymReader.Native.amd64.dll</Link>
+    </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
-  </ItemGroup>
-  <ImportGroup>
-    <Import Project="..\..\build\Targets\Imports.targets" />
-    <Import Project="..\..\build\Toolset\XunitProjectRunAction.targets" />
-  </ImportGroup>
+
+  <!-- Workaround for https://github.com/Microsoft/msbuild/issues/1721. -->
+  <Import Project="..\Directory.Build.targets" Condition="'$(TargetFramework)' == ''" />
 </Project>
