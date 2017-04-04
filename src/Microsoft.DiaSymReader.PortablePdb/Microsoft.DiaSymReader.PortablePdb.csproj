@@ -1,73 +1,18 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (c)  Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information. -->
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ImportGroup>
-    <Import Project="..\..\build\Targets\Settings.targets" />
-  </ImportGroup>
+﻿<!-- Copyright (c)  Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information. -->
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <ProjectGuid>{F83343BA-B4EA-451C-B6DB-5D645E6171BC}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>Microsoft.DiaSymReader.PortablePdb</RootNamespace>
-    <AssemblyName>Microsoft.DiaSymReader.PortablePdb</AssemblyName>
+    <TargetFramework>netstandard1.1</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <TargetFrameworkIdentifier>.NETPortable</TargetFrameworkIdentifier>
-    <NuGetTargetMoniker>.NETStandard,Version=v1.1</NuGetTargetMoniker>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <IsPackable>true</IsPackable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
   <ItemGroup>
-    <Compile Include="AsyncMethodData.cs" />
-    <Compile Include="InvalidInputDataException.cs" />
-    <Compile Include="MethodExtent.cs" />
-    <Compile Include="MethodExtents.cs" />
-    <Compile Include="MethodLineDeltas.cs" />
-    <Compile Include="MethodMap.cs" />
-    <Compile Include="Utilities\BlobWriter.cs" />
-    <Compile Include="MethodId.cs" />
-    <Compile Include="DocumentId.cs" />
-    <Compile Include="Utilities\EmptyArray.cs" />
-    <Compile Include="Utilities\ExceptionUtilities.cs" />
-    <Compile Include="Utilities\HashHelpers.cs" />
-    <Compile Include="Utilities\ImmutableByteArrayInterop.cs" />
-    <Compile Include="Utilities\ImmutableArrayExtensions.cs" />
-    <Compile Include="Utilities\LazyMetadataImport.cs" />
-    <Compile Include="Utilities\FileNameUtilities.cs" />
-    <Compile Include="Utilities\HResult.cs" />
-    <Compile Include="Utilities\InteropUtilities.cs" />
-    <Compile Include="Utilities\KeyValuePair.cs" />
-    <Compile Include="Utilities\MetadataUtilities.cs" />
-    <Compile Include="Utilities\EnumerableHelpers.cs" />
-    <Compile Include="DocumentMap.cs" />
-    <Compile Include="IMetadataImport.cs" />
-    <Compile Include="PortablePdbReader.cs" />
-    <Compile Include="ScopeData.cs" />
-    <Compile Include="RootScopeData.cs" />
-    <Compile Include="ChildScopeData.cs" />
-    <Compile Include="SymBinder.cs" />
-    <Compile Include="SymScope.cs" />
-    <Compile Include="SymConstant.cs" />
-    <Compile Include="SymDocument.cs" />
-    <Compile Include="SymMethod.cs" />
-    <Compile Include="SymReader.cs" />
-    <Compile Include="SymVariable.cs" />
-    <Compile Include="Utilities\PortableShim.cs" />
-    <Compile Include="Utilities\ReadOnlyInteropStream.cs" />
-    <Compile Include="Utilities\ReflectionUtilities.cs" />
-    <Compile Include="Utilities\StreamExtensions.cs" />
-    <Compile Include="Utilities\TupleElementNamesAttribute.cs" />
-    <Compile Include="Utilities\ValueTuple.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="project.json" />
+    <PackageReference Include="Microsoft.DiaSymReader" Version="$(MicrosoftDiaSymReaderVersion)" />
+    <PackageReference Include="System.Collections.Immutable" Version="$(SystemCollectionsImmutableVersion)" />
+    <PackageReference Include="System.Reflection.Metadata" Version="$(SystemReflectionMetadataVersion)" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.DiaSymReader.PortablePdb.UnitTests" />
   </ItemGroup>
-  <ImportGroup Label="Targets">
-    <Import Project="..\..\build\Targets\Imports.targets" />
-  </ImportGroup>
 </Project>
