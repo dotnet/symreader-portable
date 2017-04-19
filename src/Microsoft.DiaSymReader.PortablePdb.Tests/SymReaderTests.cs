@@ -2,6 +2,7 @@
 
 using Roslyn.Test.Utilities;
 using System;
+using System.Linq;
 using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using Xunit;
@@ -394,6 +395,127 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             int count, count2;
             Assert.Equal(HResult.E_UNEXPECTED, asyncMethod.GetAsyncStepInfoCount(out count));
             Assert.Equal(HResult.E_UNEXPECTED, asyncMethod.GetAsyncStepInfo(count, out count2, null, null, null));
+        }
+
+        [Theory, ClassData(typeof(PdbTestData))]
+        public void GetMethodsInDocument_Errors(bool portable)
+        {
+            var symReader1 = CreateSymReaderFromResource(TestResources.MethodBoundaries.DllAndPdb(portable));
+            var symReader2 = CreateSymReaderFromResource(TestResources.Scopes.DllAndPdb(portable));
+            var document1 = symReader1.GetDocument("MethodBoundaries1.cs");
+            var document2 = symReader2.GetDocument("Scopes.cs");
+
+            Assert.Equal(HResult.E_INVALIDARG, symReader1.GetMethodsInDocument(null, 0, out _, null));
+
+            if (portable)
+            {
+                // bug in symreader: AV
+                Assert.Equal(HResult.E_INVALIDARG, symReader1.GetMethodsInDocument(document2, 0, out _, null));
+                Assert.Equal(HResult.E_INVALIDARG, symReader1.GetMethodsInDocument(document1, 10, out _, null));
+                Assert.Equal(HResult.E_INVALIDARG, symReader1.GetMethodsInDocument(document1, 10, out _, new ISymUnmanagedMethod[1]));
+            }
+        }
+
+        [Theory, ClassData(typeof(PdbTestData))]
+        public void GetMethodsInDocument(bool portable)
+        {
+            var symReader = CreateSymReaderFromResource(TestResources.MethodBoundaries.DllAndPdb(portable));
+
+            var document1 = symReader.GetDocument("MethodBoundaries1.cs");
+            var document2 = symReader.GetDocument("MethodBoundaries2.cs");
+            var document3 = symReader.GetDocument("MethodBoundaries3.cs");
+
+            // bug in symreader:
+            // CDiaWrapper::GetMethodTokens returns all methods whose containing class (compiland) belongs to specified document.
+
+            var expected = portable ? new[] 
+            {
+                0x06000001,
+                0x06000002,
+                0x06000003,
+            } : new[]
+            {
+                0x06000001,
+                0x06000002,
+                0x06000003,
+                0x06000004,
+                0x06000005,
+                0x06000006,
+                0x06000007,
+                0x06000008,
+                0x06000009,
+                0x0600000A,
+                0x0600000B,
+                0x0600000C,
+                0x0600000D,
+                0x0600000E,
+                0x0600000F,
+                0x06000010,
+            };
+
+            AssertEx.Equal(expected, symReader.GetMethodsInDocument(document1).Select(m => m.GetToken()), itemInspector: i => $"0x{i:X8}");
+
+            expected = portable ? new[]
+            {
+                0x06000002,
+                0x06000004,
+                0x06000005,
+                0x06000006,
+                0x06000007,
+                0x06000008,
+                0x06000009,
+                0x0600000A,
+                0x0600000B,
+                0x0600000C,
+            } : new[]
+            {
+                0x06000001,
+                0x06000002,
+                0x06000003,
+                0x06000004,
+                0x06000005,
+                0x06000006,
+                0x06000007,
+                0x06000008,
+                0x06000009,
+                0x0600000A,
+                0x0600000B,
+                0x0600000C,
+                0x0600000D,
+                0x0600000E,
+                0x0600000F,
+                0x06000010,
+            };
+
+            AssertEx.Equal(expected, symReader.GetMethodsInDocument(document2).Select(m => m.GetToken()), itemInspector: i => $"0x{i:X8}");
+
+            expected = portable ? new[]
+            {
+                0x0600000D,
+                0x0600000E,
+                0x0600000F,
+                0x06000010
+            } : new[]
+            {
+                0x06000001,
+                0x06000002,
+                0x06000003,
+                0x06000004,
+                0x06000005,
+                0x06000006,
+                0x06000007,
+                0x06000008,
+                0x06000009,
+                0x0600000A,
+                0x0600000B,
+                0x0600000C,
+                0x0600000D,
+                0x0600000E,
+                0x0600000F,
+                0x06000010,
+            };
+
+            AssertEx.Equal(expected, symReader.GetMethodsInDocument(document3).Select(m => m.GetToken()), itemInspector: i => $"0x{i:X8}");
         }
     }
 }
