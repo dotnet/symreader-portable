@@ -581,6 +581,12 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 return HResult.E_INVALIDARG;
             }
 
+            if (bufferLength > 0 && (methods == null || methods.Length < bufferLength))
+            {
+                count = 0;
+                return HResult.E_INVALIDARG;
+            }
+
             var methodExtents = GetMethodExtents();
             var extentsByMethod = methodExtents.GetMethodExtents(symDocument.GetId());
             if (bufferLength > 0)
@@ -601,7 +607,6 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 count = extentsByMethod.Length;
             }
 
-            count = 0;
             return HResult.S_OK;
         }
 
