@@ -3,5 +3,5 @@ csc /target:library /debug:embedded /optimize- /deterministic /out:SourceLink.Em
 
 copy /y SourceLink.dll SourceLink.dllx
 copy /y SourceLink.pdb SourceLink.pdbx
-del SourceLink.dll
-del SourceLink.pdb
+
+csc.exe /target:library /debug:full /optimize- /deterministic /out:SourceLink.dll /sourcelink:SourceLink.json Documents.cs

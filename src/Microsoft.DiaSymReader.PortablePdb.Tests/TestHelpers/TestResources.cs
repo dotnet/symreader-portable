@@ -119,6 +119,12 @@ namespace TestResources
         private static byte[] s_portablePdb;
         public static byte[] PortablePdb => ResourceLoader.GetOrCreateResource(ref s_portablePdb, nameof(SourceLink) + ".pdbx");
 
+        private static byte[] s_windowsDll;
+        public static byte[] WindowsDll => ResourceLoader.GetOrCreateResource(ref s_windowsDll, nameof(SourceLink) + ".dll");
+
+        private static byte[] s_windowsPdb;
+        public static byte[] WindowsPdb => ResourceLoader.GetOrCreateResource(ref s_windowsPdb, nameof(SourceLink) + ".pdb");
+
         private static byte[] s_EmbeddedDll;
         public static byte[] EmbeddedDll => ResourceLoader.GetOrCreateResource(ref s_EmbeddedDll, nameof(SourceLink) + ".Embedded.dll");
 
@@ -126,6 +132,8 @@ namespace TestResources
         public static byte[] Json => ResourceLoader.GetOrCreateResource(ref s_json, nameof(SourceLink) + ".json");
 
         public static TestResource PortableDllAndPdb => new TestResource(PortableDll, PortablePdb);
+        public static TestResource WindowsDllAndPdb => new TestResource(WindowsDll, WindowsPdb);
+        public static TestResource DllAndPdb(bool portable) => portable ? PortableDllAndPdb : WindowsDllAndPdb;
     }
 
     public static class EncMethodExtents
