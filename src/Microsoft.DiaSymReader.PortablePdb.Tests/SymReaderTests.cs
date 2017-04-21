@@ -31,13 +31,25 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             }
         }
 
-        [Fact]
-        public void MatchesModule()
+        [Theory, ClassData(typeof(PdbTestData))]
+        public void MatchesModule(bool portable)
         {
-            var symReader = (ISymUnmanagedReader4)CreateSymReaderFromResource(TestResources.Documents.DllAndPdb(portable: true));
+            var symReader = CreateSymReaderFromResource(TestResources.Documents.DllAndPdb(portable));
 
-            var expectedGuid = new Guid(new byte[] { 0x89, 0x03, 0x86, 0xAD, 0xFF, 0x27, 0x56, 0x46, 0x9F, 0x3F, 0xE2, 0x18, 0x4B, 0xEF, 0xFC, 0xC0 });
-            uint expectedStamp = 0xA0520CBE;
+            Guid expectedGuid;
+            uint expectedStamp;
+
+            if (portable)
+            {
+                expectedGuid = new Guid("ad860389-27ff-4656-9f3f-e2184beffcc0");
+                expectedStamp = 0xA0520CBE;
+            }
+            else
+            {
+                expectedGuid = new Guid("c5f482d0-43f0-f15a-10fa-4fc8e8691e3d");
+                expectedStamp = 0xA0520CBE;
+            }
+
 
             var anotherGuid = new Guid(new byte[] { 0x88, 0x03, 0x86, 0xAD, 0xFF, 0x27, 0x56, 0x46, 0x9F, 0x3F, 0xE2, 0x18, 0x4B, 0xEF, 0xFC, 0xC0 });
             var anotherStamp = 0xA0520CBF;
@@ -51,28 +63,26 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Assert.False(matches);
             Assert.Equal(HResult.S_OK, symReader.MatchesModule(anotherGuid, expectedStamp, 1, out matches));
             Assert.False(matches);
+
+            // Windows PDB matching ignores the stamp:
             Assert.Equal(HResult.S_OK, symReader.MatchesModule(expectedGuid, anotherStamp, 1, out matches));
-            Assert.False(matches);
+            Assert.Equal(!portable, matches);
         }
 
-        [Fact]
-        public unsafe void GetSourceServerData_None()
+        [Theory, ClassData(typeof(PdbTestData))]
+        public unsafe void GetSourceServerData_None(bool portable)
         {
-            var symReader = (ISymUnmanagedReader4)CreateSymReaderFromResource(TestResources.Documents.DllAndPdb(portable: true));
-            byte* ptr;
-            int size;
-            Assert.Equal(HResult.S_FALSE, symReader.GetSourceServerData(out ptr, out size));
+            var symReader = CreateSymReaderFromResource(TestResources.Documents.DllAndPdb(portable));
+            Assert.Equal(HResult.S_FALSE, symReader.GetSourceServerData(out byte* ptr, out int size));
             Assert.Equal(size, 0);
             Assert.Equal(IntPtr.Zero, (IntPtr)ptr);
         }
 
-        [Fact]
-        public unsafe void GetSourceServerData_Portable()
+        [Theory, ClassData(typeof(PdbTestData))]
+        public unsafe void GetSourceServerData(bool portable)
         {
-            var symReader = (ISymUnmanagedReader4)CreateSymReaderFromResource(TestResources.SourceLink.PortableDllAndPdb);
-            byte* ptr;
-            int size;
-            Assert.Equal(HResult.S_OK, symReader.GetSourceServerData(out ptr, out size));
+            var symReader = CreateSymReaderFromResource(TestResources.SourceLink.DllAndPdb(portable));
+            Assert.Equal(HResult.S_OK, symReader.GetSourceServerData(out byte* ptr, out int size));
             Assert.Equal(103, size);
             Assert.NotEqual(IntPtr.Zero, (IntPtr)ptr);
 
@@ -85,7 +95,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         [Fact]
         public unsafe void GetSourceServerData_PortableEmbedded()
         {
-            var symReader = (ISymUnmanagedReader4)CreateSymReaderFromEmbeddedPortablePdb(TestResources.SourceLink.EmbeddedDll);
+            var symReader = CreateSymReaderFromEmbeddedPortablePdb(TestResources.SourceLink.EmbeddedDll);
             byte* ptr;
             int size;
             Assert.Equal(HResult.S_OK, symReader.GetSourceServerData(out ptr, out size));

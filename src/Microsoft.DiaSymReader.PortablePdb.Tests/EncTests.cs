@@ -1486,7 +1486,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         public unsafe void GetPortableDebugMetadata()
         {
             var baselineResources = TestResources.EncMethodExtents.Baseline(portable: true);
-            var symReader = (ISymUnmanagedReader5)CreateSymReaderFromResource(baselineResources);
+            var symReader = CreateSymReaderFromResource(baselineResources);
 
             byte[] bytes;
             byte* metadata;
@@ -1522,7 +1522,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         public unsafe void GetPortableDebugMetadataByVersion()
         {
             var baselineResources = TestResources.EncMethodExtents.Baseline(portable: true);
-            var symReader = (ISymUnmanagedReader5)CreateSymReaderFromResource(baselineResources);
+            var symReader = CreateSymReaderFromResource(baselineResources);
 
             var resources1 = TestResources.EncMethodExtents.Diffs(1, portable: true);
             UpdateSymReaderFromResource(symReader, resources1);
@@ -1548,6 +1548,28 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             bytes = new byte[size];
             Marshal.Copy((IntPtr)metadata, bytes, 0, bytes.Length);
             AssertEx.Equal(resources2.Pdb, bytes);
+
+            Assert.Equal(HResult.E_INVALIDARG, symReader.GetPortableDebugMetadataByVersion(-1, out metadata, out size));
+            Assert.Equal(HResult.E_INVALIDARG, symReader.GetPortableDebugMetadataByVersion(0, out metadata, out size));
+            Assert.Equal(HResult.E_INVALIDARG, symReader.GetPortableDebugMetadataByVersion(4, out metadata, out size));
+        }
+
+        [Fact]
+        public unsafe void GetPortableDebugMetadata_Windows()
+        {
+            var baselineResources = TestResources.EncMethodExtents.Baseline(portable: false);
+            var symReader = CreateSymReaderFromResource(baselineResources);
+
+            byte* metadata;
+            int size;
+
+            Assert.Equal(HResult.S_FALSE, symReader.GetPortableDebugMetadata(out metadata, out size));
+            Assert.True(metadata == null);
+            Assert.Equal(0, size);
+
+            Assert.Equal(HResult.S_FALSE, symReader.GetPortableDebugMetadataByVersion(1, out metadata, out size));
+            Assert.True(metadata == null);
+            Assert.Equal(0, size);
 
             Assert.Equal(HResult.E_INVALIDARG, symReader.GetPortableDebugMetadataByVersion(-1, out metadata, out size));
             Assert.Equal(HResult.E_INVALIDARG, symReader.GetPortableDebugMetadataByVersion(0, out metadata, out size));
