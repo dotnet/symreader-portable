@@ -3,7 +3,7 @@
   <PropertyGroup>
     <!-- This repo version -->
     <VersionBase>1.3.0</VersionBase>
-    <PreReleaseVersionLabel>beta1</PreReleaseVersionLabel>
+    <PreReleaseVersionLabel></PreReleaseVersionLabel>
     
     <!-- Toolset -->
     <RoslynToolsMicrosoftRepoToolsetVersion>1.0.0-alpha16</RoslynToolsMicrosoftRepoToolsetVersion>
