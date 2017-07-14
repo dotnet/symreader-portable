@@ -74,7 +74,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         {
             var symReader = CreateSymReaderFromResource(TestResources.Documents.DllAndPdb(portable));
             Assert.Equal(HResult.S_FALSE, symReader.GetSourceServerData(out byte* ptr, out int size));
-            Assert.Equal(size, 0);
+            Assert.Equal(0, size);
             Assert.Equal(IntPtr.Zero, (IntPtr)ptr);
         }
 

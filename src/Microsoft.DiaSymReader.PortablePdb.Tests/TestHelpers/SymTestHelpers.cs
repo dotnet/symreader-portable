@@ -140,7 +140,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Assert.Equal(expectedStartOffset, actualOffset);
 
             Assert.Equal(HResult.S_OK, scope.GetEndOffset(out actualOffset));
-            Assert.Equal(expectedStartOffset + expectedLength, 2);
+            Assert.Equal(expectedStartOffset + expectedLength, actualOffset);
         }
 
         public static void ValidateConstant(ISymUnmanagedConstant constant, string name, object value, byte[] signature)
