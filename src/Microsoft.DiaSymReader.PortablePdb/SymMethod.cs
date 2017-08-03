@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 namespace Microsoft.DiaSymReader.PortablePdb
 {
     [ComVisible(false)]
-    public sealed class SymMethod : ISymUnmanagedMethod, ISymUnmanagedAsyncMethod, ISymEncUnmanagedMethod
+    public sealed class SymMethod : ISymUnmanagedMethod2, ISymUnmanagedAsyncMethod, ISymEncUnmanagedMethod
     {
         internal MethodDebugInformationHandle DebugHandle { get; }
         internal MethodDefinitionHandle DefinitionHandle => DebugHandle.ToDefinitionHandle();
@@ -32,10 +32,11 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         internal MethodId GetId() => PdbReader.GetMethodId(DebugHandle);
 
-        private SequencePointCollection GetSequencePoints()
-        {
-            return PdbReader.MetadataReader.GetMethodDebugInformation(DebugHandle).GetSequencePoints();
-        }
+        private SequencePointCollection GetSequencePoints() 
+            => MetadataReader.GetMethodDebugInformation(DebugHandle).GetSequencePoints();
+
+        internal StandaloneSignatureHandle GetLocalSignatureHandle() 
+            => MetadataReader.GetMethodDebugInformation(DebugHandle).LocalSignature;
 
         private RootScopeData GetRootScopeData()
         {
@@ -330,6 +331,32 @@ namespace Microsoft.DiaSymReader.PortablePdb
             return HResult.S_OK;
         }
 
+        #endregion
+
+        #region ISymUnmanagedMethod2
+
+        /// <summary>
+        /// Get the token of the local signature.
+        /// </summary>
+        /// <param name="localSignatureToken">Local signature token (StandAloneSig), or 0 if the method doesn't have any local variables.</param>
+        /// <returns>
+        /// S_OK if the method has a local signature,
+        /// S_FALSE if the method doesn't have a local signature, 
+        /// E_* if an error occurs while reading the signature.
+        /// </returns>
+        public int GetLocalSignatureToken(out int localSignatureToken)
+        {
+            var handle = GetLocalSignatureHandle();
+            if (handle.IsNil)
+            {
+                localSignatureToken = 0;
+                return HResult.S_FALSE;
+            }
+
+            localSignatureToken =  MetadataTokens.GetToken(handle);
+            return HResult.S_OK;
+        }
+        
         #endregion
 
         #region ISymUnmanagedAsyncMethod

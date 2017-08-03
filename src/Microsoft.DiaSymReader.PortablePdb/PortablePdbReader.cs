@@ -65,7 +65,6 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         /// <summary>
         /// Maps <see cref="MethodDebugInformationHandle"/> relative to this reader to the corresponding global <see cref="MethodId"/>.
-        /// Null if handles correspond to ids 1:1 (baseline).
         /// </summary>
         internal MethodId GetMethodId(MethodDebugInformationHandle handle)
         {

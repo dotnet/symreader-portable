@@ -527,5 +527,35 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 
             AssertEx.Equal(expected, symReader.GetMethodsInDocument(document3).Select(m => m.GetToken()), itemInspector: i => $"0x{i:X8}");
         }
+
+        [Theory, ClassData(typeof(PdbTestData))]
+        public void GetLocalSignatureToken(bool portable)
+        {
+            var symReader = CreateSymReaderFromResource(TestResources.Scopes.DllAndPdb(portable));
+
+            //  X..ctor
+            var mXCtor = (ISymUnmanagedMethod2)symReader.GetMethod(0x06000001);
+            Assert.Null(mXCtor);
+
+            //  C<S>.F<T>
+            var mF = (ISymUnmanagedMethod2)symReader.GetMethod(0x06000002);
+            Assert.Equal(0, mF.GetLocalSignatureToken());
+
+            //  C<S>.NestedScopes
+            var mNestedScopes = (ISymUnmanagedMethod2)symReader.GetMethod(0x06000003);
+            Assert.Equal(portable ? 0x11000001 : 0x1100001B, mNestedScopes.GetLocalSignatureToken());
+
+            //  C<S>.NestedScopesLocals
+            var mNestedScopesLocals = (ISymUnmanagedMethod2)symReader.GetMethod(0x06000004);
+            Assert.Equal(portable ? 0x11000002 : 0x1100001C, mNestedScopesLocals.GetLocalSignatureToken());
+
+            //  C<S>.NestedScopesLocals2
+            var mNestedScopesLocals2 = (ISymUnmanagedMethod2)symReader.GetMethod(0x06000005);
+            Assert.Equal(portable ? 0x11000003 : 0x1100001D, mNestedScopesLocals2.GetLocalSignatureToken());
+
+            //  C<S>..ctor
+            var mCCtor = (ISymUnmanagedMethod2)symReader.GetMethod(0x06000006);
+            Assert.Null(mCCtor);
+        }
     }
 }

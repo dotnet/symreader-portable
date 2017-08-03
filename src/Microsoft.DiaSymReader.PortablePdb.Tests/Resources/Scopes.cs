@@ -108,4 +108,23 @@ public class C<S>
             }
         }
     }
+
+    public static void NestedScopesLocals2()
+    {
+        {
+            {
+                {
+                    Console.WriteLine();
+                }
+            }
+        }
+        {
+            {
+                    Console.WriteLine();
+            }
+            {
+                int x = 1;
+            }
+        }
+    }
 }
