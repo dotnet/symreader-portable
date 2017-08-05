@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using Roslyn.Test.Utilities;
+using Roslyn.Utilities;
 using Xunit;
 
 namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
@@ -14,11 +14,11 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
     public class EmbeddedSourceTests
     {
         [Theory, ClassData(typeof(PdbTestData))]
-        private void EmbeddedSource(bool portable)
+        public void EmbeddedSource(bool portable)
         {
             var symReader = CreateSymReaderFromResource(TestResources.EmbeddedSource.DllAndPdb(portable));
 
-            foreach (string file in new[] { @"C:\EmbeddedSource.cs", @"C:\EmbeddedSourceSmall.cs" })
+            foreach (string file in new[] { @"C:\EmbeddedSource.cs", @"C:\EmbeddedSourceSmall.cs", @"C:\EmbeddedSourceNoSequencePoints.cs", @"C:\EmbeddedSourceNoCode.cs" })
             {
                 bool hasEmbeddedSource;
                 int length, bytesRead;
@@ -37,15 +37,30 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
                 byte[] expectedContent;
                 int uncompressedSize = BitConverter.ToInt32(blob, 0);
 
-                if (uncompressedSize == 0)
+                switch (file)
                 {
-                    Assert.Equal(@"C:\EmbeddedSourceSmall.cs", file);
-                    expectedContent = TestResources.EmbeddedSource.CSSmall;
-                }
-                else
-                {
-                    Assert.Equal(@"C:\EmbeddedSource.cs", file);
-                    expectedContent = TestResources.EmbeddedSource.CS;
+                    case @"C:\EmbeddedSource.cs":
+                        Assert.NotEqual(0, uncompressedSize);
+                        expectedContent = TestResources.EmbeddedSource.CS;
+                        break;
+
+                    case @"C:\EmbeddedSourceSmall.cs":
+                        Assert.Equal(0, uncompressedSize);
+                        expectedContent = TestResources.EmbeddedSource.CSSmall;
+                        break;
+
+                    case @"C:\EmbeddedSourceNoSequencePoints.cs":
+                        Assert.Equal(0, uncompressedSize);
+                        expectedContent = TestResources.EmbeddedSource.NoSequencePoints;
+                        break;
+
+                    case @"C:\EmbeddedSourceNoCode.cs":
+                        Assert.Equal(0, uncompressedSize);
+                        expectedContent = TestResources.EmbeddedSource.NoCode;
+                        break;
+
+                    default:
+                        throw ExceptionUtilities.Unreachable;
                 }
 
                 AssertEx.Equal(expectedContent, Decode(blob, uncompressedSize));
