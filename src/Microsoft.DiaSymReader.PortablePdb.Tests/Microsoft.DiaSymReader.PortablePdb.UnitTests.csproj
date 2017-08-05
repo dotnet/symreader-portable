@@ -79,6 +79,12 @@
     <EmbeddedResource Include="Resources\EmbeddedSourceSmall.cs">
       <LogicalName>EmbeddedSourceSmall.cs</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EmbeddedSourceNoSequencePoints.cs">
+      <LogicalName>EmbeddedSourceNoSequencePoints.cs</LogicalName>
+    </EmbeddedResource>
+      <EmbeddedResource Include="Resources\EmbeddedSourceNoCode.cs">
+          <LogicalName>EmbeddedSourceNoCode.cs</LogicalName>
+      </EmbeddedResource>
     <EmbeddedResource Include="Resources\EmbeddedSource.dll">
       <LogicalName>EmbeddedSource.dll</LogicalName>
     </EmbeddedResource>
