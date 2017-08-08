@@ -10,7 +10,7 @@
     <RoslynToolsMicrosoftRepoToolsetVersion>1.0.0-alpha30</RoslynToolsMicrosoftRepoToolsetVersion>
 
     <!-- symreader -->
-    <MicrosoftDiaSymReaderVersion>1.2.0-beta1-62005-01</MicrosoftDiaSymReaderVersion>
+    <MicrosoftDiaSymReaderVersion>1.2.0-beta1-62008-01</MicrosoftDiaSymReaderVersion>
     <MicrosoftDiaSymReaderNativeVersion>1.7.0-private-25604</MicrosoftDiaSymReaderNativeVersion>
 
     <!-- CoreFX -->
