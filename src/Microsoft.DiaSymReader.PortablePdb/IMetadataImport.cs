@@ -2,58 +2,11 @@
 
 using System;
 using System.Reflection;
-using System.Reflection.Metadata;
-using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Microsoft.DiaSymReader.PortablePdb
 {
-    internal static class IMetadataImportExtensions
-    {
-        public static string GetQualifiedTypeName(this IMetadataImport importer, Handle typeDefOrRef)
-        {
-            string qualifiedName;
-            if (typeDefOrRef.Kind == HandleKind.TypeDefinition)
-            {
-                TypeAttributes attributes;
-                int baseType;
-                importer.GetTypeDefProps(MetadataTokens.GetToken(typeDefOrRef), out qualifiedName, out attributes, out baseType);
-            }
-            else if (typeDefOrRef.Kind == HandleKind.TypeReference)
-            {
-                int resolutionScope;
-                importer.GetTypeRefProps(MetadataTokens.GetToken(typeDefOrRef), out resolutionScope, out qualifiedName);
-            }
-            else
-            {
-                qualifiedName = null;
-            }
-
-            return qualifiedName;
-        }
-
-        public static void GetTypeDefProps(this IMetadataImport importer, int typeDefinition, out string qualifiedName, out TypeAttributes attributes, out int baseType)
-        {
-            int bufferLength;
-            importer.GetTypeDefProps(typeDefinition, null, 0, out bufferLength, out attributes, out baseType);
-
-            var buffer = new StringBuilder(bufferLength);
-            importer.GetTypeDefProps(typeDefinition, buffer, buffer.Capacity, out bufferLength, out attributes, out baseType);
-            qualifiedName = buffer.ToString();
-        }
-
-        public static void GetTypeRefProps(this IMetadataImport importer, int typeReference, out int resolutionScope, out string qualifiedName)
-        {
-            int bufferLength;
-            importer.GetTypeRefProps(typeReference, out resolutionScope, null, 0, out bufferLength);
-
-            var buffer = new StringBuilder(bufferLength);
-            importer.GetTypeRefProps(typeReference, out resolutionScope, buffer, buffer.Capacity, out bufferLength);
-            qualifiedName = buffer.ToString();
-        }
-    }
-
     [ComVisible(false)]
     [ComImport]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]

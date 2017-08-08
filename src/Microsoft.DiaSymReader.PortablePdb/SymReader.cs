@@ -161,7 +161,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             return _pdbReaders;
         }
 
-        internal IMetadataImport GetMetadataImport()
+        internal MetadataImport GetMetadataImport()
         {
             if (IsDisposed)
             {

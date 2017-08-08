@@ -11,12 +11,15 @@ using System.Text;
 
 namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 {
-    internal sealed class SymMetadataImport : IMetadataImport, IDisposable
+    /// <summary>
+    /// Used to test <see cref="IMetadataImport"/>.
+    /// </summary>
+    internal sealed class TestIMetadataImport : IMetadataImport, IDisposable
     {
         private readonly PEReader _peReader;
         public readonly MetadataReader MetadataReader;
 
-        public SymMetadataImport(Stream peStream)
+        public TestIMetadataImport(Stream peStream)
         {
             _peReader = new PEReader(peStream);
             MetadataReader = _peReader.GetMetadataReader();
