@@ -40,7 +40,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         [Fact]
         public void GetReaderForFile_NextToPE()
         {
-            var importer = new SymMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
+            var importer = new TestIMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
 
             string tempDir = Path.Combine(Path.GetDirectoryName(Path.GetTempFileName()), Guid.NewGuid().ToString());
             string peFilePath = Path.Combine(tempDir, "Documents.dll");
@@ -70,7 +70,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         [Fact]
         public void GetReaderForFile_SearchPaths()
         {
-            var importer = new SymMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
+            var importer = new TestIMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
 
             string tempDir = Path.Combine(Path.GetDirectoryName(Path.GetTempFileName()), Guid.NewGuid().ToString());
             string searchDir = Path.Combine(tempDir, "Dir");
@@ -102,7 +102,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         [Fact]
         public void GetReaderForFile_SearchPaths_SubDir1()
         {
-            var importer = new SymMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
+            var importer = new TestIMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
 
             string tempDir = Path.Combine(Path.GetDirectoryName(Path.GetTempFileName()), Guid.NewGuid().ToString());
             string searchDir = Path.Combine(tempDir, "Dir");
@@ -134,7 +134,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         [Fact]
         public void GetReaderForFile_SearchPaths_SubDir2()
         {
-            var importer = new SymMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
+            var importer = new TestIMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
 
             string tempDir = Path.Combine(Path.GetDirectoryName(Path.GetTempFileName()), Guid.NewGuid().ToString());
             string searchDir = Path.Combine(tempDir, "Dir");
@@ -168,7 +168,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         [Fact]
         public void GetReaderForFile_SkipNative1()
         {
-            var importer = new SymMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
+            var importer = new TestIMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
 
             string tempDir = Path.Combine(Path.GetDirectoryName(Path.GetTempFileName()), Guid.NewGuid().ToString());
             string searchDir = Path.Combine(tempDir, "Dir");
@@ -203,7 +203,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         [Fact]
         public void GetReaderForFile_SkipNative2()
         {
-            var importer = new SymMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
+            var importer = new TestIMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
 
             string tempDir = Path.Combine(Path.GetDirectoryName(Path.GetTempFileName()), Guid.NewGuid().ToString());
             string searchDir1 = Path.Combine(tempDir, "Dir1");
@@ -239,7 +239,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         [Fact]
         public void GetReaderForFile_SkipNonMatching()
         {
-            var importer = new SymMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
+            var importer = new TestIMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
 
             string tempDir = Path.Combine(Path.GetDirectoryName(Path.GetTempFileName()), Guid.NewGuid().ToString());
             string searchDir = Path.Combine(tempDir, "Dir");
@@ -274,7 +274,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         [Fact]
         public void GetReaderForFile_MatchingNotFound()
         {
-            var importer = new SymMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
+            var importer = new TestIMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
 
             string tempDir = Path.Combine(Path.GetDirectoryName(Path.GetTempFileName()), Guid.NewGuid().ToString());
             string searchDir = Path.Combine(tempDir, "Dir");
@@ -319,7 +319,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         [Fact]
         public void GetReaderFromStream()
         {
-            var importer = new SymMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
+            var importer = new TestIMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
             var stream = new MemoryStream(TestResources.Documents.PortablePdb);
 
             ISymUnmanagedReader symReader = SymBinder.GetReaderFromStream(stream, importer);
@@ -337,7 +337,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         [Fact]
         public void GetReaderFromStream_PortableEmbedded()
         {
-            var importer = new SymMetadataImport(new MemoryStream(TestResources.MiscEmbedded.Dll));
+            var importer = new TestIMetadataImport(new MemoryStream(TestResources.MiscEmbedded.Dll));
             var peStream = new MemoryStream(TestResources.MiscEmbedded.Dll);
             var peReader = new PEReader(peStream);
 
@@ -399,7 +399,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
                 new TestMetadataProvider(() =>
                 {
                     importCreated = true;
-                    return new SymMetadataImport(new MemoryStream(TestResources.Scopes.PortableDll));
+                    return new TestIMetadataImport(new MemoryStream(TestResources.Scopes.PortableDll));
                 }));
 
             int count;

@@ -44,6 +44,8 @@ namespace Microsoft.DiaSymReader.PortablePdb
         /// in the PE file.
         /// If a searchPath is provided, those directories will always be searched.
         /// </remarks>
+        /// <exception cref="ArgumentException"><paramref name="fileName"/> is null or empty.</exception>
+        /// <exception cref="ArgumentException"><paramref name="metadataImport"/> does not implement IMetadataImport interface.</exception>
         [PreserveSig]
         public int GetReaderForFile2(
             [MarshalAs(UnmanagedType.Interface)]object metadataImport,
@@ -55,11 +57,11 @@ namespace Microsoft.DiaSymReader.PortablePdb
             reader = null;
             try
             {
-                var mdImport = metadataImport as IMetadataImport;
-                if (mdImport == null || string.IsNullOrEmpty(fileName))
-                {
-                    return HResult.E_INVALIDARG;
-                }
+                if (string.IsNullOrEmpty(fileName))
+                    throw new ArgumentException(null, nameof(fileName));
+
+                var mdImport = MetadataImport.FromObject(metadataImport) ?? 
+                    throw new ArgumentException(null, nameof(metadataImport));
 
                 // See DIA: FLocatePdbDefault, FLocateCvFilePathHelper, FLocatePdbSymsrv, FLocateCvFilePathHelper
                 //
@@ -310,12 +312,8 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
             try
             {
-                IStream comStream = stream as IStream;
-                var mdImport = metadataImport as IMetadataImport;
-                if (mdImport == null || comStream == null)
-                {
-                    return HResult.E_INVALIDARG;
-                }
+                var comStream = stream as IStream ?? throw new ArgumentNullException(null, nameof(stream));
+                var mdImport = MetadataImport.FromObject(metadataImport) ?? throw new ArgumentException(null, nameof(metadataImport));
 
                 reader = SymReader.CreateFromStream(comStream, new LazyMetadataImport(mdImport));
                 return HResult.S_OK;
@@ -335,8 +333,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             [In, MarshalAs(UnmanagedType.Interface)] object callback,
             [MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedReader reader)
         {
-            reader = null;
-            return HResult.E_NOTIMPL;
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -361,11 +358,11 @@ namespace Microsoft.DiaSymReader.PortablePdb
             [MarshalAs(UnmanagedType.LPWStr)]string pdbFilePath,
             [MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedReader reader)
         {
-            if (metadataImportProvider == null || string.IsNullOrEmpty(pdbFilePath))
-            {
-                reader = null;
-                return HResult.E_INVALIDARG;
-            }
+            if (metadataImportProvider == null)
+                throw new ArgumentException(null, nameof(metadataImportProvider));
+
+            if (string.IsNullOrEmpty(pdbFilePath))
+                throw new ArgumentException(null, nameof(pdbFilePath));
 
             reader = SymReader.CreateFromFile(pdbFilePath, new LazyMetadataImport(metadataImportProvider));
             return HResult.S_OK;
@@ -381,24 +378,19 @@ namespace Microsoft.DiaSymReader.PortablePdb
         /// </param>
         /// <param name="stream">PDB stream. The implementation supports Portable PDB and Embedded Portable PDB formats.</param>
         /// <param name="reader">The new reader instance.</param>
-        /// <returns>
-        /// E_INVALIDARG
-        ///   <paramref name="metadataImportProvider"/> is null, or
-        ///   <paramref name="stream"/> is null.
-        /// Another error code describing failure to open the file.
-        /// </returns>
+        /// <exception cref="ArgumentException"><paramref name="metadataImportProvider"/> is null</exception>
+        /// <exception cref="ArgumentException"><paramref name="stream"/> is null</exception>
         [PreserveSig]
         public int GetReaderFromPdbStream(
             [MarshalAs(UnmanagedType.Interface)]IMetadataImportProvider metadataImportProvider,
             [MarshalAs(UnmanagedType.Interface)]object stream,
             [MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedReader reader)
         {
-            IStream comStream = stream as IStream;
-            if (metadataImportProvider == null || comStream == null)
-            {
-                reader = null;
-                return HResult.E_INVALIDARG;
-            }
+            var comStream = stream as IStream ?? 
+                throw new ArgumentException(null, nameof(stream));
+
+            if (metadataImportProvider == null)
+                throw new ArgumentException(null, nameof(metadataImportProvider));
 
             reader = SymReader.CreateFromStream(comStream, new LazyMetadataImport(metadataImportProvider));
             return HResult.S_OK;

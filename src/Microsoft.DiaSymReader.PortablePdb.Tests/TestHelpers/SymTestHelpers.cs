@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
-using System.Runtime.InteropServices;
 using Roslyn.Test.Utilities;
 using Xunit;
 
@@ -14,57 +13,29 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 {
     internal static class SymTestHelpers
     {
-        [DefaultDllImportSearchPaths(DllImportSearchPath.AssemblyDirectory)]
-        [DllImport("Microsoft.DiaSymReader.Native.x86.dll", EntryPoint = "CreateSymReader")]
-        private extern static void CreateSymReader32(ref Guid id, [MarshalAs(UnmanagedType.IUnknown)]out object symReader);
-
-        [DefaultDllImportSearchPaths(DllImportSearchPath.AssemblyDirectory)]
-        [DllImport("Microsoft.DiaSymReader.Native.amd64.dll", EntryPoint = "CreateSymReader")]
-        private extern static void CreateSymReader64(ref Guid id, [MarshalAs(UnmanagedType.IUnknown)]out object symReader);
-
-        private static ISymUnmanagedReader5 CreateNativeSymReader(Stream pdbStream, object metadataImporter)
-        {
-            object symReader = null;
-
-            var guid = default(Guid);
-            if (IntPtr.Size == 4)
-            {
-                CreateSymReader32(ref guid, out symReader);
-            }
-            else
-            {
-                CreateSymReader64(ref guid, out symReader);
-            }
-
-            var reader = (ISymUnmanagedReader5)symReader;
-            reader.Initialize(pdbStream, metadataImporter);
-            return reader;
-        }
-
-        private static ISymUnmanagedReader5 CreatePortableSymReader(Stream pdbStream, object metadataImporter)
-        {
-            return (ISymUnmanagedReader5)new SymBinder().GetReaderFromStream(pdbStream, metadataImporter);
-        }
-
-        public static ISymUnmanagedReader5 CreateReader(Stream pdbStream, object metadataImporter)
+        public static ISymUnmanagedReader5 CreateReader(Stream pdbStream, Stream peStream)
         {
             pdbStream.Position = 0;
             bool isPortable = pdbStream.ReadByte() == 'B' && pdbStream.ReadByte() == 'S' && pdbStream.ReadByte() == 'J' && pdbStream.ReadByte() == 'B';
             pdbStream.Position = 0;
 
+            var metadataProvider = new SymMetadataProvider(peStream);
+
             if (isPortable)
             {
-                return CreatePortableSymReader(pdbStream, metadataImporter);
+                return (ISymUnmanagedReader5)new SymBinder().GetReaderFromStream(
+                    pdbStream, 
+                    SymUnmanagedReaderFactory.CreateSymReaderMetadataImport(metadataProvider));
             }
             else
             {
-                return CreateNativeSymReader(pdbStream, metadataImporter);
+                return SymUnmanagedReaderFactory.CreateReader(pdbStream, metadataProvider);
             }
         }
 
         public static ISymUnmanagedReader5 CreateSymReaderFromResource(TestResource artifacts)
         {
-            return CreateReader(new MemoryStream(artifacts.Pdb), metadataImporter: new SymMetadataImport(new MemoryStream(artifacts.PE)));
+            return CreateReader(new MemoryStream(artifacts.Pdb), new MemoryStream(artifacts.PE));
         }
 
         public static void UpdateSymReaderFromResource(ISymUnmanagedReader symReader, TestResource artifacts, SymUnmanagedLineDelta[] lineDeltas = null)
@@ -79,7 +50,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         
         public static ISymUnmanagedReader5 CreateSymReaderFromEmbeddedPortablePdb(byte[] peImage)
         {
-            var importer = new SymMetadataImport(new MemoryStream(peImage));
+            var importer = new TestIMetadataImport(new MemoryStream(peImage));
             var peStream = new MemoryStream(peImage);
             var peReader = new PEReader(peStream);
 
