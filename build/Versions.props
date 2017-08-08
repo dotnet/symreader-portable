@@ -6,7 +6,7 @@
     <PreReleaseVersionLabel>beta1</PreReleaseVersionLabel>
     
     <!-- Toolset -->
-    <DotNetCliVersion>2.0.0-preview3-006770</DotNetCliVersion>
+    <DotNetCliVersion>2.0.0-preview3-006923</DotNetCliVersion>
     <RoslynToolsMicrosoftRepoToolsetVersion>1.0.0-alpha30</RoslynToolsMicrosoftRepoToolsetVersion>
 
     <!-- symreader -->
