@@ -2,7 +2,7 @@
 <Project>
   <PropertyGroup>
     <!-- This repo version -->
-    <VersionBase>1.3.0</VersionBase>
+    <VersionBase>1.4.0</VersionBase>
     <PreReleaseVersionLabel>beta1</PreReleaseVersionLabel>
     
     <!-- Toolset -->
