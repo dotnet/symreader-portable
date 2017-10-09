@@ -63,7 +63,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
                 }
 
                 qualifiedName.Append(MetadataReader.GetString(typeDef.Name));
-                qualifiedNameLength = qualifiedName.Length;
+                qualifiedName.Length = qualifiedNameLength = Math.Min(qualifiedName.Length, Math.Max(0, qualifiedNameBufferLength - 1));
             }
             else
             {
@@ -97,7 +97,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
                 }
 
                 qualifiedName.Append(MetadataReader.GetString(typeRef.Name));
-                qualifiedNameLength = qualifiedName.Length;
+                qualifiedName.Length = qualifiedNameLength = Math.Min(qualifiedName.Length, Math.Max(0, qualifiedNameBufferLength - 1));
             }
             else
             {

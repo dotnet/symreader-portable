@@ -44,7 +44,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             return true;
         }
 
-        public bool TryGetTypeDefinitionInfo(int typeDefinitionToken, out string namespaceName, out string typeName, out TypeAttributes attributes, out int baseTypeToken)
+        public bool TryGetTypeDefinitionInfo(int typeDefinitionToken, out string namespaceName, out string typeName, out TypeAttributes attributes)
         {
             var handle = (TypeDefinitionHandle)MetadataTokens.Handle(typeDefinitionToken);
             if (handle.IsNil)
@@ -52,7 +52,6 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
                 namespaceName = null;
                 typeName = null;
                 attributes = 0;
-                baseTypeToken = 0;
                 return false;
             }
 
@@ -60,25 +59,22 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             namespaceName = _reader.GetString(typeDefinition.Namespace);
             typeName = _reader.GetString(typeDefinition.Name);
             attributes = typeDefinition.Attributes;
-            baseTypeToken = MetadataTokens.GetToken(typeDefinition.BaseType);
             return true;
         }
 
-        public bool TryGetTypeReferenceInfo(int typeReferenceToken, out string namespaceName, out string typeName, out int resolutionScopeToken)
+        public bool TryGetTypeReferenceInfo(int typeReferenceToken, out string namespaceName, out string typeName)
         {
             var handle = (TypeReferenceHandle)MetadataTokens.Handle(typeReferenceToken);
             if (handle.IsNil)
             {
                 namespaceName = null;
                 typeName = null;
-                resolutionScopeToken = 0;
                 return false;
             }
 
             var typeReference = _reader.GetTypeReference(handle);
             namespaceName = _reader.GetString(typeReference.Namespace);
             typeName = _reader.GetString(typeReference.Name);
-            resolutionScopeToken = MetadataTokens.GetToken(typeReference.ResolutionScope);
             return true;
         }
     }
