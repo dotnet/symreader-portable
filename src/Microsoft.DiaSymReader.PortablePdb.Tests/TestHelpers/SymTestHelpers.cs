@@ -29,7 +29,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             }
             else
             {
-                return SymUnmanagedReaderFactory.CreateReader(pdbStream, metadataProvider);
+                return SymUnmanagedReaderFactory.CreateReader<ISymUnmanagedReader5>(pdbStream, metadataProvider);
             }
         }
 

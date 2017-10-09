@@ -21,11 +21,11 @@ namespace Microsoft.DiaSymReader.PortablePdb
             string qualifiedName;
             if (typeDefOrRef.Kind == HandleKind.TypeDefinition)
             {
-                GetTypeDefProps(MetadataTokens.GetToken(typeDefOrRef), out qualifiedName, out TypeAttributes attributes, out int baseType);
+                GetTypeDefProps(MetadataTokens.GetToken(typeDefOrRef), out qualifiedName);
             }
             else if (typeDefOrRef.Kind == HandleKind.TypeReference)
             {
-                GetTypeRefProps(MetadataTokens.GetToken(typeDefOrRef), out int resolutionScope, out qualifiedName);
+                GetTypeRefProps(MetadataTokens.GetToken(typeDefOrRef), out qualifiedName);
             }
             else
             {
@@ -35,8 +35,8 @@ namespace Microsoft.DiaSymReader.PortablePdb
             return qualifiedName;
         }
 
-        public abstract void GetTypeDefProps(int typeDefinition, out string qualifiedName, out TypeAttributes attributes, out int baseType);
-        public abstract void GetTypeRefProps(int typeReference, out int resolutionScope, out string qualifiedName);
+        public abstract void GetTypeDefProps(int typeDefinition, out string qualifiedName);
+        public abstract void GetTypeRefProps(int typeReference, out string qualifiedName);
 
         public abstract unsafe int GetSigFromToken(int token, out byte* signaturePtr, out int signatureLength);
 
@@ -49,21 +49,21 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 _import = import;
             }
 
-            public override void GetTypeDefProps(int typeDefinition, out string qualifiedName, out TypeAttributes attributes, out int baseType)
+            public override void GetTypeDefProps(int typeDefinition, out string qualifiedName)
             {
-                _import.GetTypeDefProps(typeDefinition, null, 0, out int bufferLength, out attributes, out baseType);
+                _import.GetTypeDefProps(typeDefinition, null, 0, out int nameLength, out _, out _);
 
-                var buffer = new StringBuilder(bufferLength);
-                _import.GetTypeDefProps(typeDefinition, buffer, buffer.Capacity, out bufferLength, out attributes, out baseType);
+                var buffer = new StringBuilder(nameLength + 1);
+                _import.GetTypeDefProps(typeDefinition, buffer, buffer.Capacity, out nameLength, out _, out _);
                 qualifiedName = buffer.ToString();
             }
 
-            public override void GetTypeRefProps(int typeReference, out int resolutionScope, out string qualifiedName)
+            public override void GetTypeRefProps(int typeReference, out string qualifiedName)
             {
-                _import.GetTypeRefProps(typeReference, out resolutionScope, null, 0, out int bufferLength);
+                _import.GetTypeRefProps(typeReference, out _, null, 0, out int nameLength);
 
-                var buffer = new StringBuilder(bufferLength);
-                _import.GetTypeRefProps(typeReference, out resolutionScope, buffer, buffer.Capacity, out bufferLength);
+                var buffer = new StringBuilder(nameLength + 1);
+                _import.GetTypeRefProps(typeReference, out _, buffer, buffer.Capacity, out nameLength);
                 qualifiedName = buffer.ToString();
             }
 
@@ -80,20 +80,20 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 _import = import;
             }
 
-            public unsafe override void GetTypeDefProps(int typeDefinition, out string qualifiedName, out TypeAttributes attributes, out int baseType)
+            public unsafe override void GetTypeDefProps(int typeDefinition, out string qualifiedName)
             {
                 TypeAttributes attr;
                 int bt;
 
-                int bufferLength;
-                Marshal.ThrowExceptionForHR(_import.GetTypeDefProps(typeDefinition, null, 0, &bufferLength, &attr, &bt));
+                int nameLength;
+                Marshal.ThrowExceptionForHR(_import.GetTypeDefProps(typeDefinition, null, 0, &nameLength, &attr, &bt));
 
-                if (bufferLength > 0)
+                if (nameLength > 0)
                 {
-                    string buffer = new string('\0', bufferLength);
+                    string buffer = new string('\0', nameLength);
                     fixed (char* bufferPtr = buffer)
                     {
-                        Marshal.ThrowExceptionForHR(_import.GetTypeDefProps(typeDefinition, bufferPtr, bufferLength, null, null, null));
+                        Marshal.ThrowExceptionForHR(_import.GetTypeDefProps(typeDefinition, bufferPtr, buffer.Length + 1, null, null, null));
                     }
 
                     qualifiedName = buffer;
@@ -102,24 +102,21 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 {
                     qualifiedName = "";
                 }
-
-                attributes = attr;
-                baseType = bt;
             }
 
-            public unsafe override void GetTypeRefProps(int typeReference, out int resolutionScope, out string qualifiedName)
+            public unsafe override void GetTypeRefProps(int typeReference, out string qualifiedName)
             {
                 int rs;
 
-                int bufferLength;
-                Marshal.ThrowExceptionForHR(_import.GetTypeRefProps(typeReference, &rs, null, 0, &bufferLength));
+                int nameLength;
+                Marshal.ThrowExceptionForHR(_import.GetTypeRefProps(typeReference, &rs, null, 0, &nameLength));
 
-                if (bufferLength > 0)
+                if (nameLength > 0)
                 {
-                    string buffer = new string('\0', bufferLength);
+                    string buffer = new string('\0', nameLength);
                     fixed (char* bufferPtr = buffer)
                     {
-                        Marshal.ThrowExceptionForHR(_import.GetTypeRefProps(typeReference, null, bufferPtr, bufferLength, null));
+                        Marshal.ThrowExceptionForHR(_import.GetTypeRefProps(typeReference, null, bufferPtr, buffer.Length + 1, null));
                     }
 
                     qualifiedName = buffer;
@@ -128,8 +125,6 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 {
                     qualifiedName = "";
                 }
-
-                resolutionScope = rs;
             }
 
             public override unsafe int GetSigFromToken(int token, out byte* signaturePtr, out int signatureLength)
