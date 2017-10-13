@@ -4,14 +4,16 @@
     <!-- This repo version -->
     <VersionBase>1.4.0</VersionBase>
     <PreReleaseVersionLabel>beta1</PreReleaseVersionLabel>
+
+    <UsingToolPdbConverter>true</UsingToolPdbConverter>
     
     <!-- Toolset -->
-    <DotNetCliVersion>2.0.0-preview3-006923</DotNetCliVersion>
-    <RoslynToolsMicrosoftRepoToolsetVersion>1.0.0-alpha41</RoslynToolsMicrosoftRepoToolsetVersion>
+    <DotNetCliVersion>2.0.2</DotNetCliVersion>
+    <RoslynToolsMicrosoftRepoToolsetVersion>1.0.0-alpha43</RoslynToolsMicrosoftRepoToolsetVersion>
 
     <!-- symreader -->
-    <MicrosoftDiaSymReaderVersion>1.2.0-beta1-62209-01</MicrosoftDiaSymReaderVersion>
-    <MicrosoftDiaSymReaderNativeVersion>1.7.0-private-25604</MicrosoftDiaSymReaderNativeVersion>
+    <MicrosoftDiaSymReaderVersion>1.2.0-beta1-62213-04</MicrosoftDiaSymReaderVersion>
+    <MicrosoftDiaSymReaderNativeVersion>1.7.0-beta-25631</MicrosoftDiaSymReaderNativeVersion>
 
     <!-- CoreFX -->
     <SystemCollectionsImmutableVersion>1.3.1</SystemCollectionsImmutableVersion>
