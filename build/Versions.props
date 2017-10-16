@@ -12,7 +12,7 @@
     <RoslynToolsMicrosoftRepoToolsetVersion>1.0.0-alpha43</RoslynToolsMicrosoftRepoToolsetVersion>
 
     <!-- symreader -->
-    <MicrosoftDiaSymReaderVersion>1.2.0-beta1-62213-04</MicrosoftDiaSymReaderVersion>
+    <MicrosoftDiaSymReaderVersion>1.2.0</MicrosoftDiaSymReaderVersion>
     <MicrosoftDiaSymReaderNativeVersion>1.7.0-beta-25631</MicrosoftDiaSymReaderNativeVersion>
 
     <!-- CoreFX -->
