@@ -7,7 +7,6 @@
 
   <PropertyGroup>
     <LangVersion>Latest</LangVersion>
-    <DebugType>portable</DebugType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
