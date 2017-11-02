@@ -50,37 +50,31 @@ if ($help -or (($properties -ne $null) -and ($properties.Contains("/help") -or $
   exit 0
 }
 
-$RepoRoot = Join-Path $PSScriptRoot "..\"
-$DotNetRoot = Join-Path $RepoRoot ".dotnet"
-$DotNetExe = Join-Path $DotNetRoot "dotnet.exe"
-$BuildProj = Join-Path $PSScriptRoot "build.proj"
-$DependenciesProps = Join-Path $PSScriptRoot "Versions.props"
-$ArtifactsDir = Join-Path $RepoRoot "artifacts"
-$LogDir = Join-Path (Join-Path $ArtifactsDir $configuration) "log"
-$TempDir = Join-Path (Join-Path $ArtifactsDir $configuration) "tmp"
-
 function Create-Directory([string[]] $path) {
-  if (!(Test-Path -path $path)) {
+  if (!(Test-Path $path)) {
     New-Item -path $path -force -itemType "Directory" | Out-Null
   }
-}
-
-function GetDotNetCliVersion {
-  [xml]$xml = Get-Content $DependenciesProps
-  return $xml.Project.PropertyGroup.DotNetCliVersion
 }
 
 function InstallDotNetCli {
   
   Create-Directory $DotNetRoot
-  $dotnetCliVersion = GetDotNetCliVersion
+  $dotnetCliVersion = $VersionsXml.Project.PropertyGroup.DotNetCliVersion
 
-  $installScript="https://raw.githubusercontent.com/dotnet/cli/release/2.0.0/scripts/obtain/dotnet-install.ps1"
-  Invoke-WebRequest $installScript -OutFile "$DotNetRoot\dotnet-install.ps1"
+  $installScript = "$DotNetRoot\dotnet-install.ps1"
+  if (!(Test-Path $installScript)) { 
+    Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/release/2.0.0/scripts/obtain/dotnet-install.ps1" -OutFile $installScript
+  }
   
-  & "$DotNetRoot\dotnet-install.ps1" -Version $dotnetCliVersion -InstallDir $DotNetRoot
+  & $installScript -Version $dotnetCliVersion -InstallDir $DotNetRoot
   if ($lastExitCode -ne 0) {
     throw "Failed to install dotnet cli (exit code '$lastExitCode')."
+  }
+}
+
+function InstallToolset {
+  if (!(Test-Path $ToolsetBuildProj)) {
+    & $DotNetExe msbuild $ToolsetRestoreProj /t:restore /m /nologo /clp:Summary /warnaserror /v:$verbosity /p:NuGetPackageRoot=$NuGetPackageRoot /p:BaseIntermediateOutputPath=$ToolsetDir /p:ExcludeRestorePackageImports=true
   }
 }
 
@@ -91,8 +85,8 @@ function Build {
   } else {
     $logCmd = ""
   }
-
-  & $DotNetExe msbuild $BuildProj /m /nologo /clp:Summary /warnaserror /v:$verbosity $logCmd /p:Configuration=$configuration /p:SolutionPath=$solution /p:Restore=$restore /p:Build=$build /p:Rebuild=$rebuild /p:Test=$test /p:Sign=$sign /p:Pack=$pack /p:CIBuild=$ci $properties
+ 
+  & $DotNetExe msbuild $ToolsetBuildProj /m /nologo /clp:Summary /warnaserror /v:$verbosity $logCmd /p:SolutionPath=$solution /p:Configuration=$configuration /p:SolutionPath=$solution /p:Restore=$restore /p:Build=$build /p:Rebuild=$rebuild /p:Test=$test /p:Sign=$sign /p:Pack=$pack /p:CIBuild=$ci /p:NuGetPackageRoot=$NuGetPackageRoot $properties
 }
 
 function Stop-Processes() {
@@ -102,6 +96,32 @@ function Stop-Processes() {
 }
 
 try {
+
+  $RepoRoot = Join-Path $PSScriptRoot "..\"
+  $DotNetRoot = Join-Path $RepoRoot ".dotnet"
+  $DotNetExe = Join-Path $DotNetRoot "dotnet.exe"
+  $BuildProj = Join-Path $PSScriptRoot "build.proj"
+  $ToolsetRestoreProj = Join-Path $PSScriptRoot "Toolset.proj"
+  $ArtifactsDir = Join-Path $RepoRoot "artifacts"
+  $ToolsetDir = Join-Path $ArtifactsDir "toolset"
+  $LogDir = Join-Path (Join-Path $ArtifactsDir $configuration) "log"
+  $TempDir = Join-Path (Join-Path $ArtifactsDir $configuration) "tmp"
+
+  if ($solution -eq "") {
+    $solution = @(gci(Join-Path $RepoRoot "*.sln"))[0]
+  }
+
+  if ($env:NUGET_PACKAGES -ne $null) {
+    $NuGetPackageRoot = $env:NUGET_PACKAGES.TrimEnd("\") + "\"
+  } else {
+    $NuGetPackageRoot = Join-Path $env:UserProfile ".nuget\packages\"
+  }
+
+  [xml]$VersionsXml = Get-Content(Join-Path $PSScriptRoot "Versions.props")
+
+  $ToolsetVersion = $VersionsXml.Project.PropertyGroup.RoslynToolsMicrosoftRepoToolsetVersion
+  $ToolsetBuildProj = Join-Path $NuGetPackageRoot "RoslynTools.Microsoft.RepoToolset\$ToolsetVersion\tools\Build.proj"
+    
   if ($ci) {
     Create-Directory $TempDir
     $env:TEMP = $TempDir
@@ -110,6 +130,7 @@ try {
 
   if ($restore) {
     InstallDotNetCli
+    InstallToolset
   }
 
   Build
