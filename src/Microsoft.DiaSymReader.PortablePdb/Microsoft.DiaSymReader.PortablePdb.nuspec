@@ -42,13 +42,13 @@
   </metadata>
   <files>
     <file src="Microsoft.DiaSymReader.PortablePdb.dll" target="lib\portable-net45+win8" />
-    <file src="Microsoft.DiaSymReader.PortablePdb.pdb" target="lib\portable-net45+win8" />
+    <file src="Microsoft.DiaSymReader.PortablePdb*.pdb" target="lib\portable-net45+win8" />
     <file src="Microsoft.DiaSymReader.PortablePdb.xml" target="lib\portable-net45+win8" />
     <file src="Microsoft.DiaSymReader.PortablePdb.dll" target="lib\net45" />
-    <file src="Microsoft.DiaSymReader.PortablePdb.pdb" target="lib\net45" />
+    <file src="Microsoft.DiaSymReader.PortablePdb*.pdb" target="lib\net45" />
     <file src="Microsoft.DiaSymReader.PortablePdb.xml" target="lib\net45" />
     <file src="Microsoft.DiaSymReader.PortablePdb.dll" target="lib\netstandard1.1" />
-    <file src="Microsoft.DiaSymReader.PortablePdb.pdb" target="lib\netstandard1.1" />
+    <file src="Microsoft.DiaSymReader.PortablePdb*.pdb" target="lib\netstandard1.1" />
     <file src="Microsoft.DiaSymReader.PortablePdb.xml" target="lib\netstandard1.1" />
   </files>
 </package>
