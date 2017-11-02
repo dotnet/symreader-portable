@@ -548,8 +548,8 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 
             var doc = symReader.GetDocument("Enc1.cs");
             Assert.Equal(0x06000003, GetMethodsFromDocumentPosition(symReader, doc, 17, 1).Single().GetToken());
-            Assert.Equal(0, GetMethodsFromDocumentPosition(symReader, doc, 37, 1).Length);
-            Assert.Equal(0, GetMethodsFromDocumentPosition(symReader, doc, 36, 1).Length);
+            Assert.Empty(GetMethodsFromDocumentPosition(symReader, doc, 37, 1));
+            Assert.Empty(GetMethodsFromDocumentPosition(symReader, doc, 36, 1));
 
             // Gen 1:
 
@@ -558,9 +558,9 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
                 new SymUnmanagedLineDelta(0x06000003, 20)
             });
 
-            Assert.Equal(0, GetMethodsFromDocumentPosition(symReader, doc, 17, 1).Length);
+            Assert.Empty(GetMethodsFromDocumentPosition(symReader, doc, 17, 1));
             Assert.Equal(0x06000003, GetMethodsFromDocumentPosition(symReader, doc, 37, 1).Single().GetToken());
-            Assert.Equal(0, GetMethodsFromDocumentPosition(symReader, doc, 36, 1).Length);
+            Assert.Empty(GetMethodsFromDocumentPosition(symReader, doc, 36, 1));
 
             // Gen 2:
 
@@ -569,8 +569,8 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
                 new SymUnmanagedLineDelta(0x06000003, -1)
             });
 
-            Assert.Equal(0, GetMethodsFromDocumentPosition(symReader, doc, 17, 1).Length);
-            Assert.Equal(0, GetMethodsFromDocumentPosition(symReader, doc, 37, 1).Length);
+            Assert.Empty(GetMethodsFromDocumentPosition(symReader, doc, 17, 1));
+            Assert.Empty(GetMethodsFromDocumentPosition(symReader, doc, 37, 1));
             Assert.Equal(0x06000003, GetMethodsFromDocumentPosition(symReader, doc, 36, 1).Single().GetToken());
         }
 
