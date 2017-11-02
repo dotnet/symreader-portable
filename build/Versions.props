@@ -6,10 +6,10 @@
     <PreReleaseVersionLabel>beta</PreReleaseVersionLabel>
 
     <UsingToolPdbConverter>true</UsingToolPdbConverter>
-    
+
     <!-- Toolset -->
     <DotNetCliVersion>2.0.2</DotNetCliVersion>
-    <RoslynToolsMicrosoftRepoToolsetVersion>1.0.0-alpha43</RoslynToolsMicrosoftRepoToolsetVersion>
+    <RoslynToolsMicrosoftRepoToolsetVersion>1.0.0-alpha50</RoslynToolsMicrosoftRepoToolsetVersion>
 
     <!-- symreader -->
     <MicrosoftDiaSymReaderVersion>1.2.0</MicrosoftDiaSymReaderVersion>

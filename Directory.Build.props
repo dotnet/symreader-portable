@@ -6,7 +6,7 @@
   <PropertyGroup>
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
     
-    <RepoRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\'))</RepoRoot>
+    <RepoRoot>$(MSBuildThisFileDirectory)</RepoRoot>
     <SignToolDataPath>$(RepoRoot)build\SignToolData.json</SignToolDataPath>
     <VersionsPropsPath>$(RepoRoot)build\Versions.props</VersionsPropsPath>
     <RepoToolsetDir>$(NuGetPackageRoot)RoslynTools.Microsoft.RepoToolset\$(RoslynToolsMicrosoftRepoToolsetVersion)\tools\</RepoToolsetDir>

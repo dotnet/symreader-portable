@@ -6,19 +6,14 @@
   <Import Project="$(RepoToolsetDir)Settings.props" />
 
   <PropertyGroup>
-    <!-- Assuming assembly reference ... used by ... matches identity ..., you may need to supply runtime policy -->
-    <NoWarn>$(NoWarn);1702</NoWarn>
-    
-    <XUnitConfigurationFile>Default</XUnitConfigurationFile>
+    <LangVersion>Latest</LangVersion>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <DebugType>portable</DebugType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <DebugType>portable</DebugType>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
   </PropertyGroup>
 </Project>
