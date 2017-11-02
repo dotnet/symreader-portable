@@ -2,8 +2,8 @@
 <Project>
   <PropertyGroup>
     <!-- This repo version -->
-    <VersionBase>1.4.0</VersionBase>
-    <PreReleaseVersionLabel></PreReleaseVersionLabel>
+    <VersionBase>1.5.0</VersionBase>
+    <PreReleaseVersionLabel>beta</PreReleaseVersionLabel>
 
     <UsingToolPdbConverter>true</UsingToolPdbConverter>
     
