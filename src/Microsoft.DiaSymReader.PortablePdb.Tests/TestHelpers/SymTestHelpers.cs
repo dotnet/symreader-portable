@@ -322,7 +322,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
                 if (hr != HResult.S_OK)
                 {
                     Assert.Equal(HResult.E_FAIL, hr);
-                    Assert.Equal(0, allMethodTokens.Length);
+                    Assert.Empty(allMethodTokens);
                 }
                 else
                 {
