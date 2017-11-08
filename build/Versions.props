@@ -5,11 +5,9 @@
     <VersionBase>1.5.0</VersionBase>
     <PreReleaseVersionLabel>beta</PreReleaseVersionLabel>
 
-    <UsingToolPdbConverter>true</UsingToolPdbConverter>
-
     <!-- Toolset -->
     <DotNetCliVersion>2.0.2</DotNetCliVersion>
-    <RoslynToolsMicrosoftRepoToolsetVersion>1.0.0-alpha50</RoslynToolsMicrosoftRepoToolsetVersion>
+    <RoslynToolsMicrosoftRepoToolsetVersion>1.0.0-alpha52</RoslynToolsMicrosoftRepoToolsetVersion>
 
     <!-- symreader -->
     <MicrosoftDiaSymReaderVersion>1.2.0</MicrosoftDiaSymReaderVersion>
@@ -34,4 +32,9 @@
     <SystemTextEncodingVersion>4.3.0</SystemTextEncodingVersion>
     <SystemThreadingVersion>4.3.0</SystemThreadingVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <RepoRestoreSources Include="https://dotnet.myget.org/F/symreader/api/v3/index.json" />
+    <RepoRestoreSources Include="https://dotnet.myget.org/F/symreader-native/api/v3/index.json" />
+  </ItemGroup>
 </Project>
