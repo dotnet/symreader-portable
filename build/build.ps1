@@ -56,10 +56,20 @@ function Create-Directory([string[]] $path) {
   }
 }
 
+function GetVersion([string] $name) {
+  foreach ($propertyGroup in $VersionsXml.Project.PropertyGroup) {
+    if (Get-Member -inputObject $propertyGroup -name $name) {
+        return $propertyGroup.$name
+    }
+  }
+
+  throw "Failed to find $name in Versions.props"
+}
+
 function InstallDotNetCli {
   
   Create-Directory $DotNetRoot
-  $dotnetCliVersion = $VersionsXml.Project.PropertyGroup.DotNetCliVersion
+  $dotnetCliVersion = GetVersion("DotNetCliVersion")
 
   $installScript = "$DotNetRoot\dotnet-install.ps1"
   if (!(Test-Path $installScript)) { 
@@ -118,7 +128,7 @@ try {
     $NuGetPackageRoot = Join-Path $env:UserProfile ".nuget\packages\"
   }
 
-  $ToolsetVersion = $VersionsXml.Project.PropertyGroup.RoslynToolsMicrosoftRepoToolsetVersion
+  $ToolsetVersion = GetVersion("RoslynToolsMicrosoftRepoToolsetVersion")
   $ToolsetBuildProj = Join-Path $NuGetPackageRoot "RoslynTools.Microsoft.RepoToolset\$ToolsetVersion\tools\Build.proj"
 
   if ($ci) {
