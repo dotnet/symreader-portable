@@ -7,7 +7,7 @@
 
     <!-- Toolset -->
     <DotNetCliVersion>2.0.2</DotNetCliVersion>
-    <RoslynToolsMicrosoftRepoToolsetVersion>1.0.0-alpha53</RoslynToolsMicrosoftRepoToolsetVersion>
+    <RoslynToolsMicrosoftRepoToolsetVersion>1.0.0-alpha54</RoslynToolsMicrosoftRepoToolsetVersion>
 
     <!-- symreader -->
     <MicrosoftDiaSymReaderVersion>1.2.0</MicrosoftDiaSymReaderVersion>
@@ -33,8 +33,11 @@
     <SystemThreadingVersion>4.3.0</SystemThreadingVersion>
   </PropertyGroup>
 
-  <ItemGroup>
-    <RepoRestoreSources Include="https://dotnet.myget.org/F/symreader/api/v3/index.json" />
-    <RepoRestoreSources Include="https://dotnet.myget.org/F/symreader-native/api/v3/index.json" />
-  </ItemGroup>
+  <PropertyGroup>
+    <RestoreSources>
+      $(RestoreSources);
+      https://dotnet.myget.org/F/symreader/api/v3/index.json;
+      https://dotnet.myget.org/F/symreader-native/api/v3/index.json
+    </RestoreSources>
+  </PropertyGroup>
 </Project>
