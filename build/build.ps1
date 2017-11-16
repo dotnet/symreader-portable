@@ -88,6 +88,14 @@ function InstallToolset {
   }
 }
 
+function InstallVersionOverrides {  
+  if ($env:PB_PackageVersionPropsUrl -ne $null) {
+    Create-Directory $ToolsetDir
+    Write-Host "Downloading $env:PB_PackageVersionPropsUrl ..."
+    Invoke-WebRequest $env:PB_PackageVersionPropsUrl -OutFile "$ToolsetDir\PackageVersionOverrides.props"
+  }
+}
+
 function Build {
   if ($ci -or $log) {
     Create-Directory($logDir)
@@ -138,6 +146,7 @@ try {
   }
 
   if ($restore) {
+    InstallVersionOverrides
     InstallDotNetCli
     InstallToolset
   }
