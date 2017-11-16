@@ -6,6 +6,13 @@
       "values": [
         "bin/Microsoft.DiaSymReader.PortablePdb/netstandard1.1/Microsoft.DiaSymReader.PortablePdb.dll"
       ]
+    },
+    {
+      "certificate": null,
+      "strongName": null,
+      "values": [
+        "packages/*.nupkg"
+      ]
     }
   ]
 }
