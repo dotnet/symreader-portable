@@ -136,8 +136,8 @@ try {
     $NuGetPackageRoot = Join-Path $env:UserProfile ".nuget\packages\"
   }
 
-  $ToolsetVersion = GetVersion("RoslynToolsMicrosoftRepoToolsetVersion")
-  $ToolsetBuildProj = Join-Path $NuGetPackageRoot "RoslynTools.Microsoft.RepoToolset\$ToolsetVersion\tools\Build.proj"
+  $ToolsetVersion = GetVersion("RoslynToolsRepoToolsetVersion")
+  $ToolsetBuildProj = Join-Path $NuGetPackageRoot "RoslynTools.RepoToolset\$ToolsetVersion\tools\Build.proj"
 
   if ($ci) {
     Create-Directory $TempDir
