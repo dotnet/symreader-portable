@@ -3,9 +3,38 @@
   <PropertyGroup>
     <TargetFramework>netstandard1.1</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!--
+      Pack task is not capable of generating nupkg with bakcward compatible targets.
+      Hence we need to use manually written nuspec with version variables substituted.
+
+      See https://github.com/NuGet/Home/issues/4461 and
+      https://github.com/NuGet/Home/wiki/Adding-nuget-pack-as-a-msbuild-target#packing-using-a-nuspec.
+    -->
     <IsPackable>true</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
+    <NuspecBasePath>$(OutputPath)</NuspecBasePath>
+    <NuspecProperties>
+      version=$(Version);
+      licenseUrl=$(PackageLicenseUrl);
+      repoUrl=$(RepositoryUrl);
+      copyright=$(Copyright);
+      MicrosoftDiaSymReaderVersion=$(MicrosoftDiaSymReaderVersion);
+      SystemCollectionsVersion=$(SystemCollectionsVersion);
+      SystemCollectionsImmutableVersion=$(SystemCollectionsImmutableVersion);
+      SystemDiagnosticsDebugVersion=$(SystemDiagnosticsDebugVersion);
+      SystemGlobalizationVersion=$(SystemGlobalizationVersion);
+      SystemIOVersion=$(SystemIOVersion);
+      SystemLinqVersion=$(SystemLinqVersion);
+      SystemReflectionVersion=$(SystemReflectionVersion);
+      SystemReflectionMetadataVersion=$(SystemReflectionMetadataVersion);
+      SystemReflectionPrimitivesVersion=$(SystemReflectionPrimitivesVersion);
+      SystemRuntimeVersion=$(SystemRuntimeVersion);
+      SystemRuntimeExtensionsVersion=$(SystemRuntimeExtensionsVersion);
+      SystemRuntimeInteropServicesVersion=$(SystemRuntimeInteropServicesVersion);
+      SystemTextEncodingVersion=$(SystemTextEncodingVersion);
+      SystemThreadingVersion=$(SystemThreadingVersion);  
+    </NuspecProperties>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.DiaSymReader" Version="$(MicrosoftDiaSymReaderVersion)" />

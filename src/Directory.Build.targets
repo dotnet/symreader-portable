@@ -2,6 +2,4 @@
 <Project>
   <!-- This file is imported by all projects at the end of the project files -->
   <Import Project="$(RepoToolsetDir)Imports.targets" />
-  <!-- Custom nuspec file support --> 
-  <Import Project="$(RepoToolsetDir)GenerateNuspecProperties.targets" />  
 </Project>
