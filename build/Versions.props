@@ -6,8 +6,8 @@
     <PreReleaseVersionLabel>beta</PreReleaseVersionLabel>
 
     <!-- Toolset -->
+    <RoslynToolsRepoToolsetVersion>1.0.0-beta-62412-03</RoslynToolsRepoToolsetVersion>
     <DotNetCliVersion>2.0.2</DotNetCliVersion>
-    <RoslynToolsRepoToolsetVersion>1.0.0-beta-62327-02</RoslynToolsRepoToolsetVersion>
 
     <!-- symreader -->
     <MicrosoftDiaSymReaderVersion>1.2.0</MicrosoftDiaSymReaderVersion>
