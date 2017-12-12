@@ -7,8 +7,6 @@
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
     
     <RepoRoot>$(MSBuildThisFileDirectory)</RepoRoot>
-    <SignToolDataPath>$(RepoRoot)build\SignToolData.json</SignToolDataPath>
-    <VersionsPropsPath>$(RepoRoot)build\Versions.props</VersionsPropsPath>
     <RepoToolsetDir>$(NuGetPackageRoot)roslyntools.repotoolset\$(RoslynToolsRepoToolsetVersion)\tools\</RepoToolsetDir>
 
     <RepositoryUrl>https://github.com/dotnet/symreader-portable</RepositoryUrl>
