@@ -56,27 +56,14 @@ function Create-Directory([string[]] $path) {
   }
 }
 
-function GetVersion([string] $name) {
-  foreach ($propertyGroup in $VersionsXml.Project.PropertyGroup) {
-    if (Get-Member -inputObject $propertyGroup -name $name) {
-        return $propertyGroup.$name
-    }
-  }
-
-  throw "Failed to find $name in Versions.props"
-}
-
 function InstallDotNetCli {
-  
-  Create-Directory $DotNetRoot
-  $dotnetCliVersion = GetVersion("DotNetCliVersion")
-
   $installScript = "$DotNetRoot\dotnet-install.ps1"
   if (!(Test-Path $installScript)) { 
-    Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/release/2.0.0/scripts/obtain/dotnet-install.ps1" -OutFile $installScript
+    Create-Directory $DotNetRoot
+    Invoke-WebRequest "https://dot.net/v1/dotnet-install.ps1" -OutFile $installScript
   }
   
-  & $installScript -Version $dotnetCliVersion -InstallDir $DotNetRoot
+  & $installScript -Version $globalJson.sdk.version -InstallDir $DotNetRoot
   if ($lastExitCode -ne 0) {
     throw "Failed to install dotnet cli (exit code '$lastExitCode')."
   }
@@ -84,15 +71,9 @@ function InstallDotNetCli {
 
 function InstallToolset {
   if (!(Test-Path $ToolsetBuildProj)) {
-    & $DotNetExe msbuild $ToolsetRestoreProj /t:restore /m /nologo /clp:Summary /warnaserror /v:$verbosity /p:NuGetPackageRoot=$NuGetPackageRoot /p:BaseIntermediateOutputPath=$ToolsetDir /p:ExcludeRestorePackageImports=true
-  }
-}
-
-function InstallVersionOverrides {  
-  if ($env:PB_PackageVersionPropsUrl -ne $null) {
-    Create-Directory $ToolsetDir
-    Write-Host "Downloading $env:PB_PackageVersionPropsUrl ..."
-    Invoke-WebRequest $env:PB_PackageVersionPropsUrl -OutFile "$ToolsetDir\PackageVersionOverrides.props"
+   $proj = Join-Path $TempDir "_restore.proj"   
+   '<Project Sdk="RoslynTools.RepoToolset"><Target Name="NoOp"/></Project>' | Set-Content $proj
+    & $DotNetExe msbuild $proj /t:NoOp /m /nologo /clp:None /warnaserror /v:$verbosity /p:NuGetPackageRoot=$NuGetPackageRoot /p:__ExcludeSdkImports=true
   }
 }
 
@@ -118,13 +99,10 @@ try {
   $RepoRoot = Join-Path $PSScriptRoot "..\"
   $DotNetRoot = Join-Path $RepoRoot ".dotnet"
   $DotNetExe = Join-Path $DotNetRoot "dotnet.exe"
-  $BuildProj = Join-Path $PSScriptRoot "build.proj"
-  $ToolsetRestoreProj = Join-Path $PSScriptRoot "Toolset.proj"
   $ArtifactsDir = Join-Path $RepoRoot "artifacts"
-  $ToolsetDir = Join-Path $ArtifactsDir "toolset"
   $LogDir = Join-Path (Join-Path $ArtifactsDir $configuration) "log"
   $TempDir = Join-Path (Join-Path $ArtifactsDir $configuration) "tmp"
-  [xml]$VersionsXml = Get-Content(Join-Path $PSScriptRoot "Versions.props")
+  $globalJson = Get-Content(Join-Path $RepoRoot "global.json") | ConvertFrom-Json
 
   if ($solution -eq "") {
     $solution = @(gci(Join-Path $RepoRoot "*.sln"))[0]
@@ -136,17 +114,17 @@ try {
     $NuGetPackageRoot = Join-Path $env:UserProfile ".nuget\packages\"
   }
 
-  $ToolsetVersion = GetVersion("RoslynToolsRepoToolsetVersion")
-  $ToolsetBuildProj = Join-Path $NuGetPackageRoot "RoslynTools.RepoToolset\$ToolsetVersion\tools\Build.proj"
+  $ToolsetVersion = $globalJson.'msbuild-sdks'.'RoslynTools.RepoToolset'
+  $ToolsetBuildProj = Join-Path $NuGetPackageRoot "roslyntools.repotoolset\$ToolsetVersion\tools\Build.proj"
+
+  Create-Directory $TempDir
 
   if ($ci) {
-    Create-Directory $TempDir
     $env:TEMP = $TempDir
     $env:TMP = $TempDir
   }
 
   if ($restore) {
-    InstallVersionOverrides
     InstallDotNetCli
     InstallToolset
   }
