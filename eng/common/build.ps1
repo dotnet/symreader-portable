@@ -96,7 +96,7 @@ function Stop-Processes() {
 
 try {
 
-  $RepoRoot = Join-Path $PSScriptRoot "..\"
+  $RepoRoot = Join-Path $PSScriptRoot "..\..\"
   $DotNetRoot = Join-Path $RepoRoot ".dotnet"
   $DotNetExe = Join-Path $DotNetRoot "dotnet.exe"
   $ArtifactsDir = Join-Path $RepoRoot "artifacts"
