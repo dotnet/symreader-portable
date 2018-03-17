@@ -27,6 +27,8 @@
     <SystemRuntimeInteropServicesVersion>4.3.0</SystemRuntimeInteropServicesVersion>
     <SystemTextEncodingVersion>4.3.0</SystemTextEncodingVersion>
     <SystemThreadingVersion>4.3.0</SystemThreadingVersion>
+
+    <UsingToolNetFrameworkReferenceAssemblies>true</UsingToolNetFrameworkReferenceAssemblies>
   </PropertyGroup>
 
   <PropertyGroup>
