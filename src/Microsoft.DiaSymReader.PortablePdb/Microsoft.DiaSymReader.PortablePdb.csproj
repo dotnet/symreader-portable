@@ -14,27 +14,6 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
     <NuspecBasePath>$(OutputPath)</NuspecBasePath>
-    <NuspecProperties>
-      version=$(Version);
-      licenseUrl=$(PackageLicenseUrl);
-      repoUrl=$(RepositoryUrl);
-      copyright=$(Copyright);
-      MicrosoftDiaSymReaderVersion=$(MicrosoftDiaSymReaderVersion);
-      SystemCollectionsVersion=$(SystemCollectionsVersion);
-      SystemCollectionsImmutableVersion=$(SystemCollectionsImmutableVersion);
-      SystemDiagnosticsDebugVersion=$(SystemDiagnosticsDebugVersion);
-      SystemGlobalizationVersion=$(SystemGlobalizationVersion);
-      SystemIOVersion=$(SystemIOVersion);
-      SystemLinqVersion=$(SystemLinqVersion);
-      SystemReflectionVersion=$(SystemReflectionVersion);
-      SystemReflectionMetadataVersion=$(SystemReflectionMetadataVersion);
-      SystemReflectionPrimitivesVersion=$(SystemReflectionPrimitivesVersion);
-      SystemRuntimeVersion=$(SystemRuntimeVersion);
-      SystemRuntimeExtensionsVersion=$(SystemRuntimeExtensionsVersion);
-      SystemRuntimeInteropServicesVersion=$(SystemRuntimeInteropServicesVersion);
-      SystemTextEncodingVersion=$(SystemTextEncodingVersion);
-      SystemThreadingVersion=$(SystemThreadingVersion);  
-    </NuspecProperties>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.DiaSymReader" Version="$(MicrosoftDiaSymReaderVersion)" />
@@ -44,4 +23,30 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.DiaSymReader.PortablePdb.UnitTests" />
   </ItemGroup>
+
+  <Target Name="_InitializeNuspecProperties" BeforeTargets="GenerateNuspec">
+    <PropertyGroup>
+      <NuspecProperties>
+        version=$(PackageVersion);
+        licenseUrl=$(PackageLicenseUrl);
+        repoUrl=$(RepositoryUrl);
+        copyright=$(Copyright);
+        MicrosoftDiaSymReaderVersion=$(MicrosoftDiaSymReaderVersion);
+        SystemCollectionsVersion=$(SystemCollectionsVersion);
+        SystemCollectionsImmutableVersion=$(SystemCollectionsImmutableVersion);
+        SystemDiagnosticsDebugVersion=$(SystemDiagnosticsDebugVersion);
+        SystemGlobalizationVersion=$(SystemGlobalizationVersion);
+        SystemIOVersion=$(SystemIOVersion);
+        SystemLinqVersion=$(SystemLinqVersion);
+        SystemReflectionVersion=$(SystemReflectionVersion);
+        SystemReflectionMetadataVersion=$(SystemReflectionMetadataVersion);
+        SystemReflectionPrimitivesVersion=$(SystemReflectionPrimitivesVersion);
+        SystemRuntimeVersion=$(SystemRuntimeVersion);
+        SystemRuntimeExtensionsVersion=$(SystemRuntimeExtensionsVersion);
+        SystemRuntimeInteropServicesVersion=$(SystemRuntimeInteropServicesVersion);
+        SystemTextEncodingVersion=$(SystemTextEncodingVersion);
+        SystemThreadingVersion=$(SystemThreadingVersion);
+      </NuspecProperties>
+    </PropertyGroup>
+  </Target>
 </Project>
