@@ -37,7 +37,8 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             public object GetMetadataImport() => _importProvider();
         }
 
-        [Fact]
+        // TODO: Enable on Linux. https://github.com/dotnet/symreader-portable/issues/110
+        [ConditionalFact(typeof(WindowsOnly))]
         public void GetReaderForFile_NextToPE()
         {
             var importer = new TestIMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
@@ -67,7 +68,8 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Directory.Delete(tempDir, recursive: true);
         }
 
-        [Fact]
+        // TODO: Enable on Linux. https://github.com/dotnet/symreader-portable/issues/110
+        [ConditionalFact(typeof(WindowsOnly))]
         public void GetReaderForFile_SearchPaths()
         {
             var importer = new TestIMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
@@ -99,7 +101,8 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Directory.Delete(tempDir, recursive: true);
         }
 
-        [Fact]
+        // TODO: Enable on Linux. https://github.com/dotnet/symreader-portable/issues/110
+        [ConditionalFact(typeof(WindowsOnly))]
         public void GetReaderForFile_SearchPaths_SubDir1()
         {
             var importer = new TestIMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
@@ -131,7 +134,8 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Directory.Delete(tempDir, recursive: true);
         }
 
-        [Fact]
+        // TODO: Enable on Linux. https://github.com/dotnet/symreader-portable/issues/110
+        [ConditionalFact(typeof(WindowsOnly))]
         public void GetReaderForFile_SearchPaths_SubDir2()
         {
             var importer = new TestIMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
@@ -165,7 +169,8 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 
         // TODO: test Environment, Registry (need test hooks)
 
-        [Fact]
+        // TODO: Enable on Linux. https://github.com/dotnet/symreader-portable/issues/110
+        [ConditionalFact(typeof(WindowsOnly))]
         public void GetReaderForFile_SkipNative1()
         {
             var importer = new TestIMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
@@ -200,7 +205,8 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Directory.Delete(tempDir, recursive: true);
         }
 
-        [Fact]
+        // TODO: Enable on Linux. https://github.com/dotnet/symreader-portable/issues/110
+        [ConditionalFact(typeof(WindowsOnly))]
         public void GetReaderForFile_SkipNative2()
         {
             var importer = new TestIMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
@@ -236,7 +242,8 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Directory.Delete(tempDir, recursive: true);
         }
 
-        [Fact]
+        // TODO: Enable on Linux. https://github.com/dotnet/symreader-portable/issues/110
+        [ConditionalFact(typeof(WindowsOnly))]
         public void GetReaderForFile_SkipNonMatching()
         {
             var importer = new TestIMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
