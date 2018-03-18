@@ -67,7 +67,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         private static readonly int[] s_noRange = new int[0];
         private static readonly int s_noOffset = int.MaxValue;
 
-        [Fact]
+        [ConditionalFact(typeof(WindowsOnly))]
         public void GetMethodFromDocumentPosition_UsingDIA_Native()
         {
             var symReader = CreateSymReaderFromResource(TestResources.MethodBoundaries.WindowsDllAndPdb);
@@ -337,7 +337,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             ValidateMethodExtent(symReader, tokenK4, "MethodBoundaries3.cs", 7, 8);
         }
 
-        [Fact]
+        [ConditionalFact(typeof(WindowsOnly))]
         public void GetOffset_Native()
         {
             var symReader = CreateSymReaderFromResource(TestResources.MethodBoundaries.WindowsDllAndPdb);
@@ -788,7 +788,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             }, closestLines);
         }
 
-        [Fact]
+        [ConditionalFact(typeof(WindowsOnly))]
         public void FindClosestLine2_Native()
         {
             var symReader = CreateSymReaderFromResource(TestResources.Documents.DllAndPdb(portable: false));
