@@ -35,7 +35,8 @@
     <RestoreSources>
       $(RestoreSources);
       https://dotnet.myget.org/F/symreader/api/v3/index.json;
-      https://dotnet.myget.org/F/symreader-native/api/v3/index.json
+      https://dotnet.myget.org/F/symreader-native/api/v3/index.json;
+      https://dotnet.myget.org/F/dotnet-core/api/v3/index.json;
     </RestoreSources>
   </PropertyGroup>
 </Project>
