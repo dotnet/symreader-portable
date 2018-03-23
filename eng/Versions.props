@@ -6,12 +6,12 @@
     <PreReleaseVersionLabel>beta</PreReleaseVersionLabel>
 
     <!-- symreader -->
-    <MicrosoftDiaSymReaderVersion>1.3.0-beta-62723-02</MicrosoftDiaSymReaderVersion>
+    <MicrosoftDiaSymReaderVersion>1.2.0</MicrosoftDiaSymReaderVersion>
     <MicrosoftDiaSymReaderNativeVersion>1.7.0</MicrosoftDiaSymReaderNativeVersion>
 
     <!-- CoreFX -->
-    <SystemCollectionsImmutableVersion>1.5.0-preview3-26322-06</SystemCollectionsImmutableVersion>
-    <SystemReflectionMetadataVersion>1.6.0-preview3-26322-06</SystemReflectionMetadataVersion>
+    <SystemCollectionsImmutableVersion>1.3.1</SystemCollectionsImmutableVersion>
+    <SystemReflectionMetadataVersion>1.4.2</SystemReflectionMetadataVersion>
     <SystemValueTupleVersion>4.3.0</SystemValueTupleVersion>
     
     <!-- Needs these to build a custom nuspec -->
@@ -35,8 +35,7 @@
     <RestoreSources>
       $(RestoreSources);
       https://dotnet.myget.org/F/symreader/api/v3/index.json;
-      https://dotnet.myget.org/F/symreader-native/api/v3/index.json;
-      https://dotnet.myget.org/F/dotnet-core/api/v3/index.json;
+      https://dotnet.myget.org/F/symreader-native/api/v3/index.json
     </RestoreSources>
   </PropertyGroup>
 </Project>
