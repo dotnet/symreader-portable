@@ -13,6 +13,7 @@ steps:
   displayName: Install Signing Plugin
   inputs:
     signType: real
+    esrpSigning: true
   condition: and(succeeded(), eq(variables['PB_SignType'], 'real'))
 
 - script: eng\common\CIBuild.cmd 
@@ -27,7 +28,7 @@ steps:
     testResultsFiles: 'artifacts/$(BuildConfiguration)/TestResults/*.xml'
     mergeTestResults: true
     testRunTitle: 'Unit Tests'
-  condition: and(succeeded(), ne(variables['PB_SkipTests'], 'true'))
+  condition: and(succeededOrFailed(), ne(variables['PB_SkipTests'], 'true'))
 
 - task: NuGetPublisher@0
   displayName: Publish NuGet Packages to MyGet
@@ -44,7 +45,6 @@ steps:
     SearchPattern: '**/*.+(dll|exe|pdb)'
     SymbolsFolder: '$(Build.SourcesDirectory)\artifacts\$(BuildConfiguration)\SymStore'
     SkipIndexing: true
-  enabled: false
   condition: and(succeeded(), not(contains(variables['PB_PublishType'], 'blob')))
 
 - task: ms-vscs-artifact.build-tasks.artifactSymbolTask-1.artifactSymbolTask@0
@@ -54,7 +54,6 @@ steps:
     requestName: '$(system.teamProject)/$(Build.DefinitionName)/$(Build.BuildNumber)/$(Build.BuildId)'
     sourcePath: '$(DropRoot)\$(TeamName)\$(Build.DefinitionName)\$(Build.BuildNumber)\Symbols'
     usePat: false
-  enabled: false
   condition: and(succeeded(), not(contains(variables['PB_PublishType'], 'blob')))
 
 - task: CopyPublishBuildArtifacts@1
@@ -69,7 +68,7 @@ steps:
     ArtifactName: '$(Build.BuildNumber)'
     ArtifactType: FilePath
     TargetPath: '$(DropRoot)\$(TeamName)\$(Build.DefinitionName)'
-  condition: and(succeeded(), not(contains(variables['PB_PublishType'], 'blob')))
+  condition: and(succeededOrFailed(), not(contains(variables['PB_PublishType'], 'blob')))
 
 - task: ms-vseng.MicroBuildTasks.521a94ea-9e68-468a-8167-6dcf361ea776.MicroBuildCleanup@1
   displayName: Cleanup
@@ -82,4 +81,4 @@ steps:
     ArtifactName: '$(Build.BuildNumber)'
     publishLocation: FilePath
     TargetPath: '$(DropRoot)\$(TeamName)\$(Build.DefinitionName)'
-  condition: not(contains(variables['PB_PublishType'], 'blob'))
+  condition: and(succeededOrFailed(), not(contains(variables['PB_PublishType'], 'blob')))
