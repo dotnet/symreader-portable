@@ -184,7 +184,7 @@ function InstallDotNetCli {
     fi
   fi
 
-  bash "$dotnet_install_script" --version $dotnet_sdk_version
+  bash "$dotnet_install_script" --version $dotnet_sdk_version --install-dir $dotnet_root
   local lastexitcode=$?
 
   if [[ $lastexitcode != 0 ]]; then
