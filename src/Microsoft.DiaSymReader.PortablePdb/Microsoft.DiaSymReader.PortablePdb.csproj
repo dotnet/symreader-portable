@@ -3,17 +3,21 @@
   <PropertyGroup>
     <TargetFramework>netstandard1.1</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+   
     <!--
-      Pack task is not capable of generating nupkg with bakcward compatible targets.
+      Pack task is not capable of generating nupkg with backward compatible targets.
       Hence we need to use manually written nuspec with version variables substituted.
 
       See https://github.com/NuGet/Home/issues/4461 and
       https://github.com/NuGet/Home/wiki/Adding-nuget-pack-as-a-msbuild-target#packing-using-a-nuspec.
     -->
     <IsPackable>true</IsPackable>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
     <NuspecBasePath>$(OutputPath)</NuspecBasePath>
+
+    <Description>Implementation of Microsoft DiaSymReader interfaces that reads debug information from Portable PDB format.</Description>
+    <PackageTags>DiaSymReader ISymUnmanagedReader Portable PDB COM interop debugging</PackageTags>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.DiaSymReader" Version="$(MicrosoftDiaSymReaderVersion)" />
@@ -24,13 +28,12 @@
     <InternalsVisibleTo Include="Microsoft.DiaSymReader.PortablePdb.UnitTests" />
   </ItemGroup>
 
-  <Target Name="_InitializeNuspecProperties" BeforeTargets="GenerateNuspec">
+  <Target Name="_InitializeNuspecProperties" 
+          BeforeTargets="GenerateNuspec"
+          DependsOnTargets="_InitializeStandardNuspecProperties">
     <PropertyGroup>
       <NuspecProperties>
-        version=$(PackageVersion);
-        licenseUrl=$(PackageLicenseUrl);
-        repoUrl=$(RepositoryUrl);
-        copyright=$(Copyright);
+        $(NuspecProperties);
         MicrosoftDiaSymReaderVersion=$(MicrosoftDiaSymReaderVersion);
         SystemCollectionsVersion=$(SystemCollectionsVersion);
         SystemCollectionsImmutableVersion=$(SystemCollectionsImmutableVersion);
