@@ -9,6 +9,8 @@
 
     <!-- Opt-in repo features -->
     <UsingToolSymbolUploader>true</UsingToolSymbolUploader>
+    <UsingToolNuGetRepack>true</UsingToolNuGetRepack>
+    <UsingToolNetFrameworkReferenceAssemblies>true</UsingToolNetFrameworkReferenceAssemblies>
 
     <!-- symreader -->
     <MicrosoftDiaSymReaderVersion>1.3.0</MicrosoftDiaSymReaderVersion>
@@ -32,8 +34,6 @@
     <SystemRuntimeInteropServicesVersion>4.3.0</SystemRuntimeInteropServicesVersion>
     <SystemTextEncodingVersion>4.3.0</SystemTextEncodingVersion>
     <SystemThreadingVersion>4.3.0</SystemThreadingVersion>
-
-    <UsingToolNetFrameworkReferenceAssemblies>true</UsingToolNetFrameworkReferenceAssemblies>
   </PropertyGroup>
 
   <PropertyGroup>
