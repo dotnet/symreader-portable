@@ -9,6 +9,7 @@
 
     <!-- Opt-in repo features -->
     <UsingToolSymbolUploader>true</UsingToolSymbolUploader>
+    <UsingToolNuGetRepack>true</UsingToolNuGetRepack>
 
     <!-- symreader -->
     <MicrosoftDiaSymReaderVersion>1.3.0-beta-62801-02</MicrosoftDiaSymReaderVersion>
