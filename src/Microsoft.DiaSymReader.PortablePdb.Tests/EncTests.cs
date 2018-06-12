@@ -1554,7 +1554,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Assert.Equal(HResult.E_INVALIDARG, symReader.GetPortableDebugMetadataByVersion(4, out metadata, out size));
         }
 
-        [Fact]
+        [ConditionalFact(typeof(WindowsOnly))]
         public unsafe void GetPortableDebugMetadata_Windows()
         {
             var baselineResources = TestResources.EncMethodExtents.Baseline(portable: false);

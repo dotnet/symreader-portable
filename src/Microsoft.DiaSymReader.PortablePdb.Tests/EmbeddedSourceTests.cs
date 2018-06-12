@@ -16,6 +16,12 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         [Theory, ClassData(typeof(PdbTestData))]
         public void EmbeddedSource(bool portable)
         {
+            // TODO: https://github.com/dotnet/symreader-portable/issues/111
+            if (Path.DirectorySeparatorChar == '/')
+            {
+                return;
+            }
+
             var symReader = CreateSymReaderFromResource(TestResources.EmbeddedSource.DllAndPdb(portable));
 
             foreach (string file in new[] { @"C:\EmbeddedSource.cs", @"C:\EmbeddedSourceSmall.cs", @"C:\EmbeddedSourceNoSequencePoints.cs", @"C:\EmbeddedSourceNoCode.cs" })
