@@ -2,6 +2,7 @@
 
 using Roslyn.Test.Utilities;
 using System;
+using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
@@ -81,6 +82,12 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         [Theory, ClassData(typeof(PdbTestData))]
         public unsafe void GetSourceServerData(bool portable)
         {
+            // TODO: https://github.com/dotnet/symreader-portable/issues/112
+            if (Path.DirectorySeparatorChar == '/')
+            {
+                return;
+            }
+
             var symReader = CreateSymReaderFromResource(TestResources.SourceLink.DllAndPdb(portable));
             Assert.Equal(HResult.S_OK, symReader.GetSourceServerData(out byte* ptr, out int size));
             Assert.Equal(103, size);
@@ -92,7 +99,8 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             AssertEx.Equal(TestResources.SourceLink.Json, actual);
         }
 
-        [Fact]
+        // TODO: https://github.com/dotnet/symreader-portable/issues/112
+        [ConditionalFact(typeof(WindowsOnly))]
         public unsafe void GetSourceServerData_PortableEmbedded()
         {
             var symReader = CreateSymReaderFromEmbeddedPortablePdb(TestResources.SourceLink.EmbeddedDll);

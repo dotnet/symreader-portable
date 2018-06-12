@@ -153,7 +153,7 @@
     </EmbeddedResource>
   </ItemGroup>
   
-  <ItemGroup>
+  <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
     <Content Include="$(NuGetPackageRoot)\Microsoft.DiaSymReader.Native\$(MicrosoftDiaSymReaderNativeVersion)\runtimes\win\native\Microsoft.DiaSymReader.Native.x86.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Visible>false</Visible>
