@@ -1,4 +1,4 @@
-<!-- Copyright (c)  Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information. -->
+<?xml version="1.0" encoding="utf-8"?>
 <Project>
   <PropertyGroup>
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
@@ -6,11 +6,12 @@
     <!-- This repo version -->
     <VersionPrefix>1.6.0</VersionPrefix>
     <PreReleaseVersionLabel>beta</PreReleaseVersionLabel>
+    <SemanticVersioningV1>true</SemanticVersioningV1>
 
     <!-- Opt-in repo features -->
     <UsingToolSymbolUploader>true</UsingToolSymbolUploader>
-    <UsingToolNuGetRepack>true</UsingToolNuGetRepack>
     <UsingToolNetFrameworkReferenceAssemblies>true</UsingToolNetFrameworkReferenceAssemblies>
+    <UsingToolNuGetRepack>true</UsingToolNuGetRepack>
 
     <!-- symreader -->
     <MicrosoftDiaSymReaderVersion>1.3.0</MicrosoftDiaSymReaderVersion>
