@@ -132,13 +132,9 @@ while (($# > 0)); do
   esac
 done
 
-# ReadJson [filename] [json key]
-# Result: Sets 'readjsonvalue' to the value of the provided json key
-# Note: this method may return unexpected results if there are duplicate
-# keys in the json
-function ReadJson {
-  local file=$1
-  local key=$2
+# ReadVersionFromJson [json key]
+function ReadGlobalVersion {
+  local key=$1
 
   local unamestr="$(uname)"
   local sedextended='-r'
@@ -146,11 +142,14 @@ function ReadJson {
     sedextended='-E'
   fi;
 
-  readjsonvalue="$(grep -m 1 "\"$key\"" $file | sed $sedextended 's/^ *//;s/.*: *"//;s/",?//')"
-  if [[ ! "$readjsonvalue" ]]; then
-    echo "Error: Cannot find \"$key\" in $file" >&2;
+  local version="$(grep -m 1 "\"$key\"" $global_json_file | sed $sedextended 's/^ *//;s/.*: *"//;s/",?//')"
+  if [[ ! "$version" ]]; then
+    echo "Error: Cannot find \"$key\" in $global_json_file" >&2;
     ExitWithExitCode 1
   fi;
+
+  # return value
+  echo "$version"
 }
 
 function InitializeDotNetCli {
@@ -165,8 +164,8 @@ function InitializeDotNetCli {
     export DOTNET_INSTALL_DIR="$DotNetCoreSdkDir"
   fi
 
-  ReadJson "$global_json_file" "version"
-  local dotnet_sdk_version="$readjsonvalue"
+  
+  local dotnet_sdk_version=`ReadGlobalVersion "dotnet"`
   local dotnet_root=""
 
   # Use dotnet installation specified in DOTNET_INSTALL_DIR if it contains the required SDK version, 
@@ -220,8 +219,7 @@ function GetDotNetInstallScript {
 }
 
 function InitializeToolset {
-  ReadJson $global_json_file "RoslynTools.RepoToolset"
-  local toolset_version=$readjsonvalue
+  local toolset_version=`ReadGlobalVersion "Microsoft.DotNet.Arcade.Sdk"`
   local toolset_location_file="$toolset_dir/$toolset_version.txt"
 
   if [[ -a "$toolset_location_file" ]]; then
@@ -239,7 +237,7 @@ function InitializeToolset {
   
   local proj="$toolset_dir/restore.proj"
 
-  echo '<Project Sdk="RoslynTools.RepoToolset"/>' > $proj
+  echo '<Project Sdk="Microsoft.DotNet.Arcade.Sdk"/>' > $proj
   "$build_driver" msbuild $proj /t:__WriteToolsetLocation /m /nologo /clp:None /warnaserror /bl:$toolset_restore_log /v:$verbosity /p:__ToolsetLocationOutputFile=$toolset_location_file 
   local lastexitcode=$?
 
