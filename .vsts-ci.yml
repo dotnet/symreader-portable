@@ -29,7 +29,7 @@ steps:
   displayName: Publish Test Results
   inputs:
     testRunner: XUnit
-    testResultsFiles: 'artifacts/$(BuildConfiguration)/TestResults/*.xml'
+    testResultsFiles: 'artifacts/TestResults/$(BuildConfiguration)/*.xml'
     mergeTestResults: true
     testRunTitle: 'Unit Tests'
   condition: and(succeededOrFailed(), ne(variables['PB_SkipTests'], 'true'))
@@ -37,7 +37,7 @@ steps:
 - task: NuGetPublisher@0
   displayName: Publish NuGet Packages to MyGet
   inputs:
-    searchPattern: 'artifacts\$(BuildConfiguration)\packages\Shipping\*.nupkg'
+    searchPattern: 'artifacts\packages\$(BuildConfiguration)\Shipping\*.nupkg'
     connectedServiceName: 'SymReaderPortable NuGet feed'
     nuGetVersion: 4.0.0.2283
   condition: and(succeeded(), not(contains(variables['PB_PublishType'], 'blob')))
@@ -47,11 +47,11 @@ steps:
   inputs:
     CopyRoot: '$(Build.SourcesDirectory)'
     Contents: |
-     artifacts\$(BuildConfiguration)\bin
-     artifacts\$(BuildConfiguration)\log
-     artifacts\$(BuildConfiguration)\TestResults
-     artifacts\$(BuildConfiguration)\SymStore
-     artifacts\$(BuildConfiguration)\packages
+     artifacts\bin\$(BuildConfiguration)
+     artifacts\log\$(BuildConfiguration)
+     artifacts\TestResults\$(BuildConfiguration)
+     artifacts\SymStore\$(BuildConfiguration)
+     artifacts\packages\$(BuildConfiguration)
     ArtifactName: '$(Build.BuildNumber)'
     ArtifactType: FilePath
     TargetPath: '$(DropRoot)\$(TeamName)\$(Build.DefinitionName)'

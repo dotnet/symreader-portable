@@ -4,14 +4,14 @@
       "certificate": "WindowsPhone623",
       "strongName": "MsSharedLib72",
       "values": [
-        "bin/Microsoft.DiaSymReader.PortablePdb/netstandard1.1/Microsoft.DiaSymReader.PortablePdb.dll"
+        "bin/Microsoft.DiaSymReader.PortablePdb/*/netstandard1.1/Microsoft.DiaSymReader.PortablePdb.dll"
       ]
     },
     {
       "certificate": "NuGet",
       "strongName": null,
       "values": [
-        "packages/*/*.nupkg"
+        "packages/*/*/*.nupkg"
       ]
     }
   ]
