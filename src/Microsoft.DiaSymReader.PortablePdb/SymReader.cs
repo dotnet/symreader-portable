@@ -285,7 +285,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         }
 
         /// <summary>
-        /// Get a list of all documents, incuding those added via EnC.
+        /// Get a list of all documents, including those added via EnC.
         /// </summary>
         public int GetDocuments(
             int bufferLength,
