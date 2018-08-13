@@ -83,7 +83,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
                 // TODO: https://github.com/dotnet/symreader-portable/issues/47
                 // We could avoid allocating managed memory here if FromPortablePdbImage accepted non-seekable stream in prefetch mode.
-                // The implemenation in S.R.M. allocates native memory. 
+                // The implementation in S.R.M. allocates native memory. 
                 byte[] decompressed;
                 try
                 {
