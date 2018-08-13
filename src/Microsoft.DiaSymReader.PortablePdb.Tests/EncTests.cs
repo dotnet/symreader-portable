@@ -604,7 +604,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 
             Assert.Equal(HResult.S_OK, symEncUpdate.UpdateMethodLines(0x06000002, new[] { 1 }, 4));
 
-            // metod w/o debug info:
+            // method w/o debug info:
             Assert.Equal(HResult.S_OK, symEncUpdate.UpdateMethodLines(0x06000005, new[] { 1 }, 0));
             Assert.Equal(HResult.E_FAIL, symEncUpdate.UpdateMethodLines(0x06000005, new[] { 1 }, 1));
         }

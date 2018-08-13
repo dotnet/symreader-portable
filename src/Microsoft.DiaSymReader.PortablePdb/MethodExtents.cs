@@ -65,7 +65,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 }
             }
 
-            // patitioned extents will need to be recalculated for all affected documents:
+            // partitioned extents will need to be recalculated for all affected documents:
             lock (_lazyPartitionedExtentsByDocument)
             {
                 foreach (var document in lineDeltasByDocument.Keys)

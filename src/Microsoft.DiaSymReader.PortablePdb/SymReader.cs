@@ -83,7 +83,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
                 // TODO: https://github.com/dotnet/symreader-portable/issues/47
                 // We could avoid allocating managed memory here if FromPortablePdbImage accepted non-seekable stream in prefetch mode.
-                // The implemenation in S.R.M. allocates native memory. 
+                // The implementation in S.R.M. allocates native memory. 
                 byte[] decompressed;
                 try
                 {
@@ -285,7 +285,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         }
 
         /// <summary>
-        /// Get a list of all documents, incuding those added via EnC.
+        /// Get a list of all documents, including those added via EnC.
         /// </summary>
         public int GetDocuments(
             int bufferLength,
@@ -747,7 +747,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         }
 
         /// <summary>
-        /// Checkes whether the id stored in the PDB matches the PDB ID stored in the PE/COFF Debug Directory.
+        /// Checks whether the id stored in the PDB matches the PDB ID stored in the PE/COFF Debug Directory.
         /// </summary>
         [PreserveSig]
         public int MatchesModule(Guid guid, uint stamp, int age, [MarshalAs(UnmanagedType.Bool)]out bool result)
