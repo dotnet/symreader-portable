@@ -8,6 +8,13 @@ root = true
 indent_style = space
 # (Please don't specify an indent_size here; that has too many unintended consequences.)
 
+[*.{sh}]
+end_of_line = lf
+indent_size = 2
+
+[*.{ps1}]
+indent_size = 2
+
 # Code files
 [*.{cs,csx,vb,vbx}]
 indent_size = 4

@@ -9,14 +9,6 @@ It is recommended that new applications and libraries read Portable PDBs directl
 
 Pre-release builds are available on MyGet gallery: https://dotnet.myget.org/Gallery/symreader-portable.
 
-[//]: # (Begin current test results)
+[![Build Status](https://dnceng.visualstudio.com/public/_apis/build/status/dotnet/symreader/SymReader%20PR?branchName=master)](https://dnceng.visualstudio.com/public/_build/latest?definitionId=291?branchName=master)
 
-|    | x64 Debug|x64 Release|
-|:--:|:--:|:--:|
-|**Windows**|[![Build Status](https://ci.dot.net/job/dotnet_symreader-portable/job/master/job/Windows_NT_Debug/badge/icon)](https://ci.dot.net/job/dotnet_symreader-portable/job/master/job/Windows_NT_Debug/)|[![Build Status](https://ci.dot.net/job/dotnet_symreader-portable/job/master/job/Windows_NT_Release/badge/icon)](https://ci.dot.net/job/dotnet_symreader-portable/job/master/job/Windows_NT_Release/)|
-|**Ubuntu 16.04**|[![Build Status](https://ci.dot.net/job/dotnet_symreader-portable/job/master/job/Ubuntu16.04_Debug/badge/icon)](https://ci.dot.net/job/dotnet_symreader-portable/job/master/job/Ubuntu16.04_Debug/)|[![Build Status](https://ci.dot.net/job/dotnet_symreader-portable/job/master/job/Ubuntu16.04_Release/badge/icon)](https://ci.dot.net/job/dotnet_symreader-portable/job/master/job/Ubuntu16.04_Release/)|
-
-[//]: # (End current test results)
-
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).  For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
-
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
