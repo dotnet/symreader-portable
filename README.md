@@ -9,6 +9,6 @@ It is recommended that new applications and libraries read Portable PDBs directl
 
 Pre-release builds are available on MyGet gallery: https://dotnet.myget.org/Gallery/symreader-portable.
 
-[![Build Status](https://dnceng.visualstudio.com/public/_apis/build/status/dotnet/symreader/SymReader%20PR?branchName=master)](https://dnceng.visualstudio.com/public/_build/latest?definitionId=291?branchName=master)
+[![Build Status](https://dnceng.visualstudio.com/public/_apis/build/status/SymReaderPortable%20PR?branchName=master)](https://dnceng.visualstudio.com/public/_build/latest?definitionId=296?branchName=master)
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
