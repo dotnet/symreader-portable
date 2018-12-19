@@ -5,7 +5,7 @@ resources:
   containers:
   - container: LinuxContainer
     image: microsoft/dotnet-buildtools-prereqs:ubuntu-14.04-cross-0cd4667-20170319080304
-    
+
 # CI and PR triggers
 trigger:
 - master
