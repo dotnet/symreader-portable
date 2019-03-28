@@ -25,13 +25,12 @@ jobs:
     jobs:
     - job: Windows
       pool:
-        # For public or PR jobs, use the hosted pool.  For internal jobs use the internal pool.
-        # Will eventually change this to two BYOC pools.
         ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
           name: NetCorePublic-Int-Pool
           queue: BuildPool.Windows.10.Amd64.VS2017.Open
         ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-          name: dotnet-internal-temp
+          name: NetCoreInternal-Int-Pool
+          queue: BuildPool.Windows.10.Amd64.VS2017
       variables:
       # Only enable publishing in official builds.
       - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
