@@ -1,6 +1,10 @@
 variables:
   - name: _TeamName
     value: Roslyn
+  - name: _PublishUsingPipelines
+    value: true
+  - name: _DotNetArtifactsCategory
+    value: .NETCore
 resources:
   containers:
   - container: LinuxContainer
@@ -20,6 +24,7 @@ jobs:
     enablePublishBuildArtifacts: true
     enablePublishTestResults: true
     enablePublishBuildAssets: true
+    enablePublishUsingPipelines: $(_PublishUsingPipelines)
     enableTelemetry: true
     helixRepo: dotnet/symreader
     jobs:
@@ -44,6 +49,8 @@ jobs:
                  /p:DotNetPublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
                  /p:DotNetPublishBlobFeedUrl=https://dotnetfeed.blob.core.windows.net/dotnet-core/index.json
                  /p:DotNetPublishToBlobFeed=$(_DotNetPublishToBlobFeed)
+                 /p:DotNetPublishUsingPipelines=$(_PublishUsingPipelines)
+                 /p:DotNetArtifactsCategory=$(_DotNetArtifactsCategory)
                  /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
       # else
       - ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
