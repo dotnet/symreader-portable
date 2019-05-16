@@ -31,10 +31,10 @@ jobs:
     - job: Windows
       pool:
         ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
-          name: NetCorePublic-Int-Pool
+          name: NetCorePublic-Pool
           queue: BuildPool.Windows.10.Amd64.VS2017.Open
         ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-          name: NetCoreInternal-Int-Pool
+          name: NetCoreInternal-Pool
           queue: BuildPool.Windows.10.Amd64.VS2017
       variables:
       # Only enable publishing in official builds.
@@ -88,7 +88,7 @@ jobs:
       container: LinuxContainer
       pool:
         ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
-          name:  NetCorePublic-Int-Pool
+          name:  NetCorePublic-Pool
           queue: BuildPool.Ubuntu.1604.Amd64.Open
         ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
           name: dnceng-linux-internal-temp
