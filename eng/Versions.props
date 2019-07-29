@@ -31,11 +31,4 @@
     <SystemTextEncodingVersion>4.3.0</SystemTextEncodingVersion>
     <SystemThreadingVersion>4.3.0</SystemThreadingVersion>
   </PropertyGroup>
-  <PropertyGroup>
-    <RestoreSources>
-      $(RestoreSources);
-      https://dotnet.myget.org/F/symreader/api/v3/index.json;
-      https://dotnet.myget.org/F/symreader-native/api/v3/index.json
-    </RestoreSources>
-  </PropertyGroup>
 </Project>
