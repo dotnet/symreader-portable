@@ -28,6 +28,7 @@
     </dependencies>
   </metadata>
   <files>
+    $CommonFileElements$
     <file src="netstandard1.1\Microsoft.DiaSymReader.PortablePdb.dll" target="lib\portable-net45+win8" />
     <file src="netstandard1.1\Microsoft.DiaSymReader.PortablePdb*.pdb" target="lib\portable-net45+win8" />
     <file src="netstandard1.1\Microsoft.DiaSymReader.PortablePdb.xml" target="lib\portable-net45+win8" />
