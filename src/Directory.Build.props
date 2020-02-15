@@ -3,15 +3,10 @@
   <Import Project="Sdk.props" Sdk="Microsoft.DotNet.Arcade.Sdk" />
 
   <PropertyGroup>
-    <LangVersion>Latest</LangVersion>
-    <NoWarn>$(NoWarn);NU5125</NoWarn>
+    <LangVersion>Preview</LangVersion>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 
     <!-- Any code that allows overflows intentionally should be explicitly in an unchecked region. -->
     <CheckForOverflowUnderflow Condition="'$(Configuration)' == 'Debug'">true</CheckForOverflowUnderflow>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(CopyrightMicrosoft)' != ''">
-    <Copyright>$(CopyrightMicrosoft)</Copyright>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
 </Project>

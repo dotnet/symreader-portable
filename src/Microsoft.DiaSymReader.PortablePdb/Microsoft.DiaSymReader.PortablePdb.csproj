@@ -3,38 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netstandard1.1</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <!--
-      Pack task is not capable of generating nupkg with backward compatible targets.
-      Hence we need to use manually written nuspec with version variables substituted.
-
-      See https://github.com/NuGet/Home/issues/4461 and
-      https://github.com/NuGet/Home/wiki/Adding-nuget-pack-as-a-msbuild-target#packing-using-a-nuspec.
-    -->
     <IsPackable>true</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
-    <NuspecBasePath>$(OutputPath)</NuspecBasePath>
     <PackageDescription>Implementation of Microsoft DiaSymReader interfaces that reads debug information from Portable PDB format.</PackageDescription>
     <PackageTags>DiaSymReader ISymUnmanagedReader Portable PDB COM interop debugging</PackageTags>
     <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
-  <ItemGroup>
-    <NuSpecProperty Include="MicrosoftDiaSymReaderVersion=$(MicrosoftDiaSymReaderVersion)"/>
-    <NuSpecProperty Include="SystemCollectionsVersion=$(SystemCollectionsVersion)"/>
-    <NuSpecProperty Include="SystemCollectionsImmutableVersion=$(SystemCollectionsImmutableVersion)"/>
-    <NuSpecProperty Include="SystemDiagnosticsDebugVersion=$(SystemDiagnosticsDebugVersion)"/>
-    <NuSpecProperty Include="SystemGlobalizationVersion=$(SystemGlobalizationVersion)"/>
-    <NuSpecProperty Include="SystemIOVersion=$(SystemIOVersion)"/>
-    <NuSpecProperty Include="SystemLinqVersion=$(SystemLinqVersion)"/>
-    <NuSpecProperty Include="SystemReflectionVersion=$(SystemReflectionVersion)"/>
-    <NuSpecProperty Include="SystemReflectionMetadataVersion=$(SystemReflectionMetadataVersion)"/>
-    <NuSpecProperty Include="SystemReflectionPrimitivesVersion=$(SystemReflectionPrimitivesVersion)"/>
-    <NuSpecProperty Include="SystemRuntimeVersion=$(SystemRuntimeVersion)"/>
-    <NuSpecProperty Include="SystemRuntimeExtensionsVersion=$(SystemRuntimeExtensionsVersion)"/>
-    <NuSpecProperty Include="SystemRuntimeInteropServicesVersion=$(SystemRuntimeInteropServicesVersion)"/>
-    <NuSpecProperty Include="SystemTextEncodingVersion=$(SystemTextEncodingVersion)"/>
-    <NuSpecProperty Include="SystemThreadingVersion=$(SystemThreadingVersion)"/>
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.DiaSymReader" Version="$(MicrosoftDiaSymReaderVersion)" />
     <PackageReference Include="System.Collections.Immutable" Version="$(SystemCollectionsImmutableVersion)" />
