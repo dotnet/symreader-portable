@@ -58,7 +58,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             bool matches;
             Assert.Equal(HResult.S_OK, symReader.MatchesModule(expectedGuid, expectedStamp, 1, out matches));
             Assert.True(matches);
-            Assert.Equal(HResult.S_OK, symReader.MatchesModule(expectedGuid, expectedStamp, -1, out matches));
+            Assert.Equal(HResult.S_OK, symReader.MatchesModule(expectedGuid, expectedStamp, 12, out matches));
             Assert.False(matches);
             Assert.Equal(HResult.S_OK, symReader.MatchesModule(expectedGuid, expectedStamp, 2, out matches));
             Assert.False(matches);
