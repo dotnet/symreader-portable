@@ -134,13 +134,16 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         internal bool MatchesModule(Guid guid, uint stamp, int age)
         {
-            if (age != 1)
+            // A valid portable PDB age is always 1.
+            // We also allow the special '-1' value along with zero for the stamp to indicate that the caller isn't able to provide the stamp value
+            if (age != 1 && age != -1)
             {
                 return false;
             }
 
             var id = new BlobContentId(MetadataReader.DebugMetadataHeader.Id);
-            return id.Guid == guid && id.Stamp == stamp;
+
+            return id.Guid == guid && (id.Stamp == stamp || age == -1);
         }
 
         internal MetadataReader MetadataReader

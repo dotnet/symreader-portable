@@ -749,6 +749,11 @@ namespace Microsoft.DiaSymReader.PortablePdb
         /// <summary>
         /// Checks whether the id stored in the PDB matches the PDB ID stored in the PE/COFF Debug Directory.
         /// </summary>
+        /// <param name="guid">The GUID portion of the PDB ID from the PE/COFFF debug directory</param>
+        /// <param name="stamp">The timestamp portion of the PDB ID from the PE/COFF debug directory. If the caller 
+        /// doesn't have access to this value, the caller may also pass zero for this value and -1 for the age.</param>
+        /// <param name="age">The age value from the PE/COFF debug directory</param>
+        /// <param name="result">True if the PDB matches the provided PDB ID</param>
         [PreserveSig]
         public int MatchesModule(Guid guid, uint stamp, int age, [MarshalAs(UnmanagedType.Bool)]out bool result)
         {

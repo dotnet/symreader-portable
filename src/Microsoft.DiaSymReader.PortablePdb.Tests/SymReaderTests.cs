@@ -58,12 +58,21 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             bool matches;
             Assert.Equal(HResult.S_OK, symReader.MatchesModule(expectedGuid, expectedStamp, 1, out matches));
             Assert.True(matches);
-            Assert.Equal(HResult.S_OK, symReader.MatchesModule(expectedGuid, expectedStamp, -1, out matches));
+            Assert.Equal(HResult.S_OK, symReader.MatchesModule(expectedGuid, expectedStamp, 12, out matches));
             Assert.False(matches);
             Assert.Equal(HResult.S_OK, symReader.MatchesModule(expectedGuid, expectedStamp, 2, out matches));
             Assert.False(matches);
             Assert.Equal(HResult.S_OK, symReader.MatchesModule(anotherGuid, expectedStamp, 1, out matches));
             Assert.False(matches);
+
+            if (portable)
+            {
+                // Verify matching without the timestamp works correctly also
+                Assert.Equal(HResult.S_OK, symReader.MatchesModule(expectedGuid, 0, -1, out matches));
+                Assert.True(matches);
+                Assert.Equal(HResult.S_OK, symReader.MatchesModule(anotherGuid, 0, -1, out matches));
+                Assert.False(matches);
+            }
 
             // Windows PDB matching ignores the stamp:
             Assert.Equal(HResult.S_OK, symReader.MatchesModule(expectedGuid, anotherStamp, 1, out matches));
