@@ -140,4 +140,5 @@ stages:
     parameters:
       # Symbol validation isn't being very reliable lately. This should be enabled back
       # once this issue is resolved: https://github.com/dotnet/arcade/issues/2871
+      publishingInfraVersion: 3
       enableSymbolValidation: false
