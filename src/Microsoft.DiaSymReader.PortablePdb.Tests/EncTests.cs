@@ -48,8 +48,6 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Assert.Equal(HResult.S_OK, symUpdate.UpdateSymbolStore2(deltaPdb, deltas, 1));
         }
 
-        // TODO: test multiple files with the same name (enc update of document map)
-
         [Theory, ClassData(typeof(PdbTestData))]
         public void GetDocuments(bool portable)
         {
@@ -111,6 +109,40 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Assert.Equal(@"C:\F\B.cs", docB2.GetName());
             Assert.Equal(@"C:\F\C.cs", docC2.GetName());
             Assert.Equal(@"C:\F\E.cs", docE2.GetName());
+        }
+
+        [Theory, ClassData(typeof(PdbTestData))]
+        public void GetDocuments_MultipleDocumentsWithSameName(bool portable)
+        {
+            var symReader = CreateSymReaderFromResource(TestResources.EncDocuments.Baseline(portable));
+
+            // Windows and Portable PDBs differ in ordering.
+
+            var allDocs0 = symReader.GetDocuments();
+            AssertEx.SetEqual(new[]
+            {
+                @"D:\Temp\App\App\M\M.cs",
+                @"D:\Temp\App\App\N\N.cs",
+                @"D:\Temp\App\App\Program.cs",
+                @"D:\Temp\App\App\obj\Debug\net6.0\.NETCoreApp,Version=v6.0.AssemblyAttributes.cs",
+                @"D:\Temp\App\App\obj\Debug\net6.0\App.AssemblyInfo.cs"
+            }, allDocs0.Select(d => d.GetName()));
+
+            // gen 1:
+
+            UpdateSymReaderFromResource(symReader, TestResources.EncDocuments.Diffs(1, portable));
+
+            var allDocs1 = symReader.GetDocuments();
+            AssertEx.SetEqual(new[]
+            {
+                @"D:\Temp\App\App\M\M.cs",
+                @"D:\Temp\App\App\N\N.cs",
+                @"D:\Temp\App\App\Program.cs",
+                @"D:\Temp\App\App\obj\Debug\net6.0\.NETCoreApp,Version=v6.0.AssemblyAttributes.cs",
+                @"D:\Temp\App\App\obj\Debug\net6.0\App.AssemblyInfo.cs",
+                @"D:\Temp\App\App\M\C.cs",
+                @"D:\Temp\App\App\N\C.cs"
+            }, allDocs1.Select(d => d.GetName()));
         }
 
         [Theory, ClassData(typeof(PdbTestData))]
