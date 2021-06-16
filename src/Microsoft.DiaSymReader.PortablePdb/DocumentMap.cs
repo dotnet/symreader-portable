@@ -112,8 +112,9 @@ namespace Microsoft.DiaSymReader.PortablePdb
                     {
                         var infoIndex = GetInfoIndex(existing.Single);
                         var otherInfo = _infos[infoIndex];
-                        
-                        if (DocumentFullPathEquals(symReader.GetReader(otherInfo.Version).MetadataReader, otherInfo.Handle, fullName, ignoreCase: false))
+                        var otherReader = (otherInfo.Version <= symReader.Version) ? symReader.GetReader(otherInfo.Version).MetadataReader : reader;
+
+                        if (DocumentFullPathEquals(otherReader, otherInfo.Handle, fullName, ignoreCase: false))
                         {
                             _infos[infoIndex] = info;
                             documentId = existing.Single;
@@ -132,8 +133,9 @@ namespace Microsoft.DiaSymReader.PortablePdb
                         {
                             var infoIndex = GetInfoIndex(id);
                             var otherInfo = _infos[infoIndex];
+                            var otherReader = (otherInfo.Version <= symReader.Version) ? symReader.GetReader(otherInfo.Version).MetadataReader : reader;
 
-                            if (DocumentFullPathEquals(symReader.GetReader(otherInfo.Version).MetadataReader, otherInfo.Handle, fullName, ignoreCase: false))
+                            if (DocumentFullPathEquals(otherReader, otherInfo.Handle, fullName, ignoreCase: false))
                             {
                                 _infos[infoIndex] = info;
                                 documentId = id;

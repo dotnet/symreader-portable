@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using System;
 using Microsoft.DiaSymReader.PortablePdb.UnitTests;
 
 namespace TestResources
@@ -164,5 +165,26 @@ namespace TestResources
             new TestResource(
                 ResourceLoader.GetOrCreateResource(ref s_images[generation * ImagesPerGeneration + 2], $"{nameof(EncMethodExtents)}.{generation}.metadata"),
                 ResourceLoader.GetOrCreateResource(ref s_images[generation * ImagesPerGeneration + 3], $"{nameof(EncMethodExtents)}.{generation}.pdb"));
+    }
+
+    public static class EncDocuments
+    {
+        private static byte[][] s_images = new byte[6][];
+
+        public static TestResource Baseline(bool portable) => portable ?
+            new TestResource(
+                ResourceLoader.GetOrCreateResource(ref s_images[0], nameof(EncDocuments) + ".App.dllx"),
+                ResourceLoader.GetOrCreateResource(ref s_images[1], nameof(EncDocuments) + ".App.pdbx")) :
+            new TestResource(
+                ResourceLoader.GetOrCreateResource(ref s_images[2], nameof(EncDocuments) + ".App.dll"),
+                ResourceLoader.GetOrCreateResource(ref s_images[3], nameof(EncDocuments) + ".App.pdb"));
+
+        public static TestResource Diffs(int generation, bool portable) => portable ?
+            new TestResource(
+                Array.Empty<byte>(),
+                ResourceLoader.GetOrCreateResource(ref s_images[4], nameof(EncDocuments) + ".Delta.pdbx")) :
+            new TestResource(
+                Array.Empty<byte>(),
+                ResourceLoader.GetOrCreateResource(ref s_images[5], nameof(EncDocuments) + ".Delta.pdb"));
     }
 }

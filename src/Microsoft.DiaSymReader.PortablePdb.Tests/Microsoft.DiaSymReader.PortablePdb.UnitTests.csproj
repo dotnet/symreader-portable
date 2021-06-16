@@ -151,6 +151,24 @@
     <EmbeddedResource Include="Resources\EncMethodExtents\EncMethodExtents.2.pdbx">
       <LogicalName>EncMethodExtents.2.pdbx</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EncDocuments\App.dll">
+      <LogicalName>EncDocuments.App.dll</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EncDocuments\App.dllx">
+      <LogicalName>EncDocuments.App.dllx</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EncDocuments\App.pdb">
+      <LogicalName>EncDocuments.App.pdb</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EncDocuments\App.pdbx">
+      <LogicalName>EncDocuments.App.pdbx</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EncDocuments\Delta.pdb">
+      <LogicalName>EncDocuments.Delta.pdb</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EncDocuments\Delta.pdbx">
+      <LogicalName>EncDocuments.Delta.pdbx</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   
   <ItemGroup Condition="'$(OS)' == 'Windows_NT'">

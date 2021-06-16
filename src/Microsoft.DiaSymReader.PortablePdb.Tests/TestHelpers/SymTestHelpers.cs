@@ -40,7 +40,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 
         public static void UpdateSymReaderFromResource(ISymUnmanagedReader symReader, TestResource artifacts, SymUnmanagedLineDelta[] lineDeltas = null)
         {
-            lineDeltas = lineDeltas ?? Array.Empty<SymUnmanagedLineDelta>();
+            lineDeltas ??= Array.Empty<SymUnmanagedLineDelta>();
 
             var symUpdate = (ISymUnmanagedEncUpdate)symReader;
             var deltaPdb = SymUnmanagedStreamFactory.CreateStream(new MemoryStream(artifacts.Pdb));

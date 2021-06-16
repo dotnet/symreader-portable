@@ -436,8 +436,13 @@ namespace Roslyn.Test.Utilities
             }
 
             var actualString = string.Join(itemSeparator, actual.Select(itemInspector));
+            var expectedString = string.Join(itemSeparator, expected.Select(itemInspector));
 
             var message = new StringBuilder();
+            message.AppendLine();
+            message.AppendLine("Expected:");
+            message.AppendLine(expectedString);
+
             message.AppendLine();
             message.AppendLine("Actual:");
             message.AppendLine(actualString);
