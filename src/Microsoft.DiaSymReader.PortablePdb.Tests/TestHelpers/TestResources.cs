@@ -173,18 +173,18 @@ namespace TestResources
 
         public static TestResource Baseline(bool portable) => portable ?
             new TestResource(
-                ResourceLoader.GetOrCreateResource(ref s_images[0], nameof(EncDocuments) + @"\App.dllx"),
-                ResourceLoader.GetOrCreateResource(ref s_images[1], nameof(EncDocuments) + @"\App.pdbx")) :
+                ResourceLoader.GetOrCreateResource(ref s_images[0], nameof(EncDocuments) + ".App.dllx"),
+                ResourceLoader.GetOrCreateResource(ref s_images[1], nameof(EncDocuments) + ".App.pdbx")) :
             new TestResource(
-                ResourceLoader.GetOrCreateResource(ref s_images[2], nameof(EncDocuments) + @"\App.dll"),
-                ResourceLoader.GetOrCreateResource(ref s_images[3], nameof(EncDocuments) + @"\App.pdb"));
+                ResourceLoader.GetOrCreateResource(ref s_images[2], nameof(EncDocuments) + ".App.dll"),
+                ResourceLoader.GetOrCreateResource(ref s_images[3], nameof(EncDocuments) + ".App.pdb"));
 
         public static TestResource Diffs(int generation, bool portable) => portable ?
             new TestResource(
                 Array.Empty<byte>(),
-                ResourceLoader.GetOrCreateResource(ref s_images[4], nameof(EncDocuments) + @"\Delta.pdbx")) :
+                ResourceLoader.GetOrCreateResource(ref s_images[4], nameof(EncDocuments) + ".Delta.pdbx")) :
             new TestResource(
                 Array.Empty<byte>(),
-                ResourceLoader.GetOrCreateResource(ref s_images[5], nameof(EncDocuments) + @"\Delta.pdb"));
+                ResourceLoader.GetOrCreateResource(ref s_images[5], nameof(EncDocuments) + ".Delta.pdb"));
     }
 }
