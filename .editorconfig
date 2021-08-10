@@ -1,4 +1,4 @@
-# EditorConfig is awesome:http://EditorConfig.org
+﻿# EditorConfig is awesome:http://EditorConfig.org
 
 # top-most EditorConfig file
 root = true
@@ -82,3 +82,6 @@ csharp_new_line_before_catch = true
 csharp_new_line_before_finally = true
 csharp_new_line_before_members_in_object_initializers = true
 csharp_new_line_before_members_in_anonymous_types = true
+
+[*.{cs}]
+file_header_template = Licensed to the.NET Foundation under one or more agreements.\nThe.NET Foundation licenses this file to you under the MIT license.\nSee the License.txt file in the project root for more information.
