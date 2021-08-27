@@ -19,8 +19,8 @@ namespace Microsoft.DiaSymReader.PortablePdb
         internal MethodDebugInformationHandle DebugHandle { get; }
         internal MethodDefinitionHandle DefinitionHandle => DebugHandle.ToDefinitionHandle();
         internal PortablePdbReader PdbReader { get; }
-        private RootScopeData _lazyRootScopeData;
-        private AsyncMethodData _lazyAsyncMethodData;
+        private RootScopeData? _lazyRootScopeData;
+        private AsyncMethodData? _lazyAsyncMethodData;
 
         internal SymReader SymReader => PdbReader.SymReader;
         internal MetadataReader MetadataReader => PdbReader.MetadataReader;
@@ -84,7 +84,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         #region ISymUnmanagedMethod
 
-        public int GetNamespace([MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedNamespace @namespace)
+        public int GetNamespace([MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedNamespace? @namespace)
         {
             // SymReader doesn't support namespaces
             @namespace = null;
@@ -115,7 +115,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
             if (!SymReader.TryGetLineDeltas(GetId(), out var deltas))
             {
-                deltas = default(MethodLineDeltas);
+                deltas = default;
             }
 
             int sequencePointIndex = 0;
@@ -179,7 +179,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
             if (!SymReader.TryGetLineDeltas(GetId(), out var deltas))
             {
-                deltas = default(MethodLineDeltas);
+                deltas = default;
             }
 
             bool setEndOffset = false;
@@ -228,7 +228,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             return HResult.S_OK;
         }
 
-        public int GetScopeFromOffset(int offset, [MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedScope scope)
+        public int GetScopeFromOffset(int offset, [MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedScope? scope)
         {
             // SymReader doesn't support. 
             scope = null;
@@ -250,18 +250,18 @@ namespace Microsoft.DiaSymReader.PortablePdb
         public int GetSequencePoints(
             int bufferLength,
             out int count,
-            [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0), Out]int[] offsets,
-            [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0), Out]ISymUnmanagedDocument[] documents,
-            [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0), Out]int[] startLines,
-            [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0), Out]int[] startColumns,
-            [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0), Out]int[] endLines,
-            [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0), Out]int[] endColumns)
+            [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0), Out]int[]? offsets,
+            [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0), Out]ISymUnmanagedDocument[]? documents,
+            [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0), Out]int[]? startLines,
+            [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0), Out]int[]? startColumns,
+            [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0), Out]int[]? endLines,
+            [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0), Out]int[]? endColumns)
         {
-            SymDocument currentDocument = null;
+            SymDocument? currentDocument = null;
 
             if ((startLines == null && endLines == null) || !SymReader.TryGetLineDeltas(GetId(), out var deltas))
             {
-                deltas = default(MethodLineDeltas);
+                deltas = default;
             }
 
             int i = 0;

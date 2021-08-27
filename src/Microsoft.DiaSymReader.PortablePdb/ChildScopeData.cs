@@ -55,7 +55,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             return builder.ToImmutable();
         }
 
-        internal override int GetConstants(int bufferLength, out int count, ISymUnmanagedConstant[] constants)
+        internal override int GetConstants(int bufferLength, out int count, ISymUnmanagedConstant[]? constants)
         {
             var pdbReader = SymMethod.PdbReader;
             var scope = pdbReader.MetadataReader.GetLocalScope(_handle);
@@ -70,6 +70,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
                     break;
                 }
 
+                Debug.Assert(constants != null);
                 constants[i++] = new SymConstant(pdbReader, handle);
             }
 
@@ -77,7 +78,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             return HResult.S_OK;
         }
 
-        internal override int GetLocals(int bufferLength, out int count, ISymUnmanagedVariable[] locals)
+        internal override int GetLocals(int bufferLength, out int count, ISymUnmanagedVariable[]? locals)
         {
             var mdReader = SymMethod.MetadataReader;
             var scope = mdReader.GetLocalScope(_handle);
@@ -92,6 +93,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
                     break;
                 }
 
+                Debug.Assert(locals != null);
                 locals[i++] = new SymVariable(SymMethod, handle);
             }
 

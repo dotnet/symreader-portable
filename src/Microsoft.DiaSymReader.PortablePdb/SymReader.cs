@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -32,7 +33,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         private readonly Lazy<DocumentMap> _lazyDocumentMap;
         private readonly Lazy<MethodMap> _methodMap;
         private readonly Lazy<MethodExtents> _lazyMethodExtents;
-        private Dictionary<MethodId, MethodLineDeltas> _lazyMethodLineDeltas;
+        private Dictionary<MethodId, MethodLineDeltas>? _lazyMethodLineDeltas;
 
         /// Takes ownership of <paramref name="pdbReader"/> and <paramref name="metadataImport"/>.
         internal SymReader(PortablePdbReader pdbReader, LazyMetadataImport metadataImport)
@@ -124,7 +125,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
                     throw new BadImageFormatException();
                 }
 
-                provider = MetadataReaderProvider.FromPortablePdbImage(ImmutableByteArrayInterop.DangerousCreateFromUnderlyingArray(ref decompressed));
+                provider = MetadataReaderProvider.FromPortablePdbImage(ImmutableByteArrayInterop.DangerousCreateFromUnderlyingArray(ref decompressed!));
             }
             else
             {
@@ -175,7 +176,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         public int Destroy()
         {
-            var readers = Interlocked.Exchange(ref _pdbReaders, null);
+            var readers = Interlocked.Exchange(ref _pdbReaders, null!);
             if (readers == null)
             {
                 return HResult.S_OK;
@@ -206,13 +207,13 @@ namespace Microsoft.DiaSymReader.PortablePdb
             return false;
         }
 
-        internal SymDocument AsSymDocument(ISymUnmanagedDocument document)
+        internal SymDocument? AsSymDocument(ISymUnmanagedDocument document)
         {
             var symDocument = document as SymDocument;
             return (symDocument?.SymReader == this) ? symDocument : null;
         }
 
-        internal SymMethod AsSymMethod(ISymUnmanagedMethod method)
+        internal SymMethod? AsSymMethod(ISymUnmanagedMethod method)
         {
             var symMethod = method as SymMethod;
             return (symMethod?.SymReader == this) ? symMethod : null;
@@ -244,7 +245,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         {
             if (_lazyMethodLineDeltas == null)
             {
-                deltas = default(MethodLineDeltas);
+                deltas = default;
                 return false;
             }
 
@@ -272,7 +273,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             Guid language,
             Guid languageVendor,
             Guid documentType,
-            [MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedDocument document)
+            [MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedDocument? document)
         {
             var map = GetDocumentMap();
             if (map.TryGetDocument(url, out var documentId))
@@ -294,17 +295,17 @@ namespace Microsoft.DiaSymReader.PortablePdb
             out int count,
             [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0), Out]ISymUnmanagedDocument[] documents)
         {
-            DocumentMap documentMapOpt = null;
-            PortablePdbReader pdbReaderOpt = null; 
+            DocumentMap? documentMap = null;
+            PortablePdbReader? pdbReader = null; 
             if (Version > 1)
             {
-                documentMapOpt = GetDocumentMap();
-                count = documentMapOpt.DocumentCount;
+                documentMap = GetDocumentMap();
+                count = documentMap.DocumentCount;
             }
             else
             {
-                pdbReaderOpt = GetReader(version: 1);
-                count = pdbReaderOpt.MetadataReader.Documents.Count;
+                pdbReader = GetReader(version: 1);
+                count = pdbReader.MetadataReader.Documents.Count;
             }
 
             if (bufferLength == 0)
@@ -319,9 +320,9 @@ namespace Microsoft.DiaSymReader.PortablePdb
             }
 
             int i = 0;
-            if (documentMapOpt != null)
+            if (documentMap != null)
             {
-                foreach (var info in documentMapOpt.Infos)
+                foreach (var info in documentMap.Infos)
                 {
                     if (i >= bufferLength)
                     {
@@ -333,14 +334,16 @@ namespace Microsoft.DiaSymReader.PortablePdb
             }
             else
             {
-                foreach (var documentHandle in pdbReaderOpt.MetadataReader.Documents)
+                Debug.Assert(pdbReader != null);
+
+                foreach (var documentHandle in pdbReader.MetadataReader.Documents)
                 {
                     if (i >= bufferLength)
                     {
                         break;
                     }
 
-                    documents[i++] = new SymDocument(pdbReaderOpt, documentHandle);
+                    documents[i++] = new SymDocument(pdbReader, documentHandle);
                 }
             }
 
@@ -368,14 +371,14 @@ namespace Microsoft.DiaSymReader.PortablePdb
         /// <summary>
         /// Get the latest version of a method with specified token.
         /// </summary>
-        public int GetMethod(int methodToken, [MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedMethod method)
+        public int GetMethod(int methodToken, [MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedMethod? method)
         {
             int hr = GetMethodImpl(methodToken, out var symMethod);
             method = symMethod;
             return hr;
         }
 
-        private int GetMethodImpl(int methodToken, out SymMethod method)
+        private int GetMethodImpl(int methodToken, out SymMethod? method)
         {
             if (TryGetDebuggableMethod(methodToken, out var pdbReader, out var handle))
             {
@@ -387,12 +390,12 @@ namespace Microsoft.DiaSymReader.PortablePdb
             return HResult.E_FAIL;
         }
 
-        private bool TryGetDebuggableMethod(int methodToken, out PortablePdbReader pdbReader, out MethodDebugInformationHandle handle)
+        private bool TryGetDebuggableMethod(int methodToken, [NotNullWhen(true)] out PortablePdbReader? pdbReader, out MethodDebugInformationHandle handle)
         {
             if (!MetadataUtilities.IsMethodToken(methodToken))
             {
                 pdbReader = null;
-                handle = default(MethodDebugInformationHandle);
+                handle = default;
                 return false;
             }
 
@@ -419,7 +422,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             }
 
             pdbReader = null;
-            handle = default(MethodDebugInformationHandle);
+            handle = default;
             return false;
         }
 
@@ -429,7 +432,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         public int GetMethodByVersion(
             int methodToken,
             int version,
-            [MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedMethod method)
+            [MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedMethod? method)
         {
             if (!IsValidVersion(version))
             {
@@ -462,7 +465,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             return HResult.S_OK;
         }
 
-        public int GetMethodByVersionPreRemap(int methodToken, int version, [MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedMethod method)
+        public int GetMethodByVersionPreRemap(int methodToken, int version, [MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedMethod? method)
         {
             return GetMethodByVersion(methodToken, version, out method);
         }
@@ -471,7 +474,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             ISymUnmanagedDocument document,
             int line,
             int column,
-            [MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedMethod method)
+            [MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedMethod? method)
         {
             var symDocument = AsSymDocument(document);
             if (symDocument == null)
@@ -737,7 +740,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         {
             if (stream != null)
             {
-                return UpdateSymbolStoreImpl(stream, null, EmptyArray<SymUnmanagedLineDelta>.Instance, 0);
+                return UpdateSymbolStoreImpl(stream, fileName: null, EmptyArray<SymUnmanagedLineDelta>.Instance, 0);
             }
 
             if (string.IsNullOrEmpty(fileName))
@@ -868,8 +871,8 @@ namespace Microsoft.DiaSymReader.PortablePdb
         }
 
         private int UpdateSymbolStoreImpl(
-            IStream stream,
-            string fileName,
+            IStream? stream,
+            string? fileName,
             SymUnmanagedLineDelta[] lineDeltas,
             int lineDeltaCount)
         {
@@ -886,7 +889,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
             int newVersion = Version + 1;
 
-            var provider = (stream != null) ? CreateProviderFromStream(stream) : CreateProviderFromFile(fileName);
+            var provider = (stream != null) ? CreateProviderFromStream(stream) : CreateProviderFromFile(fileName!);
 
             var pdbReader = new PortablePdbReader(provider, newVersion, documentMap.DocumentCount);
 
@@ -915,7 +918,6 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         private Dictionary<DocumentId, List<(MethodId, int)>> GroupLineDeltasByDocument(SymUnmanagedLineDelta[] lineDeltas, int lineDeltaCount)
         {
-            var methodMap = GetMethodMap();
             var deltasByDocument = new Dictionary<DocumentId, List<(MethodId, int)>>();
             for (int i = 0; i < lineDeltaCount; i++)
             {
@@ -996,6 +998,8 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 count = 0;
                 return hr;
             }
+
+            Debug.Assert(method != null);
 
             var actualCount = SymMethod.GetLocalVariableCount(method.MetadataReader, method.DebugHandle);
             if (actualCount > unchecked((uint)bufferLength))

@@ -9,7 +9,7 @@ using System.Diagnostics;
 namespace Microsoft.DiaSymReader.PortablePdb
 {
     [DebuggerDisplay("{GetDebuggerDisplay(),nq}")]
-    internal struct MethodLineExtent
+    internal readonly struct MethodLineExtent
     {
         internal sealed class MethodComparer : IComparer<MethodLineExtent>
         {

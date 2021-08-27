@@ -66,7 +66,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
             foreach (var documentHandle in reader.Documents)
             {
-                string fileName = GetFileName(reader, documentHandle);
+                string? fileName = GetFileName(reader, documentHandle);
 
                 // invalid metadata: document doesn't have a name
                 if (fileName == null)
@@ -87,12 +87,12 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
             foreach (var documentHandle in reader.Documents)
             {
-                string fileName = GetFileName(reader, documentHandle);
+                string? fileName = GetFileName(reader, documentHandle);
 
                 // invalid metadata: document doesn't have a name
                 if (fileName == null)
                 {
-                    handleToIdMapBuilder.Add(default(DocumentId));
+                    handleToIdMapBuilder.Add(default);
                     continue;
                 }
 
@@ -160,7 +160,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             handleToIdMap = handleToIdMapBuilder.MoveToImmutable();
         }
 
-        private static string GetFileName(MetadataReader reader, DocumentHandle documentHandle)
+        private static string? GetFileName(MetadataReader reader, DocumentHandle documentHandle)
         {
             var document = reader.GetDocument(documentHandle);
 
@@ -178,7 +178,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             }
 
             // find the last part handle:
-            BlobHandle partHandle = default(BlobHandle);
+            BlobHandle partHandle = default;
             while (nameReader.RemainingBytes > 0)
             {
                 partHandle = nameReader.ReadBlobHandle();
@@ -207,7 +207,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
             if (!_map.TryGetValue(fileName, out var documents))
             {
-                id = default(DocumentId);
+                id = default;
                 return false;
             }
 

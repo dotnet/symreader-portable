@@ -13,7 +13,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         {
         }
 
-        internal override ScopeData Parent => null;
+        internal override ScopeData? Parent => null;
         internal override int StartOffset => 0;
 
         internal override int EndOffset
@@ -47,14 +47,14 @@ namespace Microsoft.DiaSymReader.PortablePdb
             return ImmutableArray<ChildScopeData>.Empty;
         }
 
-        internal override int GetConstants(int bufferLength, out int count, ISymUnmanagedConstant[] constants)
+        internal override int GetConstants(int bufferLength, out int count, ISymUnmanagedConstant[]? constants)
         {
             // C# and VB never define any constants in the root scope 
             count = 0;
             return HResult.S_OK;
         }
 
-        internal override int GetLocals(int bufferLength, out int count, ISymUnmanagedVariable[] locals)
+        internal override int GetLocals(int bufferLength, out int count, ISymUnmanagedVariable[]? locals)
         {
             // C# and VB never define any locals in the root scope 
             count = 0;

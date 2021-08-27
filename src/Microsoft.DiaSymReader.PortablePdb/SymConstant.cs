@@ -4,6 +4,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 
@@ -15,8 +16,8 @@ namespace Microsoft.DiaSymReader.PortablePdb
         private readonly PortablePdbReader _pdbReader;
         private readonly LocalConstantHandle _handle;
 
-        private object _lazyValue = s_uninitialized;
-        private byte[] _lazySignature;
+        private object? _lazyValue = s_uninitialized;
+        private byte[]? _lazySignature;
 
         private static readonly object s_nullReferenceValue = 0;
         private static readonly object s_uninitialized = new object();
@@ -53,7 +54,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             return InteropUtilities.BytesToBuffer(_lazySignature, bufferLength, out count, signature);
         }
 
-        public int GetValue(out object value)
+        public int GetValue(out object? value)
         {
             if (_lazyValue == s_uninitialized)
             {
@@ -64,6 +65,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             return HResult.S_OK;
         }
 
+        [MemberNotNull(nameof(_lazySignature))]
         private void InitializeValueAndSignature()
         {
             var mdReader = _pdbReader.MetadataReader;
@@ -93,13 +95,13 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 sigWriter.Write(mdReader.GetBlobBytes(constant.Signature), 0, customModifiersLength);
             }
 
-            object translatedValue;
+            object? translatedValue;
             if (rawTypeCode == (int)MetadataUtilities.SignatureTypeCode_ValueType ||
                 rawTypeCode == (int)MetadataUtilities.SignatureTypeCode_Class)
             {
                 var typeHandle = sigReader.ReadTypeHandle();
 
-                string qualifiedName = _pdbReader.SymReader.GetMetadataImport().GetQualifiedTypeName(typeHandle);
+                string? qualifiedName = _pdbReader.SymReader.GetMetadataImport().GetQualifiedTypeName(typeHandle);
                 if (qualifiedName == "System.Decimal")
                 {
                     translatedValue = sigReader.ReadDecimal();

@@ -57,7 +57,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 }
             }
 
-            return default(BlobHandle);
+            return default;
         }
     }
 }

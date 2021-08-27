@@ -58,16 +58,16 @@ namespace Microsoft.DiaSymReader.PortablePdb
             return HResult.S_OK;
         }
 
-        internal static void TransferOwnershipOrRelease(ref object objectOpt, object newOwnerOpt)
+        internal static void TransferOwnershipOrRelease(ref object? obj, object? newOwner)
         {
-            if (newOwnerOpt != null)
+            if (newOwner != null)
             {
-                if (objectOpt != null && Marshal.IsComObject(objectOpt))
+                if (obj != null && Marshal.IsComObject(obj))
                 {
-                    Marshal.ReleaseComObject(objectOpt);
+                    Marshal.ReleaseComObject(obj);
                 }
 
-                objectOpt = null;
+                obj = null;
             }
         }
     }

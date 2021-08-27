@@ -57,8 +57,9 @@ namespace Microsoft.DiaSymReader.PortablePdb
         /// whose underlying backing field is modified. 
         /// </remarks>
         /// <returns>An immutable array.</returns>
-        internal static ImmutableArray<byte> DangerousCreateFromUnderlyingArray(ref byte[] array)
+        internal static ImmutableArray<byte> DangerousCreateFromUnderlyingArray(ref byte[]? array)
         {
+            Debug.Assert(array != null);
             byte[] givenArray = array;
             array = null;
 
@@ -86,7 +87,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         {
             var union = new ByteArrayUnion();
             union.ImmutableArray = array;
-            return union.UnderlyingArray;
+            return union.UnderlyingArray!;
         }
 
         [StructLayout(LayoutKind.Explicit)]

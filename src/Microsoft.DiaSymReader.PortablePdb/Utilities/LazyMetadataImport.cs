@@ -11,8 +11,8 @@ namespace Microsoft.DiaSymReader.PortablePdb
 {
     internal sealed class LazyMetadataImport : IDisposable
     {
-        private MetadataImport _lazyMetadataImport;
-        private readonly IMetadataImportProvider _metadataImportProviderOpt;
+        private MetadataImport? _lazyMetadataImport;
+        private readonly IMetadataImportProvider? _metadataImportProvider;
 
         public LazyMetadataImport(MetadataImport metadataImport)
         {
@@ -21,16 +21,16 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         public LazyMetadataImport(IMetadataImportProvider metadataImportProvider)
         {
-            _metadataImportProviderOpt = metadataImportProvider;
+            _metadataImportProvider = metadataImportProvider;
         }
 
         public MetadataImport GetMetadataImport()
         {
             if (_lazyMetadataImport == null)
             {
-                Debug.Assert(_metadataImportProviderOpt != null, "MetadataImport disposed");
+                Debug.Assert(_metadataImportProvider != null, "MetadataImport disposed");
 
-                var import = MetadataImport.FromObject(_metadataImportProviderOpt.GetMetadataImport()) ?? 
+                var import = MetadataImport.FromObject(_metadataImportProvider.GetMetadataImport()) ?? 
                     throw new InvalidOperationException();
 
                 Interlocked.CompareExchange(ref _lazyMetadataImport, import, null);

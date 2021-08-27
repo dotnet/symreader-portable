@@ -97,7 +97,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             var buffer = _buffer;
             Array.Resize(ref buffer, _position);
 
-            _buffer = null;
+            _buffer = null!;
             _position = -1;
             return buffer;
         }

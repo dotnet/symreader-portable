@@ -13,7 +13,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 {
     internal sealed class PortablePdbReader : IDisposable
     {
-        internal SymReader _symReader;
+        internal SymReader? _symReader;
         internal readonly int Version;
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         private readonly MetadataReader _metadataReader;
 
         // null when disposed
-        private MetadataReaderProvider _metadataReaderProvider;
+        private MetadataReaderProvider? _metadataReaderProvider;
 
         private ImmutableArray<DocumentId> _documentHandleToIdMapOpt;
         private ImmutableArray<MethodId> _methodHandleToIdMapOpt;
@@ -78,7 +78,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         {
             if (id.IsDefault)
             {
-                handle = default(MethodDebugInformationHandle);
+                handle = default;
                 return false;
             }
 
@@ -86,7 +86,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             {
                 if (id.Value > _metadataReader.MethodDebugInformation.Count)
                 {
-                    handle = default(MethodDebugInformationHandle);
+                    handle = default;
                     return false;
                 }
 
@@ -101,7 +101,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 return true;
             }
 
-            handle = default(MethodDebugInformationHandle);
+            handle = default;
             return false;
         }
 
