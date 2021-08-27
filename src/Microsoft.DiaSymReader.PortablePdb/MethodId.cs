@@ -11,7 +11,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
     /// Unique ID representing a method across all generations.
     /// </summary>
     [DebuggerDisplay("{GetDebuggerDisplay(),nq}")]
-    internal struct MethodId : IEquatable<MethodId>, IComparable<MethodId>
+    internal readonly struct MethodId : IEquatable<MethodId>, IComparable<MethodId>
     {
         // 1-based
         public readonly int Value;

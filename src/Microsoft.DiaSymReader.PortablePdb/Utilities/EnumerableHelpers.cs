@@ -15,7 +15,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         /// </summary>
         public static Dictionary<K, (V Single, ImmutableArray<V> Multiple)> GroupBy<K, V>(this IEnumerable<KeyValuePair<K, V>> entries, IEqualityComparer<K> keyComparer)
         {
-            var builder = new Dictionary<K, (V Single, ImmutableArray<V>.Builder Multiple)>(keyComparer);
+            var builder = new Dictionary<K, (V Single, ImmutableArray<V>.Builder? Multiple)>(keyComparer);
 
             foreach (var entry in entries)
             {
@@ -28,7 +28,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
                     var list = ImmutableArray.CreateBuilder<V>();
                     list.Add(existing.Single);
                     list.Add(entry.Value);
-                    builder[entry.Key] = (default(V), list);
+                    builder[entry.Key] = (default(V)!, list);
                 }
                 else
                 {
@@ -39,7 +39,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             var result = new Dictionary<K, (V, ImmutableArray<V>)>(builder.Count, keyComparer);
             foreach (var entry in builder)
             {
-                result.Add(entry.Key, (entry.Value.Single, entry.Value.Multiple?.ToImmutable() ?? default(ImmutableArray<V>)));
+                result.Add(entry.Key, (entry.Value.Single, entry.Value.Multiple?.ToImmutable() ?? default));
             }
 
             return result;

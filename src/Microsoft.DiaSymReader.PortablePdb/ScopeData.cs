@@ -2,9 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the License.txt file in the project root for more information.
 
-using System;
 using System.Collections.Immutable;
-using System.Diagnostics;
 
 namespace Microsoft.DiaSymReader.PortablePdb
 {
@@ -16,7 +14,6 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         internal ScopeData(SymMethod symMethod)
         {
-            Debug.Assert(symMethod != null);
             SymMethod = symMethod;
         }
 
@@ -34,15 +31,15 @@ namespace Microsoft.DiaSymReader.PortablePdb
         {
             // Portable PDB uses edge-exclusive semantics like C#.
             // VB end offset is inclusive.
-            return SymMethod.SymReader.VbSemantics.Value && !(Parent is RootScopeData) ? value - 1 : value;
+            return SymMethod.SymReader.VbSemantics.Value && Parent is not RootScopeData ? value - 1 : value;
         }
 
         protected abstract ImmutableArray<ChildScopeData> CreateChildren();
 
         internal abstract int StartOffset { get; }
         internal abstract int EndOffset { get; }
-        internal abstract ScopeData Parent { get; }
-        internal abstract int GetConstants(int bufferLength, out int count, ISymUnmanagedConstant[] constants);
-        internal abstract int GetLocals(int bufferLength, out int count, ISymUnmanagedVariable[] locals);
+        internal abstract ScopeData? Parent { get; }
+        internal abstract int GetConstants(int bufferLength, out int count, ISymUnmanagedConstant[]? constants);
+        internal abstract int GetLocals(int bufferLength, out int count, ISymUnmanagedVariable[]? locals);
     }
 }

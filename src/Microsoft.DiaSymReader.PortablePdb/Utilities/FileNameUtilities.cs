@@ -15,7 +15,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         /// Returns the position in given path where the file name starts.
         /// </summary>
         /// <returns>-1 if path is null.</returns>
-        internal static int IndexOfFileName(string path)
+        internal static int IndexOfFileName(string? path)
         {
             if (path == null)
             {

@@ -123,7 +123,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
             var typeProvider = DummyTypeProvider.Instance;
 
-            var decoder = new SignatureDecoder<object, object>(typeProvider, metadataReader: null, genericContext: null);
+            var decoder = new SignatureDecoder<object?, object?>(typeProvider, metadataReader: null, genericContext: null);
             for (int i = 0; i < slotIndex - 1; i++)
             {
                 decoder.DecodeType(ref signatureReader, allowTypeSpecifications: false);
@@ -142,24 +142,24 @@ namespace Microsoft.DiaSymReader.PortablePdb
             return HResult.S_OK;
         }
 
-        private sealed class DummyTypeProvider : ISignatureTypeProvider<object, object>
+        private sealed class DummyTypeProvider : ISignatureTypeProvider<object?, object?>
         {
-            public static readonly DummyTypeProvider Instance = new DummyTypeProvider();
+            public static readonly DummyTypeProvider Instance = new();
 
-            public object GetArrayType(object elementType, ArrayShape shape) => null;
-            public object GetByReferenceType(object elementType) => null;
-            public object GetFunctionPointerType(MethodSignature<object> signature) => null;
-            public object GetGenericInstantiation(object genericType, ImmutableArray<object> typeArguments) => null;
-            public object GetGenericMethodParameter(object genericContext, int index) => null;
-            public object GetGenericTypeParameter(object genericContext, int index) => null;
-            public object GetModifiedType(object modifier, object unmodifiedType, bool isRequired) => null;
-            public object GetPinnedType(object elementType) => null;
-            public object GetPointerType(object elementType) => null;
-            public object GetPrimitiveType(PrimitiveTypeCode typeCode) => null;
-            public object GetSZArrayType(object elementType) => null;
-            public object GetTypeFromDefinition(MetadataReader reader, TypeDefinitionHandle handle, byte rawTypeKind) => null;
-            public object GetTypeFromReference(MetadataReader reader, TypeReferenceHandle handle, byte rawTypeKind) => null;
-            public object GetTypeFromSpecification(MetadataReader reader, object genericContext, TypeSpecificationHandle handle, byte rawTypeKind) => null;
+            public object? GetArrayType(object? elementType, ArrayShape shape) => null;
+            public object? GetByReferenceType(object? elementType) => null;
+            public object? GetFunctionPointerType(MethodSignature<object?> signature) => null;
+            public object? GetGenericInstantiation(object? genericType, ImmutableArray<object?> typeArguments) => null;
+            public object? GetGenericMethodParameter(object? genericContext, int index) => null;
+            public object? GetGenericTypeParameter(object? genericContext, int index) => null;
+            public object? GetModifiedType(object? modifier, object? unmodifiedType, bool isRequired) => null;
+            public object? GetPinnedType(object? elementType) => null;
+            public object? GetPointerType(object? elementType) => null;
+            public object? GetPrimitiveType(PrimitiveTypeCode typeCode) => null;
+            public object? GetSZArrayType(object? elementType) => null;
+            public object? GetTypeFromDefinition(MetadataReader reader, TypeDefinitionHandle handle, byte rawTypeKind) => null;
+            public object? GetTypeFromReference(MetadataReader reader, TypeReferenceHandle handle, byte rawTypeKind) => null;
+            public object? GetTypeFromSpecification(MetadataReader reader, object? genericContext, TypeSpecificationHandle handle, byte rawTypeKind) => null;
         }
     }
 }

@@ -28,7 +28,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         void GetTypeDefProps(
             int typeDefinition,
-            [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder qualifiedName,
+            [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder? qualifiedName,
             int qualifiedNameBufferLength,
             out int qualifiedNameLength,
             [MarshalAs(UnmanagedType.U4)] out TypeAttributes attributes,
@@ -39,7 +39,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         void GetTypeRefProps(
             int typeReference,
             out int resolutionScope,
-            [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder qualifiedName,
+            [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder? qualifiedName,
             int qualifiedNameBufferLength,
             out int qualifiedNameLength);
 

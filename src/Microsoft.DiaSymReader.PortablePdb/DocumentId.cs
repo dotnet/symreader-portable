@@ -11,7 +11,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
     /// Unique ID representing a document across all generations.
     /// </summary>
     [DebuggerDisplay("{GetDebuggerDisplay(),nq}")]
-    internal struct DocumentId : IEquatable<DocumentId>
+    internal readonly struct DocumentId : IEquatable<DocumentId>
     {
         // 1-based
         public readonly int Value;

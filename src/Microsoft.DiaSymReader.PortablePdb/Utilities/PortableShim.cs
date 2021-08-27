@@ -23,11 +23,11 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
             internal static readonly Type Type = ReflectionUtilities.GetTypeFromEither(
                 contractName: $"{TypeName}, {CoreNames.System_Runtime_Extensions}",
-                desktopName: TypeName);
+                desktopName: TypeName)!;
 
             internal static Func<string, string> GetEnvironmentVariable = (Func<string, string>)Type
                 .GetTypeInfo()
-                .GetDeclaredMethod(nameof(GetEnvironmentVariable), paramTypes: new[] { typeof(string) })
+                .GetDeclaredMethod(nameof(GetEnvironmentVariable), paramTypes: new[] { typeof(string) })!
                 .CreateDelegate(typeof(Func<string, string>));
         }
 
@@ -37,17 +37,17 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
             internal static readonly Type Type = ReflectionUtilities.GetTypeFromEither(
                 contractName: $"{TypeName}, {CoreNames.System_IO_FileSystem}",
-                desktopName: TypeName);
+                desktopName: TypeName)!;
 
             internal static readonly Func<string, bool> Exists = Type
                 .GetTypeInfo()
                 .GetDeclaredMethod(nameof(Exists), new[] { typeof(string) })
-                .CreateDelegate<Func<string, bool>>();
+                .CreateDelegate<Func<string, bool>>()!;
 
             internal static readonly Func<string, byte[]> ReadAllBytes = Type
                 .GetTypeInfo()
                 .GetDeclaredMethod(nameof(ReadAllBytes), paramTypes: new[] { typeof(string) })
-                .CreateDelegate<Func<string, byte[]>>();
+                .CreateDelegate<Func<string, byte[]>>()!;
         }
 
         internal static class FileMode
@@ -56,7 +56,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
             internal static readonly Type Type = ReflectionUtilities.GetTypeFromEither(
                 contractName: $"{TypeName}, {CoreNames.System_IO_FileSystem_Primitives}",
-                desktopName: TypeName);
+                desktopName: TypeName)!;
 
             internal static readonly object Open = Enum.ToObject(Type, 3);
         }
@@ -67,7 +67,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
             internal static readonly Type Type = ReflectionUtilities.GetTypeFromEither(
                 contractName: $"{TypeName}, {CoreNames.System_IO_FileSystem_Primitives}",
-                desktopName: TypeName);
+                desktopName: TypeName)!;
 
             internal static readonly object Read = Enum.ToObject(Type, 1);
         }
@@ -78,7 +78,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
             internal static readonly Type Type = ReflectionUtilities.GetTypeFromEither(
                 contractName: $"{TypeName}, {CoreNames.System_IO_FileSystem_Primitives}",
-                desktopName: TypeName);
+                desktopName: TypeName)!;
 
             internal static readonly object ReadOrDelete = Enum.ToObject(Type, 1 | 4);
         }
@@ -89,11 +89,11 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
             internal static readonly Type Type = ReflectionUtilities.GetTypeFromEither(
                 contractName: $"{TypeName}, {CoreNames.System_IO_FileSystem}",
-                desktopName: TypeName);
+                desktopName: TypeName)!;
 
             private static ConstructorInfo s_Ctor_String_FileMode_FileAccess_FileShare = Type
                 .GetTypeInfo()
-                .GetDeclaredConstructor(paramTypes: new[] { typeof(string), FileMode.Type, FileAccess.Type, FileShare.Type });
+                .GetDeclaredConstructor(paramTypes: new[] { typeof(string), FileMode.Type, FileAccess.Type, FileShare.Type })!;
 
             internal static Stream CreateReadShareDelete(string path)
             {

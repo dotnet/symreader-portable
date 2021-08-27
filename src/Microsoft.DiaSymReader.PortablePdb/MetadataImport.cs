@@ -13,14 +13,14 @@ namespace Microsoft.DiaSymReader.PortablePdb
 {
     internal abstract class MetadataImport
     {
-        public static MetadataImport FromObject(object obj)
+        public static MetadataImport? FromObject(object obj)
             => obj is IMetadataImport legacyImporter ? (MetadataImport)new Legacy(legacyImporter) :
                obj is DiaSymReader.IMetadataImport dsrImporter ? new Internal(dsrImporter) :
                null;
 
-        public string GetQualifiedTypeName(Handle typeDefOrRef)
+        public string? GetQualifiedTypeName(Handle typeDefOrRef)
         {
-            string qualifiedName;
+            string? qualifiedName;
             if (typeDefOrRef.Kind == HandleKind.TypeDefinition)
             {
                 GetTypeDefProps(MetadataTokens.GetToken(typeDefOrRef), out qualifiedName);
@@ -53,19 +53,19 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
             public override void GetTypeDefProps(int typeDefinition, out string qualifiedName)
             {
-                _import.GetTypeDefProps(typeDefinition, null, 0, out int nameLength, out _, out _);
+                _import.GetTypeDefProps(typeDefinition, qualifiedName: null, 0, out int nameLength, out _, out _);
 
                 var buffer = new StringBuilder(nameLength + 1);
-                _import.GetTypeDefProps(typeDefinition, buffer, buffer.Capacity, out nameLength, out _, out _);
+                _import.GetTypeDefProps(typeDefinition, buffer, buffer.Capacity, out _, out _, out _);
                 qualifiedName = buffer.ToString();
             }
 
             public override void GetTypeRefProps(int typeReference, out string qualifiedName)
             {
-                _import.GetTypeRefProps(typeReference, out _, null, 0, out int nameLength);
+                _import.GetTypeRefProps(typeReference, out _, qualifiedName: null, 0, out int nameLength);
 
                 var buffer = new StringBuilder(nameLength + 1);
-                _import.GetTypeRefProps(typeReference, out _, buffer, buffer.Capacity, out nameLength);
+                _import.GetTypeRefProps(typeReference, out _, buffer, buffer.Capacity, out _);
                 qualifiedName = buffer.ToString();
             }
 

@@ -61,7 +61,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
                 if (!SymReader.TryGetLineDeltas(extent.Method, out var deltas))
                 {
-                    deltas = default(MethodLineDeltas);
+                    deltas = default;
                 }
 
                 int sequencePointIndex = 0;
@@ -121,7 +121,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             // diasymreader returns no checksum for documents once EnC has been performed:
             if (SymReader.Version > 1)
             {
-                algorithm = default(Guid);
+                algorithm = default;
                 return HResult.S_FALSE;
             }
 
@@ -145,8 +145,6 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         public int GetLanguageVendor(ref Guid vendor)
         {
-            var document = PdbReader.MetadataReader.GetDocument(Handle);
-            Guid languageId = PdbReader.MetadataReader.GetGuid(document.Language);
             vendor = s_vendorMicrosoftGuid;
             return HResult.S_OK;
         }
@@ -221,7 +219,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         private BlobReader GetEmbeddedSourceBlobReader()
         {
             BlobHandle blobHandle = PdbReader.MetadataReader.GetCustomDebugInformation(Handle, MetadataUtilities.EmbeddedSourceId);
-            return blobHandle.IsNil ? default(BlobReader) : PdbReader.MetadataReader.GetBlobReader(blobHandle);
+            return blobHandle.IsNil ? default : PdbReader.MetadataReader.GetBlobReader(blobHandle);
         }
     }
 }

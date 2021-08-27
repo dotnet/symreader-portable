@@ -8,7 +8,7 @@ using System.Diagnostics;
 
 namespace Microsoft.DiaSymReader.PortablePdb
 {
-    internal struct MethodLineDeltas
+    internal readonly struct MethodLineDeltas
     {
         /// <summary>
         /// Delta applied to all sequence points.

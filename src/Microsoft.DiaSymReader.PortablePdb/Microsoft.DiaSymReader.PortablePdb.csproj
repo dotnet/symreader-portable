@@ -9,6 +9,7 @@
     <PackageDescription>Implementation of Microsoft DiaSymReader interfaces that reads debug information from Portable PDB format.</PackageDescription>
     <PackageTags>DiaSymReader ISymUnmanagedReader Portable PDB COM interop debugging</PackageTags>
     <DevelopmentDependency>true</DevelopmentDependency>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.DiaSymReader" Version="$(MicrosoftDiaSymReaderVersion)" />

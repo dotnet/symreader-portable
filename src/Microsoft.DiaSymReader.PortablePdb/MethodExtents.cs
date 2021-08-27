@@ -20,8 +20,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         // Method extents partitioned into non-overlapping subsequences, each sorted by min line.
         // Used as cache, lock on access.
-        private Dictionary<DocumentId, ImmutableArray<ImmutableArray<MethodLineExtent>>> _lazyPartitionedExtentsByDocument =
-            new Dictionary<DocumentId, ImmutableArray<ImmutableArray<MethodLineExtent>>>();
+        private Dictionary<DocumentId, ImmutableArray<ImmutableArray<MethodLineExtent>>> _lazyPartitionedExtentsByDocument = new();
 
         public MethodExtents(PortablePdbReader pdbReader)
         {
@@ -213,7 +212,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
             if (!_extentsByDocument.TryGetValue(documentId, out var extentsInDocument))
             {
-                partitionedExtents = default(ImmutableArray<ImmutableArray<MethodLineExtent>>);
+                partitionedExtents = default;
                 return false;
             }
 
@@ -291,7 +290,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         private static IEnumerable<(DocumentId, MethodLineExtent)> GetMethodExtents(
             PortablePdbReader pdbReader,
             MethodDebugInformationHandle methodDebugHandle, 
-            ImmutableArray<int> lineDeltasOpt = default(ImmutableArray<int>),
+            ImmutableArray<int> lineDeltasOpt = default,
             int expectedSequencePointCount = -1)
         {
             var mdReader = pdbReader.MetadataReader;
@@ -376,13 +375,13 @@ namespace Microsoft.DiaSymReader.PortablePdb
         /// <summary>
         /// Enumerates all documents that include at least one non-hidden sequence point of the specified method body.
         /// </summary>
-        internal static (DocumentHandle Single, IEnumerable<DocumentHandle> Multiple) GetMethodBodyDocuments(MetadataReader reader, MethodDebugInformationHandle handle)
+        internal static (DocumentHandle Single, IEnumerable<DocumentHandle>? Multiple) GetMethodBodyDocuments(MetadataReader reader, MethodDebugInformationHandle handle)
         {
             var debugInfo = reader.GetMethodDebugInformation(handle);
             if (debugInfo.SequencePointsBlob.IsNil)
             {
                 // no debug info for the method:
-                return (default(DocumentHandle), null);
+                return (default, null);
             }
 
             if (!debugInfo.Document.IsNil)
@@ -419,7 +418,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             }
         }
 
-        internal IEnumerable<(MethodId Id, int Version)> GetMethodsContainingLine(DocumentId documentId, int line)
+        internal IEnumerable<(MethodId Id, int Version)>? GetMethodsContainingLine(DocumentId documentId, int line)
         {
             if (!TryGetPartitionedExtents(documentId, out var extentsByMinLine))
             {

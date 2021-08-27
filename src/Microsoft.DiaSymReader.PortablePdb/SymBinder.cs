@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection.PortableExecutable;
 using System.Runtime.InteropServices;
@@ -22,7 +23,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             [MarshalAs(UnmanagedType.Interface)]object metadataImport,
             [MarshalAs(UnmanagedType.LPWStr)]string fileName,
             [MarshalAs(UnmanagedType.LPWStr)]string searchPath,
-            [MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedReader reader)
+            [MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedReader? reader)
         {
             return GetReaderForFile2(
                 metadataImport,
@@ -54,7 +55,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             [MarshalAs(UnmanagedType.LPWStr)]string fileName,
             [MarshalAs(UnmanagedType.LPWStr)]string searchPath,
             SymUnmanagedSearchPolicy searchPolicy,
-            [MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedReader reader)
+            [MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedReader? reader)
         {
             reader = null;
             try
@@ -140,7 +141,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             }
             finally
             {
-                InteropUtilities.TransferOwnershipOrRelease(ref metadataImport, reader);
+                InteropUtilities.TransferOwnershipOrRelease(ref metadataImport!, reader);
             }
         }
 
@@ -182,8 +183,10 @@ namespace Microsoft.DiaSymReader.PortablePdb
             uint stamp,
             int age,
             LazyMetadataImport metadataImport,
+#pragma warning disable IDE0060 // TODO: Remove unused parameter
             SymUnmanagedSearchPolicy searchPolicy,
-            out ISymUnmanagedReader reader)
+#pragma warning restore
+            [NotNullWhen(true)] out ISymUnmanagedReader? reader)
         {
             if (searchPaths == null)
             {
@@ -231,11 +234,11 @@ namespace Microsoft.DiaSymReader.PortablePdb
             uint stamp,
             int age,
             LazyMetadataImport metadataImport,
-            out ISymUnmanagedReader reader)
+            [NotNullWhen(true)] out ISymUnmanagedReader? reader)
         {
             if (PortableShim.File.Exists(pdbFilePath))
             {
-                PortablePdbReader pdbReader;
+                PortablePdbReader? pdbReader;
                 try
                 {
                     pdbReader = new PortablePdbReader(SymReader.CreateProviderFromFile(pdbFilePath), version: 1, previousDocumentCount: 0);
@@ -287,7 +290,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             {
             }
 
-            codeViewData = default(CodeViewDebugDirectoryData);
+            codeViewData = default;
             stamp = 0;
             return false;
         }
@@ -308,7 +311,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         public int GetReaderFromStream(
             [MarshalAs(UnmanagedType.Interface)]object metadataImport,
             [MarshalAs(UnmanagedType.Interface)]object stream,
-            [MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedReader reader)
+            [MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedReader? reader)
         {
             reader = null;
 
@@ -322,7 +325,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             }
             finally
             {
-                InteropUtilities.TransferOwnershipOrRelease(ref metadataImport, reader);
+                InteropUtilities.TransferOwnershipOrRelease(ref metadataImport!, reader);
             }
         }
 

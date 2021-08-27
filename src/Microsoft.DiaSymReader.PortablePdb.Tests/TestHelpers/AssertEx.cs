@@ -196,7 +196,7 @@ namespace Roslyn.Test.Utilities
             }
             else if (!SequenceEqual(expected, actual, comparer))
             {
-                string assertMessage = GetAssertMessage(expected, actual, comparer, itemInspector, itemSeparator);
+                string assertMessage = GetAssertMessage(expected, actual, itemInspector, itemSeparator);
 
                 if (message != null)
                 {
@@ -239,7 +239,7 @@ namespace Roslyn.Test.Utilities
             return true;
         }
 
-        public static void SetEqual<T>(IEnumerable<T> expected, IEnumerable<T> actual, IEqualityComparer<T> comparer = null, string message = null, string itemSeparator = "\r\n")
+        public static void SetEqual<T>(IEnumerable<T> expected, IEnumerable<T> actual, IEqualityComparer<T> comparer = null, string message = null)
         {
             var expectedSet = new HashSet<T>(expected, comparer);
             var result = expected.Count() == actual.Count() && expectedSet.SetEquals(actual);
@@ -398,20 +398,17 @@ namespace Roslyn.Test.Utilities
             return output.ToString();
         }
 
-        public static string GetAssertMessage<T>(IEnumerable<T> expected, IEnumerable<T> actual, bool escapeQuotes, string expectedValueSourcePath = null, int expectedValueSourceLine = 0)
+        public static string GetAssertMessage<T>(IEnumerable<T> expected, IEnumerable<T> actual, bool escapeQuotes)
         {
             Func<T, string> itemInspector = escapeQuotes ? new Func<T, string>(t => t.ToString().Replace("\"", "\"\"")) : null;
-            return GetAssertMessage(expected, actual, itemInspector: itemInspector, itemSeparator: "\r\n", expectedValueSourcePath: expectedValueSourcePath, expectedValueSourceLine: expectedValueSourceLine);
+            return GetAssertMessage(expected, actual, itemInspector: itemInspector, itemSeparator: "\r\n");
         }
 
         public static string GetAssertMessage<T>(
             IEnumerable<T> expected,
             IEnumerable<T> actual,
-            Func<T, T, bool> comparer = null,
             Func<T, string> itemInspector = null,
-            string itemSeparator = null,
-            string expectedValueSourcePath = null,
-            int expectedValueSourceLine = 0)
+            string itemSeparator = null)
         {
             if (itemInspector == null)
             {

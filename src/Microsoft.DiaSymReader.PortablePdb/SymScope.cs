@@ -42,23 +42,23 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         public int GetConstantCount(out int count)
         {
-            return GetConstants(0, out count, null);
+            return GetConstants(0, out count, constants: null);
         }
 
         public int GetConstants(
             int bufferLength,
             out int count,
-            [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0), Out]ISymUnmanagedConstant[] constants)
+            [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0), Out]ISymUnmanagedConstant[]? constants)
         {
             return _data.GetConstants(bufferLength, out count, constants);
         }
 
         public int GetLocalCount(out int count)
         {
-            return GetLocals(0, out count, null);
+            return GetLocals(0, out count, locals: null);
         }
 
-        public int GetLocals(int bufferLength, out int count, [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0), Out]ISymUnmanagedVariable[] locals)
+        public int GetLocals(int bufferLength, out int count, [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0), Out]ISymUnmanagedVariable[]? locals)
         {
             return _data.GetLocals(bufferLength, out count, locals);
         }
@@ -69,7 +69,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             return HResult.S_OK;
         }
 
-        public int GetParent([MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedScope scope)
+        public int GetParent([MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedScope? scope)
         {
             var parentData = _data.Parent;
             scope = (parentData != null) ? new SymScope(parentData) : null;

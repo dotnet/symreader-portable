@@ -27,7 +27,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             private object GetDebuggerDisplay() => $"{MetadataTokens.GetToken(Handle):X8} v{Version}";
         }
 
-        private List<MethodInfo> _lazyInfos;
+        private List<MethodInfo>? _lazyInfos;
         private readonly int _baselineMethodCount;
 
         public MethodMap(PortablePdbReader pdbReader)
@@ -89,7 +89,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
                     int index = id.Value - 1;
                     while (infos.Count <= index)
                     {
-                        infos.Add(default(MethodInfo));
+                        infos.Add(default);
                     }
 
                     // an existing info is overwritten with new version:
