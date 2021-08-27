@@ -34,6 +34,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         /// </summary>
         internal PortablePdbReader(MetadataReaderProvider provider, int version, int previousDocumentCount)
         {
+            Debug.Assert(provider != null);
             Debug.Assert(version >= 1);
 
             try

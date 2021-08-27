@@ -27,6 +27,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         internal SymMethod(PortablePdbReader pdbReader, MethodDebugInformationHandle handle)
         {
+            Debug.Assert(pdbReader != null);
             PdbReader = pdbReader;
             DebugHandle = handle;
         }

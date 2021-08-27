@@ -17,6 +17,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         internal ChildScopeData(SymMethod symMethod, ScopeData parent, LocalScopeHandle handle)
             : base(symMethod)
         {
+            Debug.Assert(parent != null);
             Debug.Assert(!handle.IsNil);
 
             _handle = handle;
