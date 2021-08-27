@@ -221,10 +221,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         private void UpdateLineDeltas(MethodId methodId, MethodLineDeltas deltas)
         {
-            if (_lazyMethodLineDeltas == null)
-            {
-                _lazyMethodLineDeltas = new Dictionary<MethodId, MethodLineDeltas>();
-            }
+            _lazyMethodLineDeltas ??= new Dictionary<MethodId, MethodLineDeltas>();
 
             if (_lazyMethodLineDeltas.TryGetValue(methodId, out var existing))
             {
@@ -380,7 +377,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         private int GetMethodImpl(int methodToken, out SymMethod? method)
         {
-            if (TryGetDebuggableMethod(methodToken, out var pdbReader, out var handle))
+            if (TryGetMethod(methodToken, out var pdbReader, out var handle))
             {
                 method = new SymMethod(pdbReader, handle);
                 return HResult.S_OK;
@@ -390,7 +387,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             return HResult.E_FAIL;
         }
 
-        private bool TryGetDebuggableMethod(int methodToken, [NotNullWhen(true)] out PortablePdbReader? pdbReader, out MethodDebugInformationHandle handle)
+        private bool TryGetMethod(int methodToken, [NotNullWhen(true)] out PortablePdbReader? pdbReader, out MethodDebugInformationHandle handle)
         {
             if (!MetadataUtilities.IsMethodToken(methodToken))
             {
@@ -922,7 +919,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             for (int i = 0; i < lineDeltaCount; i++)
             {
                 int methodToken = lineDeltas[i].MethodToken;
-                if (!TryGetDebuggableMethod(methodToken, out var pdbReader, out var handle))
+                if (!TryGetMethod(methodToken, out var pdbReader, out var handle))
                 {
                     continue;
                 }
@@ -933,11 +930,8 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 {
                     AddExtentForDocument(single);
                 }
-                else
+                else if (multiple != null)
                 {
-                    // method has debug info:
-                    Debug.Assert(multiple != null);
-
                     foreach (var documentHandle in multiple)
                     {
                         AddExtentForDocument(documentHandle);
@@ -966,7 +960,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         [PreserveSig]
         public int GetLocalVariableCount(int methodToken, out int count)
         {
-            if (TryGetDebuggableMethod(methodToken, out var pdbReader, out var handle))
+            if (TryGetMethod(methodToken, out var pdbReader, out var handle))
             {
                 count = SymMethod.GetLocalVariableCount(pdbReader.MetadataReader, handle);
                 return HResult.S_OK;
@@ -1043,7 +1037,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 return HResult.E_INVALIDARG;
             }
 
-            if (count < 0 || !TryGetDebuggableMethod(methodToken, out var pdbReader, out var handle))
+            if (count < 0 || !TryGetMethod(methodToken, out var pdbReader, out var handle) || !pdbReader.HasSequencePoints(handle))
             {
                 return HResult.E_FAIL;
             }

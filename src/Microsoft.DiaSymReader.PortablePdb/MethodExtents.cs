@@ -298,7 +298,6 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
             var debugInfo = mdReader.GetMethodDebugInformation(methodDebugHandle);
 
-            // no debug info for the method
             if (debugInfo.SequencePointsBlob.IsNil)
             {
                 yield break;

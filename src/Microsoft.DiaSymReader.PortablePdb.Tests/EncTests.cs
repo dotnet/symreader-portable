@@ -88,7 +88,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Assert.Equal(HResult.S_FALSE, docMain1.GetChecksum(0, out count, null));
             Assert.Equal(0, count);
             Assert.Equal(HResult.S_FALSE, docMain1.GetChecksumAlgorithmId(ref alg));
-            Assert.Equal(default(Guid), alg);
+            Assert.Equal(default, alg);
 
             UpdateSymReaderFromResource(symReader, TestResources.EncMethodExtents.Diffs(2, portable));
 
@@ -104,7 +104,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Assert.Equal(HResult.S_FALSE, docMain2.GetChecksum(0, out count, null));
             Assert.Equal(0, count);
             Assert.Equal(HResult.S_FALSE, docMain2.GetChecksumAlgorithmId(ref alg));
-            Assert.Equal(default(Guid), alg);
+            Assert.Equal(default, alg);
 
             Assert.Equal(@"C:\Enc1.cs", docMain2.GetName());
             Assert.Equal(@"C:\F\A.cs", docA2.GetName());
@@ -152,12 +152,12 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         {
             var symReader = CreateSymReaderFromResource(TestResources.EncMethodExtents.Baseline(portable));
 
-            Assert.Equal(HResult.E_FAIL, symReader.GetMethod(0x01000001, out var _));
-            Assert.Equal(HResult.E_FAIL, symReader.GetMethod(0x06000fff, out var __));
+            Assert.Equal(HResult.E_FAIL, symReader.GetMethod(0x01000001, out _));
+            Assert.Equal(HResult.E_FAIL, symReader.GetMethod(0x06000fff, out _));
 
             // method w/o debug info:
-            Assert.Equal(HResult.E_FAIL, symReader.GetMethod(0x06000005, out var ___));
-            Assert.Equal(HResult.E_FAIL, symReader.GetMethodByVersion(0x06000005, 1, out var ____));
+            Assert.Equal(HResult.E_FAIL, symReader.GetMethod(0x06000005, out _));
+            Assert.Equal(HResult.E_FAIL, symReader.GetMethodByVersion(0x06000005, 1, out _));
 
             var methodA0 = symReader.GetMethod(0x06000001);
             Assert.Equal(1, symReader.GetMethodVersion(methodA0));
@@ -195,9 +195,9 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Assert.Equal(1, symReader.GetMethodVersion(methodF0));
             Assert.Equal(9, methodF0.GetSequencePoints().First().StartLine);
 
-            Assert.Equal(HResult.E_FAIL, symReader.GetMethodByVersion(0x06000100, 1, out var m0));
-            Assert.Equal(HResult.E_INVALIDARG, symReader.GetMethodByVersion(0x06000001, 2, out var m1));
-            Assert.Equal(HResult.E_INVALIDARG, symReader.GetMethodByVersion(0x06000002, 2, out var m2));
+            Assert.Equal(HResult.E_FAIL, symReader.GetMethodByVersion(0x06000100, 1, out _));
+            Assert.Equal(HResult.E_INVALIDARG, symReader.GetMethodByVersion(0x06000001, 2, out _));
+            Assert.Equal(HResult.E_INVALIDARG, symReader.GetMethodByVersion(0x06000002, 2, out _));
 
             // gen 1:
 
@@ -243,9 +243,9 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Assert.Equal(1, symReader.GetMethodVersion(methodF0));
             Assert.Equal(9, methodF0.GetSequencePoints().First().StartLine);
 
-            Assert.Equal(HResult.E_FAIL, symReader.GetMethodByVersionPreRemap(0x06000100, 1, out var m0));
-            Assert.Equal(HResult.E_INVALIDARG, symReader.GetMethodByVersionPreRemap(0x06000001, 2, out var m1));
-            Assert.Equal(HResult.E_INVALIDARG, symReader.GetMethodByVersionPreRemap(0x06000002, 2, out var m2));
+            Assert.Equal(HResult.E_FAIL, symReader.GetMethodByVersionPreRemap(0x06000100, 1, out _));
+            Assert.Equal(HResult.E_INVALIDARG, symReader.GetMethodByVersionPreRemap(0x06000001, 2, out _));
+            Assert.Equal(HResult.E_INVALIDARG, symReader.GetMethodByVersionPreRemap(0x06000002, 2, out _));
 
             // gen 1:
 
@@ -677,8 +677,8 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             else
             {
                 // seems like a bug in diasymreader (the sequence points are actually updated) 
-                Assert.Equal(HResult.E_FAIL, symReader.GetMethodFromDocumentPosition(docA, 10 + 3, 1, out method));
-                Assert.Equal(HResult.E_FAIL, symReader.GetMethodFromDocumentPosition(docB, 20 + 2, 1, out method));
+                Assert.Equal(HResult.E_FAIL, symReader.GetMethodFromDocumentPosition(docA, 10 + 3, 1, out _));
+                Assert.Equal(HResult.E_FAIL, symReader.GetMethodFromDocumentPosition(docB, 20 + 2, 1, out _));
             }
 
             Assert.Equal(HResult.S_OK, symReader.GetMethodFromDocumentPosition(docEnc, 15 + 1, 1, out method));
@@ -813,9 +813,6 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 
             UpdateSymReaderFromResource(symReader, TestResources.EncMethodExtents.Diffs(1, portable));
 
-            var docEnc = symReader.GetDocument("Enc1.cs");
-            var docA = symReader.GetDocument("A.cs");
-            var docB = symReader.GetDocument("B.cs");
             var method = symReader.GetMethod(0x06000002);
 
             Assert.Equal(2, symReader.GetMethodVersion(method));
@@ -872,19 +869,19 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
                 Assert.Equal(HResult.S_OK, method.GetOffset(docEnc, 16, 1, out ilOffset));
                 Assert.Equal(0xD, ilOffset);
 
-                Assert.Equal(HResult.S_OK, method.GetRanges(docEnc, 8, 1, ranges.Length, out count, ranges));
+                Assert.Equal(HResult.S_OK, method.GetRanges(docEnc, 8, 1, ranges.Length, out _, ranges));
                 Assert.Equal(0, ranges[0]);
                 Assert.Equal(1, ranges[1]);
 
-                Assert.Equal(HResult.S_OK, method.GetRanges(docA, 13, 1, ranges.Length, out count, ranges));
+                Assert.Equal(HResult.S_OK, method.GetRanges(docA, 13, 1, ranges.Length, out _, ranges));
                 Assert.Equal(1, ranges[0]);
                 Assert.Equal(7, ranges[1]);
 
-                Assert.Equal(HResult.S_OK, method.GetRanges(docB, 22, 1, ranges.Length, out count, ranges));
+                Assert.Equal(HResult.S_OK, method.GetRanges(docB, 22, 1, ranges.Length, out _, ranges));
                 Assert.Equal(7, ranges[0]);
                 Assert.Equal(0xd, ranges[1]);
 
-                Assert.Equal(HResult.S_OK, method.GetRanges(docEnc, 16, 1, ranges.Length, out count, ranges));
+                Assert.Equal(HResult.S_OK, method.GetRanges(docEnc, 16, 1, ranges.Length, out _, ranges));
                 Assert.Equal(0xd, ranges[0]);
                 Assert.Equal(0xe, ranges[1]);
             }
@@ -894,13 +891,13 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
                 Assert.Equal(HResult.S_OK, method.GetOffset(docEnc, 9, 1, out ilOffset));
                 Assert.Equal(0, ilOffset);
 
-                Assert.Equal(HResult.E_FAIL, method.GetOffset(docEnc, 8, 1, out ilOffset));
-                Assert.Equal(HResult.E_FAIL, method.GetOffset(docA, 13, 1, out ilOffset));
-                Assert.Equal(HResult.E_FAIL, method.GetOffset(docB, 22, 1, out ilOffset));
-                Assert.Equal(HResult.E_FAIL, method.GetOffset(docEnc, 16, 1, out ilOffset));
+                Assert.Equal(HResult.E_FAIL, method.GetOffset(docEnc, 8, 1, out _));
+                Assert.Equal(HResult.E_FAIL, method.GetOffset(docA, 13, 1, out _));
+                Assert.Equal(HResult.E_FAIL, method.GetOffset(docB, 22, 1, out _));
+                Assert.Equal(HResult.E_FAIL, method.GetOffset(docEnc, 16, 1, out _));
 
                 // diasymreader bug, it seems to ignore applied line deltas:
-                Assert.Equal(HResult.S_OK, method.GetRanges(docEnc, 9, 1, ranges.Length, out count, ranges));
+                Assert.Equal(HResult.S_OK, method.GetRanges(docEnc, 9, 1, ranges.Length, out _, ranges));
                 Assert.Equal(0, ranges[0]);
                 Assert.Equal(1, ranges[1]);
 
@@ -923,10 +920,6 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         {
             var symReader = CreateSymReaderFromResource(TestResources.EncMethodExtents.Baseline(portable));
             var symEncUpdate = (ISymUnmanagedEncUpdate)symReader;
-
-            var docEnc = symReader.GetDocument("Enc1.cs");
-            var docA = symReader.GetDocument("A.cs");
-            var docB = symReader.GetDocument("B.cs");
 
             // Gen 0:
             // Method A (0x06000001):
@@ -1011,10 +1004,6 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             var symReader = CreateSymReaderFromResource(TestResources.EncMethodExtents.Baseline(portable));
             var symEncUpdate = (ISymUnmanagedEncUpdate)symReader;
 
-            var docEnc = symReader.GetDocument("Enc1.cs");
-            var docA = symReader.GetDocument("A.cs");
-            var docB = symReader.GetDocument("B.cs");
-
             // Gen 0:
             // Method A (0x06000001):
             // {
@@ -1070,10 +1059,6 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             var symReader = CreateSymReaderFromResource(TestResources.EncMethodExtents.Baseline(portable));
             var symEncUpdate = (ISymUnmanagedEncUpdate)symReader;
 
-            var docEnc = symReader.GetDocument("Enc1.cs");
-            var docA = symReader.GetDocument("A.cs");
-            var docB = symReader.GetDocument("B.cs");
-
             // Gen 0:
             // Method A (0x06000001):
             // {
@@ -1126,10 +1111,6 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         {
             var symReader = CreateSymReaderFromResource(TestResources.EncMethodExtents.Baseline(portable));
             var symEncUpdate = (ISymUnmanagedEncUpdate)symReader;
-
-            var docEnc = symReader.GetDocument("Enc1.cs");
-            var docA = symReader.GetDocument("A.cs");
-            var docB = symReader.GetDocument("B.cs");
 
             // Gen 0:
             // Method A (0x06000001):
@@ -1226,15 +1207,15 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             var symReader = CreateSymReaderFromResource(TestResources.Scopes.DllAndPdb(portable));
             var symEncUpdate = (ISymUnmanagedEncUpdate)symReader;
 
-            Assert.Equal(HResult.E_FAIL, symEncUpdate.GetLocalVariableCount(0, out int count));
-            Assert.Equal(HResult.E_FAIL, symEncUpdate.GetLocalVariableCount(0x01000001, out count));
-            Assert.Equal(HResult.E_FAIL, symEncUpdate.GetLocalVariableCount(0x06000100, out count));
+            Assert.Equal(HResult.E_FAIL, symEncUpdate.GetLocalVariableCount(0, out _));
+            Assert.Equal(HResult.E_FAIL, symEncUpdate.GetLocalVariableCount(0x01000001, out _));
+            Assert.Equal(HResult.E_FAIL, symEncUpdate.GetLocalVariableCount(0x06000100, out _));
 
             var vars = new ISymUnmanagedVariable[10];
-            Assert.Equal(HResult.E_INVALIDARG, symEncUpdate.GetLocalVariables(0x06000003, 0, null, out count));
-            Assert.Equal(HResult.S_OK, symEncUpdate.GetLocalVariables(0x06000003, -1, vars, out count));
-            Assert.Equal(HResult.S_OK, symEncUpdate.GetLocalVariables(0x06000003, int.MaxValue, vars, out count));
-            Assert.Equal(HResult.E_WIN32_NOT_ENOUGH_MEMORY, symEncUpdate.GetLocalVariables(0x06000003, 1, vars, out count));
+            Assert.Equal(HResult.E_INVALIDARG, symEncUpdate.GetLocalVariables(0x06000003, 0, null, out _));
+            Assert.Equal(HResult.S_OK, symEncUpdate.GetLocalVariables(0x06000003, -1, vars, out _));
+            Assert.Equal(HResult.S_OK, symEncUpdate.GetLocalVariables(0x06000003, int.MaxValue, vars, out _));
+            Assert.Equal(HResult.E_WIN32_NOT_ENOUGH_MEMORY, symEncUpdate.GetLocalVariables(0x06000003, 1, vars, out _));
         }
 
         [Theory, ClassData(typeof(PdbTestData))]
@@ -1256,13 +1237,22 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         }
 
         [Theory, ClassData(typeof(PdbTestData))]
+        public void GetLocalVariables_MethodWithoutSequencePoints(bool portable)
+        {
+            var symReader = CreateSymReaderFromResource(TestResources.Documents.DllAndPdb(portable));
+            var symEncUpdate = (ISymUnmanagedEncUpdate)symReader;
+
+            VerifyLocalVariables(symEncUpdate, 0x06000002);
+        }
+
+        [Theory, ClassData(typeof(PdbTestData))]
         public void GetLocalVariablesUpdate(bool portable)
         {
             var symReader = CreateSymReaderFromResource(TestResources.EncMethodExtents.Baseline(portable));
             var symEncUpdate = (ISymUnmanagedEncUpdate)symReader;
 
             // method w/o debug info:
-            Assert.Equal(HResult.E_FAIL, symEncUpdate.GetLocalVariableCount(0x06000005, out int count));
+            Assert.Equal(HResult.E_FAIL, symEncUpdate.GetLocalVariableCount(0x06000005, out _));
 
             VerifyLocalVariables(symEncUpdate, 0x06000004, "H1", "H2");
             VerifyLocalVariables(symEncUpdate, 0x06000009, "H3");
@@ -1292,13 +1282,13 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             var symEncUpdate = (ISymUnmanagedEncUpdate)symReader;
 
             // method w/o debug info:
-            Assert.Equal(HResult.E_FAIL, symEncUpdate.GetLocalVariableCount(0x06000005, out int count));
+            Assert.Equal(HResult.E_FAIL, symEncUpdate.GetLocalVariableCount(0x06000005, out _));
 
             VerifyLocalVariables(symEncUpdate, 0x06000004, "H1", "H2");
             VerifyLocalVariables(symEncUpdate, 0x06000009, "H3");
 
             // gen 1:
-            Assert.Equal(HResult.S_OK, symReader.UpdateSymbolStore(deltaPath1, default(IStream)));
+            Assert.Equal(HResult.S_OK, symReader.UpdateSymbolStore(deltaPath1, stream: null));
 
             VerifyLocalVariables(symEncUpdate, 0x06000004, "H1", "H2");
             VerifyLocalVariables(symEncUpdate, 0x06000009, "H3", "H4");
@@ -1306,7 +1296,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             // gen 2:
             var deltaStream2 = SymUnmanagedStreamFactory.CreateStream(new MemoryStream(TestResources.EncMethodExtents.Diffs(2, portable).Pdb));
 
-            Assert.Equal(HResult.S_OK, symReader.UpdateSymbolStore(default(string), deltaStream2));
+            Assert.Equal(HResult.S_OK, symReader.UpdateSymbolStore(fileName: null, deltaStream2));
 
             VerifyLocalVariables(symEncUpdate, 0x06000004, "H2");
             VerifyLocalVariables(symEncUpdate, 0x06000009, "H4");
@@ -1439,15 +1429,16 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 
             var method = (ISymEncUnmanagedMethod)symReader.GetMethod(0x06000001);
             var documents = new ISymUnmanagedDocument[20];
+            int count, actualCount;
 
             if (portable)
             {
                 // diasymreader bug: one document is missing non-deterministically
 
-                Assert.Equal(HResult.S_OK, method.GetDocumentsForMethodCount(out int count));
+                Assert.Equal(HResult.S_OK, method.GetDocumentsForMethodCount(out count));
                 Assert.Equal(13, count);
 
-                Assert.Equal(HResult.S_OK, method.GetDocumentsForMethod(count, out int actualCount, documents));
+                Assert.Equal(HResult.S_OK, method.GetDocumentsForMethod(count, out actualCount, documents));
                 Assert.Equal(count, actualCount);
 
                 AssertEx.Equal(new[]
@@ -1467,6 +1458,14 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
                     @"C:\a\B\x.cs",
                 }, documents.Take(actualCount).Select(d => d.GetName()));
             }
+
+            var methodWithoutSequencePoints = (ISymEncUnmanagedMethod)symReader.GetMethod(0x06000002);
+
+            Assert.Equal(HResult.S_OK, methodWithoutSequencePoints.GetDocumentsForMethodCount(out count));
+            Assert.Equal(0, count);
+
+            Assert.Equal(HResult.S_OK, methodWithoutSequencePoints.GetDocumentsForMethod(count, out actualCount, documents));
+            Assert.Equal(count, actualCount);
         }
 
         [Theory, ClassData(typeof(PdbTestData))]
@@ -1583,9 +1582,9 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Marshal.Copy((IntPtr)metadata, bytes, 0, bytes.Length);
             AssertEx.Equal(resources2.Pdb, bytes);
 
-            Assert.Equal(HResult.E_INVALIDARG, symReader.GetPortableDebugMetadataByVersion(-1, out metadata, out size));
-            Assert.Equal(HResult.E_INVALIDARG, symReader.GetPortableDebugMetadataByVersion(0, out metadata, out size));
-            Assert.Equal(HResult.E_INVALIDARG, symReader.GetPortableDebugMetadataByVersion(4, out metadata, out size));
+            Assert.Equal(HResult.E_INVALIDARG, symReader.GetPortableDebugMetadataByVersion(-1, out _, out _));
+            Assert.Equal(HResult.E_INVALIDARG, symReader.GetPortableDebugMetadataByVersion(0, out _, out _));
+            Assert.Equal(HResult.E_INVALIDARG, symReader.GetPortableDebugMetadataByVersion(4, out _, out _));
         }
 
         [ConditionalFact(typeof(WindowsOnly))]
@@ -1605,9 +1604,9 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Assert.True(metadata == null);
             Assert.Equal(0, size);
 
-            Assert.Equal(HResult.E_INVALIDARG, symReader.GetPortableDebugMetadataByVersion(-1, out metadata, out size));
-            Assert.Equal(HResult.E_INVALIDARG, symReader.GetPortableDebugMetadataByVersion(0, out metadata, out size));
-            Assert.Equal(HResult.E_INVALIDARG, symReader.GetPortableDebugMetadataByVersion(4, out metadata, out size));
+            Assert.Equal(HResult.E_INVALIDARG, symReader.GetPortableDebugMetadataByVersion(-1, out _, out _));
+            Assert.Equal(HResult.E_INVALIDARG, symReader.GetPortableDebugMetadataByVersion(0, out _, out _));
+            Assert.Equal(HResult.E_INVALIDARG, symReader.GetPortableDebugMetadataByVersion(4, out _, out _));
         }
     }
 }

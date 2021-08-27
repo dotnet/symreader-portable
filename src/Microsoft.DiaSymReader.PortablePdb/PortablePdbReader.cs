@@ -105,8 +105,11 @@ namespace Microsoft.DiaSymReader.PortablePdb
             return false;
         }
 
-        internal bool HasDebugInfo(MethodDebugInformationHandle handle)
+        internal bool HasSequencePoints(MethodDebugInformationHandle handle)
             => !MetadataReader.GetMethodDebugInformation(handle).SequencePointsBlob.IsNil;
+
+        internal bool HasDebugInfo(MethodDebugInformationHandle handle)
+            => HasSequencePoints(handle) || MetadataReader.GetCustomDebugInformation(handle.ToDefinitionHandle()).Count > 0;
 
         internal void InitializeHandleToIdMaps(ImmutableArray<DocumentId> documentIds, ImmutableArray<MethodId> methodIds)
         {
