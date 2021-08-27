@@ -12,14 +12,8 @@ namespace Microsoft.DiaSymReader.PortablePdb
     [ComVisible(false)]
     public sealed class SymDocument : ISymUnmanagedDocument
     {
-        private static Guid s_CSharpGuid = new Guid("3f5162f8-07c6-11d3-9053-00c04fa302a1");
-        private static Guid s_visualBasicGuid = new Guid("3a12d0b8-c26c-11d0-b442-00a0244a1dd2");
-        private static Guid s_FSharpGuid = new Guid("ab4f38c9-b6e6-43ba-be3b-58080b2ccce3");
-        private static Guid s_sha1Guid = new Guid("ff1816ec-aa5e-4d10-87f7-6f4963833460");
-        private static Guid s_sha256Guid = new Guid("8829d00f-11b8-4213-878b-770e8597ac16");
-
-        private static Guid s_vendorMicrosoftGuid = new Guid("994b45c4-e6e9-11d2-903f-00c04fa302a1");
-        private static Guid s_documentTypeGuid = new Guid("5a869d0b-6611-11d3-bd2a-0000f80849bd");
+        private readonly static Guid s_vendorMicrosoftGuid = new("994b45c4-e6e9-11d2-903f-00c04fa302a1");
+        private readonly static Guid s_documentTypeGuid = new("5a869d0b-6611-11d3-bd2a-0000f80849bd");
 
         internal DocumentHandle Handle { get; }
         internal PortablePdbReader PdbReader { get; }

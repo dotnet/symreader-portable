@@ -29,7 +29,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 
                 AssertEx.Equal(new byte[]
                 {
-                    0x89, 0x03, 0x86, 0xAD, 0xFF, 0x27, 0x56, 0x46, 0x9F, 0x3F, 0xE2, 0x18, 0x4B, 0xEF, 0xFC, 0xC0, 0xBE, 0x0C, 0x52, 0xA0
+                    0x85, 0x1E, 0xD4, 0x2E, 0xBA, 0x3C, 0x65, 0x42, 0xB5, 0xB3, 0x7A, 0xFC, 0x7E, 0xBC, 0xB7, 0x39, 0x34, 0x8B, 0x33, 0xC2
                 }, pdbReader.DebugMetadataHeader.Id);
             }
         }
@@ -44,13 +44,13 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 
             if (portable)
             {
-                expectedGuid = new Guid("ad860389-27ff-4656-9f3f-e2184beffcc0");
-                expectedStamp = 0xA0520CBE;
+                expectedGuid = new Guid("2ed41e85-3cba-4265-b5b3-7afc7ebcb739");
+                expectedStamp = 0xc2338b34;
             }
             else
             {
-                expectedGuid = new Guid("c5f482d0-43f0-f15a-10fa-4fc8e8691e3d");
-                expectedStamp = 0xA0520CBE;
+                expectedGuid = new Guid("bf4a0c1a-fbf1-4b2c-b3a7-a37b96754e40");
+                expectedStamp = 0x8CF1D2D4;
             }
 
 
@@ -134,30 +134,37 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 
             int actualCount;
             Assert.Equal(HResult.S_OK, symReader.GetDocuments(0, out actualCount, null));
-            Assert.Equal(13, actualCount);
+            Assert.Equal(14, actualCount);
 
             var actualDocuments = new ISymUnmanagedDocument[actualCount];
             int actualCount2;
             Assert.Equal(HResult.S_OK, symReader.GetDocuments(actualCount, out actualCount2, actualDocuments));
-            Assert.Equal(13, actualCount2);
+            Assert.Equal(14, actualCount2);
 
-            ValidateDocument(actualDocuments[0],
+            // C# compiler writes the primary document record first in Windows PDB and last in Windows PDB:
+            ValidateDocument(actualDocuments[portable ? 0 : actualDocuments.Length - 1],
+                url: @"/Documents.cs",
+                algorithmId: "8829d00f-11b8-4213-878b-770e8597ac16",
+                checksum: new byte[] { 0x5E, 0x65, 0xDD, 0xE1, 0xB0, 0xDD, 0x1D, 0xBD, 0x33, 0x14, 0x19, 0xBB, 0xB9, 0x25, 0xD9, 0xBA, 0x8E, 0x3A, 0x2D, 0x94, 0xCA, 0x64, 0x01, 0xE0, 0x02, 0xA1, 0x00, 0x04, 0x73, 0xF6, 0xB4, 0xAA });
+
+            int i = portable ? 1 : 0;
+            ValidateDocument(actualDocuments[i++],
                 url: @"C:\Documents.cs",
                 algorithmId: "ff1816ec-aa5e-4d10-87f7-6f4963833460",
                 checksum: new byte[] { 0xDB, 0xEB, 0x2A, 0x06, 0x7B, 0x2F, 0x0E, 0x0D, 0x67, 0x8A, 0x00, 0x2C, 0x58, 0x7A, 0x28, 0x06, 0x05, 0x6C, 0x3D, 0xCE });
 
-            ValidateDocument(actualDocuments[1], url: @"C:\a\b\c\d\1.cs", algorithmId: null, checksum: null);
-            ValidateDocument(actualDocuments[2], url: @"C:\a\b\c\D\2.cs", algorithmId: null, checksum: null);
-            ValidateDocument(actualDocuments[3], url: @"C:\a\b\C\d\3.cs", algorithmId: null, checksum: null);
-            ValidateDocument(actualDocuments[4], url: @"C:\a\b\c\d\x.cs", algorithmId: null, checksum: null);
-            ValidateDocument(actualDocuments[5], url: @"C:\A\b\c\x.cs", algorithmId: null, checksum: null);
-            ValidateDocument(actualDocuments[6], url: @"C:\a\b\x.cs", algorithmId: null, checksum: null);
-            ValidateDocument(actualDocuments[7], url: @"C:\a\B\3.cs", algorithmId: null, checksum: null);
-            ValidateDocument(actualDocuments[8], url: @"C:\a\B\c\4.cs", algorithmId: null, checksum: null);
-            ValidateDocument(actualDocuments[9], url: @"C:\*\5.cs", algorithmId: null, checksum: null);
-            ValidateDocument(actualDocuments[10], url: @":6.cs", algorithmId: null, checksum: null);
-            ValidateDocument(actualDocuments[11], url: @"C:\a\b\X.cs", algorithmId: null, checksum: null);
-            ValidateDocument(actualDocuments[12], url: @"C:\a\B\x.cs", algorithmId: null, checksum: null);
+            ValidateDocument(actualDocuments[i++], url: @"C:\a\b\c\d\1.cs", algorithmId: null, checksum: null);
+            ValidateDocument(actualDocuments[i++], url: @"C:\a\b\c\D\2.cs", algorithmId: null, checksum: null);
+            ValidateDocument(actualDocuments[i++], url: @"C:\a\b\C\d\3.cs", algorithmId: null, checksum: null);
+            ValidateDocument(actualDocuments[i++], url: @"C:\a\b\c\d\x.cs", algorithmId: null, checksum: null);
+            ValidateDocument(actualDocuments[i++], url: @"C:\A\b\c\x.cs", algorithmId: null, checksum: null);
+            ValidateDocument(actualDocuments[i++], url: @"C:\a\b\x.cs", algorithmId: null, checksum: null);
+            ValidateDocument(actualDocuments[i++], url: @"C:\a\B\3.cs", algorithmId: null, checksum: null);
+            ValidateDocument(actualDocuments[i++], url: @"C:\a\B\c\4.cs", algorithmId: null, checksum: null);
+            ValidateDocument(actualDocuments[i++], url: @"C:\*\5.cs", algorithmId: null, checksum: null);
+            ValidateDocument(actualDocuments[i++], url: @":6.cs", algorithmId: null, checksum: null);
+            ValidateDocument(actualDocuments[i++], url: @"C:\a\b\X.cs", algorithmId: null, checksum: null);
+            ValidateDocument(actualDocuments[i++], url: @"C:\a\B\x.cs", algorithmId: null, checksum: null);
         }
 
         [Theory, ClassData(typeof(PdbTestData))]

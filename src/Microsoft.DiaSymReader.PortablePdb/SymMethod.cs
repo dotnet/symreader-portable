@@ -640,7 +640,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         public int GetDocumentsForMethod(
             int bufferLength,
             out int count,
-            [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0)]ISymUnmanagedDocument[] documents)
+            [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0)]ISymUnmanagedDocument[]? documents)
         {
             if (documents == null)
             {
@@ -662,16 +662,18 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 return HResult.S_OK;
             }
 
-            // SymMethod w/o debug info wouldn't be created:
-            Debug.Assert(multiple != null);
-
-            // Methods don't usually span too many documents, so it's ok to use linear search.
             var uniqueHandles = new List<DocumentHandle>();
-            foreach (var documentHandle in multiple)
+
+            // Method may have debug information but no sequence points.
+            if (multiple != null)
             {
-                if (!uniqueHandles.Contains(documentHandle))
+                foreach (var documentHandle in multiple)
                 {
-                    uniqueHandles.Add(documentHandle);
+                    // Methods don't usually span too many documents, so it's ok to use linear search.
+                    if (!uniqueHandles.Contains(documentHandle))
+                    {
+                        uniqueHandles.Add(documentHandle);
+                    }
                 }
             }
 

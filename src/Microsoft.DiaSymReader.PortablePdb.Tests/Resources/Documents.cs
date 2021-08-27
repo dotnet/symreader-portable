@@ -35,4 +35,10 @@ class C
 #line 130 "C:\a\B\x.cs"
         Console.WriteLine(8);
     }
+
+#line hidden
+    void F()
+    {
+        _ = new Func<int, int>(i => i + 1);
+    }
 }

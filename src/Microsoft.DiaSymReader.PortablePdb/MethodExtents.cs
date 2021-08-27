@@ -380,7 +380,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             var debugInfo = reader.GetMethodDebugInformation(handle);
             if (debugInfo.SequencePointsBlob.IsNil)
             {
-                // no debug info for the method:
+                // no sequence points for the method:
                 return (default, null);
             }
 

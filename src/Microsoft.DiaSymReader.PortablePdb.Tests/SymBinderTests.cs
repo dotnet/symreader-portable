@@ -60,7 +60,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 
             int actualCount;
             Assert.Equal(HResult.S_OK, symReader.GetDocuments(0, out actualCount, null));
-            Assert.Equal(13, actualCount);
+            Assert.Equal(14, actualCount);
 
             // check that metadata import hasn't been disposed:
             Assert.NotNull(((SymReader)symReader).GetMetadataImport());
@@ -93,7 +93,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 
             int actualCount;
             Assert.Equal(HResult.S_OK, symReader.GetDocuments(0, out actualCount, null));
-            Assert.Equal(13, actualCount);
+            Assert.Equal(14, actualCount);
 
             // check that metadata import hasn't been disposed:
             Assert.NotNull(((SymReader)symReader).GetMetadataImport());
@@ -126,7 +126,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 
             int actualCount;
             Assert.Equal(HResult.S_OK, symReader.GetDocuments(0, out actualCount, null));
-            Assert.Equal(13, actualCount);
+            Assert.Equal(14, actualCount);
 
             // check that metadata import hasn't been disposed:
             Assert.NotNull(((SymReader)symReader).GetMetadataImport());
@@ -159,7 +159,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 
             int actualCount;
             Assert.Equal(HResult.S_OK, symReader.GetDocuments(0, out actualCount, null));
-            Assert.Equal(13, actualCount);
+            Assert.Equal(14, actualCount);
 
             // check that metadata import hasn't been disposed:
             Assert.NotNull(((SymReader)symReader).GetMetadataImport());
@@ -197,7 +197,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 
             int actualCount;
             Assert.Equal(HResult.S_OK, symReader.GetDocuments(0, out actualCount, null));
-            Assert.Equal(13, actualCount);
+            Assert.Equal(14, actualCount);
 
             // check that metadata import hasn't been disposed:
             Assert.NotNull(((SymReader)symReader).GetMetadataImport());
@@ -234,7 +234,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 
             int actualCount;
             Assert.Equal(HResult.S_OK, symReader.GetDocuments(0, out actualCount, null));
-            Assert.Equal(13, actualCount);
+            Assert.Equal(14, actualCount);
 
             // check that metadata import hasn't been disposed:
             Assert.NotNull(((SymReader)symReader).GetMetadataImport());
@@ -270,7 +270,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 
             int actualCount;
             Assert.Equal(HResult.S_OK, symReader.GetDocuments(0, out actualCount, null));
-            Assert.Equal(13, actualCount);
+            Assert.Equal(14, actualCount);
 
             // check that metadata import hasn't been disposed:
             Assert.NotNull(((SymReader)symReader).GetMetadataImport());
@@ -315,7 +315,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 
             int actualCount;
             Assert.Equal(HResult.S_OK, symReader.GetDocuments(0, out actualCount, null));
-            Assert.Equal(13, actualCount);
+            Assert.Equal(14, actualCount);
 
             Assert.Equal(HResult.S_FALSE, ((ISymUnmanagedDispose)symReader).Destroy());
             Assert.Equal(HResult.S_OK, ((ISymUnmanagedDispose)symReader).Destroy());
@@ -335,7 +335,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 
             int actualCount;
             Assert.Equal(HResult.S_OK, symReader.GetDocuments(0, out actualCount, null));
-            Assert.Equal(13, actualCount);
+            Assert.Equal(14, actualCount);
 
             Assert.Equal(HResult.S_FALSE, ((ISymUnmanagedDispose)symReader).Destroy());
             Assert.Equal(HResult.S_OK, ((ISymUnmanagedDispose)symReader).Destroy());
@@ -372,7 +372,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
 
             int actualCount;
             Assert.Equal(HResult.S_OK, symReader.GetDocuments(0, out actualCount, null));
-            Assert.Equal(13, actualCount);
+            Assert.Equal(14, actualCount);
 
             Assert.Equal(HResult.S_FALSE, ((ISymUnmanagedDispose)symReader).Destroy());
             Assert.Equal(HResult.S_OK, ((ISymUnmanagedDispose)symReader).Destroy());
