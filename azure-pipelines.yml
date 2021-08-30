@@ -91,6 +91,18 @@ stages:
         - script: eng\common\cibuild.cmd -configuration $(_BuildConfig) -prepareMachine $(_BuildArgs)
           displayName: Build and Test
 
+        # Publish package to CoreXT store.
+        - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+          - task: NuGetCommand@2
+            displayName: Publish CoreXT Packages
+            inputs:
+              command: push
+              packagesToPush: '$(Build.SourcesDirectory)\artifacts\packages\$(BuildConfiguration)\**\*.nupkg'
+              allowPackageConflicts: true
+              nuGetFeedType: external
+              publishFeedCredentials: 'DevDiv - VS package feed'
+            condition: succeeded()
+          
       - job: MacOS
         displayName: 'MacOS'
         pool: Hosted macOS
