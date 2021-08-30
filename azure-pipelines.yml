@@ -69,11 +69,12 @@ stages:
             value: ''
         strategy:
           matrix:
-            Debug:
-              _BuildConfig: Debug
-              _SignType: test
-              _DotNetPublishToBlobFeed: false
-              _BuildArgs: ''
+            ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+              - Debug:
+                _BuildConfig: Debug
+                _SignType: test
+                _DotNetPublishToBlobFeed: false
+                _BuildArgs: ''
             Release:
               _BuildConfig: Release
               # PRs or external builds are not signed.
