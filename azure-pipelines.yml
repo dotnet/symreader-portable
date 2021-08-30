@@ -70,7 +70,7 @@ stages:
         strategy:
           matrix:
             ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-              - Debug:
+              Debug:
                 _BuildConfig: Debug
                 _SignType: test
                 _DotNetPublishToBlobFeed: false
