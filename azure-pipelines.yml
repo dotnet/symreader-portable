@@ -97,7 +97,7 @@ stages:
             displayName: Publish CoreXT Packages
             inputs:
               command: push
-              packagesToPush: '$(Build.SourcesDirectory)\artifacts\packages\$(BuildConfiguration)\**\*.nupkg'
+              packagesToPush: '$(Build.SourcesDirectory)\artifacts\packages\$(_BuildConfig)\**\*.nupkg'
               allowPackageConflicts: true
               nuGetFeedType: external
               publishFeedCredentials: 'DevDiv - VS package feed'
