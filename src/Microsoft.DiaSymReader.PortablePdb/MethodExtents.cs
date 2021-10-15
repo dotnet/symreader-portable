@@ -36,6 +36,14 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 // we only created extents for a single methods and all extents of a single method within document were merged into one:
                 _extentsByDocument[documentId] = UpdateExtent(_extentsByDocument[documentId], newExtents.Single());
             }
+
+            lock (_lazyPartitionedExtentsByDocument)
+            {
+                foreach (var (documentId, _) in newExtentsByDocument)
+                {
+                    _lazyPartitionedExtentsByDocument.Remove(documentId);
+                }
+            }
         }
 
         private ImmutableArray<MethodLineExtent> UpdateExtent(ImmutableArray<MethodLineExtent> extents, MethodLineExtent newExtent)
