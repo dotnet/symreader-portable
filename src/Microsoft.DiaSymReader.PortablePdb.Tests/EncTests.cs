@@ -657,13 +657,16 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             //   IL_000D: (15, 5) - (15, 6) 0x30000001 (Document) Enc1.cs
             // }
 
-            Assert.Equal(HResult.S_OK, symEncUpdate.UpdateMethodLines(0x06000002, new[] { -1, 3, 2, 1 }, 4));
-
             var docEnc = symReader.GetDocument("Enc1.cs");
             var docA = symReader.GetDocument("A.cs");
             var docB = symReader.GetDocument("B.cs");
 
-            Assert.Equal(HResult.S_OK, symReader.GetMethodFromDocumentPosition(docEnc, 8, 1, out var method));
+            Assert.Equal(HResult.S_OK, symReader.GetMethodFromDocumentPosition(docEnc, 9, 1, out var method));
+            Assert.Equal(0x06000002, method.GetToken());
+
+            Assert.Equal(HResult.S_OK, symEncUpdate.UpdateMethodLines(0x06000002, new[] { -1, 3, 2, 1 }, 4));
+
+            Assert.Equal(HResult.S_OK, symReader.GetMethodFromDocumentPosition(docEnc, 8, 1, out method));
             Assert.Equal(0x06000002, method.GetToken());
 
             if (portable)
