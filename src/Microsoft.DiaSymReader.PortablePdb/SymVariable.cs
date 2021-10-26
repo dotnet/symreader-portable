@@ -123,7 +123,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
             var typeProvider = DummyTypeProvider.Instance;
 
-            var decoder = new SignatureDecoder<object?, object?>(typeProvider, metadataReader: null, genericContext: null);
+            var decoder = new SignatureDecoder<object?, object?>(typeProvider, metadataReader: null!, genericContext: null);
             for (int i = 0; i < slotIndex - 1; i++)
             {
                 decoder.DecodeType(ref signatureReader, allowTypeSpecifications: false);

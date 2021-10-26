@@ -146,6 +146,11 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 return false;
             }
 
+            if (MetadataReader.DebugMetadataHeader == null)
+            {
+                return false;
+            }
+
             var id = new BlobContentId(MetadataReader.DebugMetadataHeader.Id);
 
             return id.Guid == guid && (id.Stamp == stamp || age == -1);

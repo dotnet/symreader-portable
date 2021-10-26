@@ -156,7 +156,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             int endColumn,
             int bufferLength,
             out int count,
-            [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 4), Out]byte[] source)
+            [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 4), Out] byte[]? source)
         {
             count = 0;
 
@@ -191,7 +191,12 @@ namespace Microsoft.DiaSymReader.PortablePdb
             }
 
             count = Math.Min(bufferLength, reader.Length);
-            reader.ReadBytes(count, source, 0);
+
+            if (source != null)
+            {
+                reader.ReadBytes(count, source, 0);
+            }
+
             return HResult.S_OK;
         }
 
