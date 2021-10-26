@@ -695,6 +695,11 @@ namespace Microsoft.DiaSymReader.PortablePdb
             // diasymreader enumerates from version 1:
             foreach (var pdbReader in GetReaders())
             {
+                if (pdbReader.MetadataReader.DebugMetadataHeader == null)
+                {
+                    continue;
+                }
+
                 var handle = pdbReader.MetadataReader.DebugMetadataHeader.EntryPoint;
                 if (!handle.IsNil)
                 {
