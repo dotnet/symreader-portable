@@ -20,16 +20,16 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         // Method extents partitioned into non-overlapping subsequences, each sorted by min line.
         // Used as cache, lock on access.
-        private Dictionary<DocumentId, ImmutableArray<ImmutableArray<MethodLineExtent>>> _lazyPartitionedExtentsByDocument = new();
+        private readonly Dictionary<DocumentId, ImmutableArray<ImmutableArray<MethodLineExtent>>> _lazyPartitionedExtentsByDocument = new();
 
         public MethodExtents(PortablePdbReader pdbReader)
         {
             _extentsByDocument = GroupExtentsByDocument(GetMethodExtents(pdbReader));
         }
 
-        internal void Update(PortablePdbReader pdbReader, MethodDebugInformationHandle methodHandle, ImmutableArray<int> deltas, int expectedSequencePointCount)
+        internal void Update(PortablePdbReader pdbReader, MethodDebugInformationHandle methodHandle, MethodLineDeltas oldDeltas, ImmutableArray<int> newDeltas, int expectedSequencePointCount)
         {
-            var newExtentsByDocument = GroupExtentsByDocument(GetMethodExtents(pdbReader, methodHandle, deltas, expectedSequencePointCount));
+            var newExtentsByDocument = GroupExtentsByDocument(GetMethodExtents(pdbReader, methodHandle, oldDeltas, newDeltas, expectedSequencePointCount));
 
             foreach (var (documentId, newExtents) in newExtentsByDocument)
             {
@@ -297,8 +297,9 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         private static IEnumerable<(DocumentId, MethodLineExtent)> GetMethodExtents(
             PortablePdbReader pdbReader,
-            MethodDebugInformationHandle methodDebugHandle, 
-            ImmutableArray<int> lineDeltasOpt = default,
+            MethodDebugInformationHandle methodDebugHandle,
+            MethodLineDeltas oldLineDeltasOpt = default,
+            ImmutableArray<int> newLineDeltasOpt = default,
             int expectedSequencePointCount = -1)
         {
             var mdReader = pdbReader.MetadataReader;
@@ -329,15 +330,22 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 int startLine = sequencePoint.StartLine;
                 int endLine = sequencePoint.EndLine;
 
-                // apply delta:                :
-                if (!lineDeltasOpt.IsDefault && sequencePointIndex < lineDeltasOpt.Length)
+                // apply deltas:
+                unchecked
                 {
-                    int delta = lineDeltasOpt[sequencePointIndex];
-                    unchecked
+                    int delta = 0;
+                    if (!oldLineDeltasOpt.IsDefault)
                     {
-                        startLine += delta;
-                        endLine += delta;
+                        delta += oldLineDeltasOpt.GetDeltaForSequencePoint(sequencePointIndex);
                     }
+
+                    if (!newLineDeltasOpt.IsDefault && sequencePointIndex < newLineDeltasOpt.Length)
+                    {
+                        delta += newLineDeltasOpt[sequencePointIndex];
+                    }
+
+                    startLine += delta;
+                    endLine += delta;
                 }
 
                 if (sequencePoint.Document != currentDocument)
