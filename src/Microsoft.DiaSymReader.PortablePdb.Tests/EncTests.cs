@@ -689,6 +689,32 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
         }
 
         [Theory, ClassData(typeof(PdbTestData))]
+        public void UpdateMethodLines_GetMethodFromDocumentPosition2(bool portable)
+        {
+            var symReader = CreateSymReaderFromResource(TestResources.EncMethodExtents.Baseline(portable));
+            var symEncUpdate = (ISymUnmanagedEncUpdate)symReader;
+
+            // Method F (0x06000002): nil (Document) #4c
+            // {
+            //   IL_0000: (9, 5) - (9, 6) 0x30000001 (Document) Enc1.cs
+            //   IL_0001: (10, 9) - (10, 29) 0x30000002 (Document) A.cs
+            //   IL_0007: (20, 9) - (20, 29) 0x30000003 (Document) B.cs
+            //   IL_000D: (15, 5) - (15, 6) 0x30000001 (Document) Enc1.cs
+            // }
+
+            var docEnc = symReader.GetDocument("Enc1.cs");
+
+            Assert.Equal(HResult.S_OK, symReader.GetMethodFromDocumentPosition(docEnc, 9, 1, out var method));
+            Assert.Equal(0x06000002, method.GetToken());
+
+            Assert.Equal(HResult.S_OK, symEncUpdate.UpdateMethodLines(0x06000002, new[] { 10, 0, 0, 10 }, 4));
+            Assert.Equal(HResult.S_OK, symEncUpdate.UpdateMethodLines(0x06000002, new[] { -10, 0, 0, -10 }, 4));
+
+            Assert.Equal(HResult.S_OK, symReader.GetMethodFromDocumentPosition(docEnc, 9, 1, out method));
+            Assert.Equal(0x06000002, method.GetToken());
+        }
+
+        [Theory, ClassData(typeof(PdbTestData))]
         public void UpdateMethodLines_GetSourceExtentInDocument1(bool portable)
         {
             var symReader = CreateSymReaderFromResource(TestResources.EncMethodExtents.Baseline(portable));

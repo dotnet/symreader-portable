@@ -1047,12 +1047,19 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 return HResult.E_FAIL;
             }
 
-            var trimmedDeltas = ImmutableArray.Create(deltas, 0, Math.Min(deltas.Length, count));
+            var methodId = MethodId.FromToken(methodToken);
+
+            if (!TryGetLineDeltas(methodId, out var oldDeltas))
+            {
+                oldDeltas = default;
+            }
+
+            var newDeltas = ImmutableArray.Create(deltas, 0, Math.Min(deltas.Length, count));
 
             var methodExtents = GetMethodExtents();
             try
             {
-                methodExtents.Update(pdbReader, handle, trimmedDeltas, expectedSequencePointCount: count);
+                methodExtents.Update(pdbReader, handle, oldDeltas, newDeltas, expectedSequencePointCount: count);
             }
             catch (InvalidInputDataException)
             {
@@ -1060,7 +1067,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 return HResult.E_FAIL;
             }
 
-            UpdateLineDeltas(MethodId.FromToken(methodToken), new MethodLineDeltas(0, trimmedDeltas));
+            UpdateLineDeltas(methodId, new MethodLineDeltas(0, newDeltas));
             return HResult.S_OK;
         }
 
