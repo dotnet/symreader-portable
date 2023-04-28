@@ -6,8 +6,8 @@
     <VersionPrefix>1.7.0</VersionPrefix>
     <PreReleaseVersionLabel>beta</PreReleaseVersionLabel>
     <SemanticVersioningV1>true</SemanticVersioningV1>
-    <!-- Opt-in repo features -->
-    <UsingToolSymbolUploader>true</UsingToolSymbolUploader>
+    <!-- Opt-in/out repo features -->
+    <UsingToolPdbConverter>false</UsingToolPdbConverter>
     <UsingToolNetFrameworkReferenceAssemblies>true</UsingToolNetFrameworkReferenceAssemblies>
     <UsingToolNuGetRepack>true</UsingToolNuGetRepack>
     <!-- symreader -->
