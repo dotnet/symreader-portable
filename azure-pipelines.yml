@@ -46,13 +46,13 @@ stages:
         variables:
         # Only enable publishing in official builds
         - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-          # DotNet-Blob-Feed provides: dotnetfeed-storage-access-key-1
           # Publish-Build-Assets provides: MaestroAccessToken, BotAccount-dotnet-maestro-bot-PAT
           - group: Publish-Build-Assets
           - name: _OfficialBuildArgs
             value: /p:DotNetSignType=$(_SignType)
-                  /p:TeamName=$(_TeamName)
-                  /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
+                   /p:TeamName=$(_TeamName)                   
+                   /p:PublishUsingPipelines=true
+                   /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
         # else
         - ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
           - name: _OfficialBuildArgs
