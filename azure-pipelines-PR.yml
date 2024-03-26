@@ -9,7 +9,7 @@ pr:
     - README.md
     - docs/*
 
-# Run official build every day at midnight, if code has changed since the last run.
+# Run official build every day at midnight, if code has changed since the last run
 trigger:
   batch: true
   branches:
