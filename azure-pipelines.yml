@@ -89,7 +89,7 @@ extends:
             - script: eng\common\cibuild.cmd -configuration $(_BuildConfig) -prepareMachine $(_BuildArgs)
               displayName: Build and Test
             - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-              - task: NuGetCommand@2
+              - task: 1ES.PublishNuget@1
                 displayName: Publish CoreXT Packages
                 inputs:
                   command: push
