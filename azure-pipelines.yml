@@ -94,6 +94,7 @@ extends:
                 inputs:
                   command: push
                   packagesToPush: '$(Build.SourcesDirectory)\artifacts\packages\$(_BuildConfig)\Shipping\*.nupkg'
+                  packageParentPath: $(Build.SourcesDirectory)\artifacts\packages\$(_BuildConfig)\Shipping\
                   allowPackageConflicts: true
                   nuGetFeedType: external
                   publishFeedCredentials: 'DevDiv - VS package feed'
