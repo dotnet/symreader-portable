@@ -90,7 +90,7 @@ extends:
               displayName: Build and Test
             - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
               - task: 1ES.PublishNuget@1
-                displayName: 📦 Publish CoreXT Packages
+                displayName: Publish CoreXT Packages
                 inputs:
                   command: push
                   packagesToPush: '$(Build.SourcesDirectory)\artifacts\packages\$(_BuildConfig)\Shipping\*.nupkg'
