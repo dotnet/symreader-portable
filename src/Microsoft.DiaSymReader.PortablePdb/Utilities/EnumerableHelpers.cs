@@ -10,10 +10,10 @@ namespace Microsoft.DiaSymReader.PortablePdb
     internal static class EnumerableHelpers
     {
         /// <summary>
-        /// Groups specified entries by key optimizing for single-item groups. 
+        /// Groups specified entries by key optimizing for single-item groups.
         /// The ordering of values within each bucket is the same as their ordering in the <paramref name="entries"/> sequence.
         /// </summary>
-        public static Dictionary<K, (V Single, ImmutableArray<V> Multiple)> GroupBy<K, V>(this IEnumerable<KeyValuePair<K, V>> entries, IEqualityComparer<K> keyComparer)
+        public static Dictionary<K, (V Single, ImmutableArray<V> Multiple)> GroupBy<K, V>(this IEnumerable<KeyValuePair<K, V>> entries, IEqualityComparer<K> keyComparer) where K : notnull
         {
             var builder = new Dictionary<K, (V Single, ImmutableArray<V>.Builder? Multiple)>(keyComparer);
 

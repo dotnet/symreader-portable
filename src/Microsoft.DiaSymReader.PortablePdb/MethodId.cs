@@ -28,7 +28,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         public bool Equals(MethodId other) => Value == other.Value;
         public override int GetHashCode() => Value.GetHashCode();
-        public override bool Equals(object obj) => obj is MethodId id && Equals(id);
+        public override bool Equals(object? obj) => obj is MethodId id && Equals(id);
 
         public int CompareTo(MethodId other) => Value.CompareTo(other.Value);
 

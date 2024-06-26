@@ -61,7 +61,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             {
                 const int STATFLAG_NONAME = 1;
 
-                STATSTG stats;
+                System.Runtime.InteropServices.ComTypes.STATSTG stats;
                 _stream.Stat(out stats, STATFLAG_NONAME);
                 return stats.cbSize;
             }

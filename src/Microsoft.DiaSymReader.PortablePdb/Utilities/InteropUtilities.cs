@@ -62,9 +62,12 @@ namespace Microsoft.DiaSymReader.PortablePdb
         {
             if (newOwner != null)
             {
-                if (obj != null && Marshal.IsComObject(obj))
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    Marshal.ReleaseComObject(obj);
+                    if (obj != null && Marshal.IsComObject(obj))
+                    {
+                        Marshal.ReleaseComObject(obj);
+                    }
                 }
 
                 obj = null;

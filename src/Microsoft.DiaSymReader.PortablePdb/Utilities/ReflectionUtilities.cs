@@ -39,7 +39,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         /// <summary>
         /// Find a <see cref="Type"/> instance by first probing the contract name and then the name as it
-        /// would exist in mscorlib.  This helps satisfy both the CoreCLR and Desktop scenarios. 
+        /// would exist in mscorlib.  This helps satisfy both the CoreCLR and Desktop scenarios.
         /// </summary>
         public static Type? GetTypeFromEither(string contractName, string desktopName)
         {
@@ -127,7 +127,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             }
             catch (TargetInvocationException e)
             {
-                ExceptionDispatchInfo.Capture(e.InnerException).Throw();
+                ExceptionDispatchInfo.Capture(e.InnerException!).Throw();
                 Debug.Assert(false, "Unreachable");
                 return default;
             }
@@ -140,7 +140,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
         public static T Invoke<T>(this MethodInfo methodInfo, object obj, params object[] args)
         {
-            return (T)methodInfo.Invoke(obj, args);
+            return (T)methodInfo.Invoke(obj, args)!;
         }
     }
 }
