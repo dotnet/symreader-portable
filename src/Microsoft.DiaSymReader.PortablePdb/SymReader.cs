@@ -14,6 +14,9 @@ using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
+#if NET9_0_OR_GREATER
+using System.Runtime.InteropServices.Marshalling;
+#endif
 using System.Threading;
 using Roslyn.Utilities;
 
@@ -23,7 +26,10 @@ namespace Microsoft.DiaSymReader.PortablePdb
     // ISymUnmanagedReaderSymbolSearchInfo?
 
     [ComVisible(false)]
-    public sealed class SymReader : ISymUnmanagedReader5, ISymUnmanagedDispose, ISymUnmanagedEncUpdate
+#if NET9_0_OR_GREATER
+    [GeneratedComClass]
+#endif
+    public sealed partial class SymReader : ISymUnmanagedReader5, ISymUnmanagedDispose, ISymUnmanagedEncUpdate
     {
         private readonly Lazy<bool> _lazyVbSemantics;
         private readonly LazyMetadataImport _metadataImport;

@@ -8,11 +8,17 @@ using System.Diagnostics;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices;
+#if NET9_0_OR_GREATER
+using System.Runtime.InteropServices.Marshalling;
+#endif
 
 namespace Microsoft.DiaSymReader.PortablePdb
 {
     [ComVisible(false)]
-    public sealed class SymVariable : ISymUnmanagedVariable
+#if NET9_0_OR_GREATER
+    [GeneratedComClass]
+#endif
+    public sealed partial class SymVariable : ISymUnmanagedVariable
     {
         private const int ADDR_IL_OFFSET = 1;
 

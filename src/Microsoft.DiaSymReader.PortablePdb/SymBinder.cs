@@ -2,6 +2,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the License.txt file in the project root for more information.
 
+#if NET9_0_OR_GREATER
+global using GeneratedWhenPossibleComInterfaceAttribute = System.Runtime.InteropServices.Marshalling.GeneratedComInterfaceAttribute;
+#else
+global using GeneratedWhenPossibleComInterfaceAttribute = System.Runtime.InteropServices.ComImportAttribute;
+#endif
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -9,6 +15,9 @@ using System.IO;
 using System.Reflection.PortableExecutable;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
+#if NET9_0_OR_GREATER
+using System.Runtime.InteropServices.Marshalling;
+#endif
 
 [assembly: Guid("CA89ACD1-A1D5-43DE-890A-5FDF50BC1F93")]
 
@@ -16,7 +25,10 @@ namespace Microsoft.DiaSymReader.PortablePdb
 {
     [Guid("E4B18DEF-3B78-46AE-8F50-E67E421BDF70")]
     [ComVisible(true)]
-    public sealed class SymBinder : ISymUnmanagedBinder4
+#if NET9_0_OR_GREATER
+    [GeneratedComClass]
+#endif
+    public sealed partial class SymBinder : ISymUnmanagedBinder4
     {
         [PreserveSig]
         public unsafe int GetReaderForFile(

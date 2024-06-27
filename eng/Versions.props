@@ -3,7 +3,7 @@
 <Project>
   <PropertyGroup>
     <!-- This repo version -->
-    <VersionPrefix>1.7.0</VersionPrefix>
+    <VersionPrefix>2.0.0</VersionPrefix>
     <PreReleaseVersionLabel>beta</PreReleaseVersionLabel>
     <SemanticVersioningV1>true</SemanticVersioningV1>
     <!-- Opt-in/out repo features -->
@@ -11,7 +11,9 @@
     <UsingToolNetFrameworkReferenceAssemblies>true</UsingToolNetFrameworkReferenceAssemblies>
     <UsingToolNuGetRepack>true</UsingToolNuGetRepack>
     <!-- symreader -->
-    <MicrosoftDiaSymReaderVersion>1.4.0-beta2-21525-04</MicrosoftDiaSymReaderVersion>
+    <MicrosoftDiaSymReaderVersion>2.2.0-beta.24327.1
+
+</MicrosoftDiaSymReaderVersion>
     <MicrosoftDiaSymReaderNativeVersion>17.0.0-beta1.21524.1</MicrosoftDiaSymReaderNativeVersion>
     <!-- CoreFX -->
     <SystemCollectionsImmutableVersion>5.0.0</SystemCollectionsImmutableVersion>

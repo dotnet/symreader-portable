@@ -10,11 +10,17 @@ using System.Linq;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices;
+#if NET9_0_OR_GREATER
+using System.Runtime.InteropServices.Marshalling;
+#endif
 
 namespace Microsoft.DiaSymReader.PortablePdb
 {
     [ComVisible(false)]
-    public sealed class SymMethod : ISymUnmanagedMethod2, ISymUnmanagedAsyncMethod, ISymEncUnmanagedMethod
+#if NET9_0_OR_GREATER
+    [GeneratedComClass]
+#endif
+    public sealed partial class SymMethod : ISymUnmanagedMethod2, ISymUnmanagedAsyncMethod, ISymEncUnmanagedMethod
     {
         internal MethodDebugInformationHandle DebugHandle { get; }
         internal MethodDefinitionHandle DefinitionHandle => DebugHandle.ToDefinitionHandle();
