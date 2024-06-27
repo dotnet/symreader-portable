@@ -9,6 +9,9 @@ using System.IO;
 using System.Reflection.PortableExecutable;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
+#if NET9_0_OR_GREATER
+using System.Runtime.InteropServices.Marshalling;
+#endif
 
 [assembly: Guid("CA89ACD1-A1D5-43DE-890A-5FDF50BC1F93")]
 
@@ -16,7 +19,10 @@ namespace Microsoft.DiaSymReader.PortablePdb
 {
     [Guid("E4B18DEF-3B78-46AE-8F50-E67E421BDF70")]
     [ComVisible(true)]
-    public sealed class SymBinder : ISymUnmanagedBinder4
+#if NET9_0_OR_GREATER
+    [GeneratedComClass]
+#endif
+    public sealed partial class SymBinder : ISymUnmanagedBinder4
     {
         [PreserveSig]
         public unsafe int GetReaderForFile(
@@ -34,7 +40,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         }
 
         /// <summary>
-        /// Given a metadata interface and a file name, returns the 
+        /// Given a metadata interface and a file name, returns the
         /// <see cref="ISymUnmanagedReader"/> interface that will read the debugging symbols associated
         /// with the module.
         /// </summary>
@@ -63,7 +69,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 if (string.IsNullOrEmpty(fileName))
                     throw new ArgumentException(null, nameof(fileName));
 
-                var mdImport = MetadataImport.FromObject(metadataImport) ?? 
+                var mdImport = MetadataImport.FromObject(metadataImport) ??
                     throw new ArgumentException(null, nameof(metadataImport));
 
                 // See DIA: FLocatePdbDefault, FLocateCvFilePathHelper, FLocatePdbSymsrv, FLocateCvFilePathHelper
@@ -92,7 +98,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 //
                 // Each attempt checks if PDB ID matches.
                 //
-                // Search policy: all is restricted unless explicitly allowed. 
+                // Search policy: all is restricted unless explicitly allowed.
                 // After opened store to cache if CACHE* given (only the first cache?)
 
                 if (!TryReadCodeViewData(fileName, out var codeViewData, out uint stamp))
@@ -105,10 +111,10 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 string pdbFileName = Path.GetFileName(codeViewData.Path);
                 var lazyImport = new LazyMetadataImport(mdImport);
 
-                // 1) next to the PE file 
+                // 1) next to the PE file
                 if ((searchPolicy & SymUnmanagedSearchPolicy.AllowReferencePathAccess) != 0)
                 {
-                    string peDirectory = Path.GetDirectoryName(fileName);
+                    string peDirectory = Path.GetDirectoryName(fileName)!;
                     string pdbFilePath = Path.Combine(peDirectory, pdbFileName);
 
                     if (TryCreateReaderForMatchingPdb(pdbFilePath, guid, stamp, age, lazyImport, out reader))
@@ -391,7 +397,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             [MarshalAs(UnmanagedType.Interface)]object stream,
             [MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedReader reader)
         {
-            var comStream = stream as IStream ?? 
+            var comStream = stream as IStream ??
                 throw new ArgumentException(null, nameof(stream));
 
             if (metadataImportProvider == null)

@@ -41,12 +41,12 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
             internal static readonly Func<string, bool> Exists = Type
                 .GetTypeInfo()
-                .GetDeclaredMethod(nameof(Exists), new[] { typeof(string) })
+                .GetDeclaredMethod(nameof(Exists), new[] { typeof(string) })!
                 .CreateDelegate<Func<string, bool>>()!;
 
             internal static readonly Func<string, byte[]> ReadAllBytes = Type
                 .GetTypeInfo()
-                .GetDeclaredMethod(nameof(ReadAllBytes), paramTypes: new[] { typeof(string) })
+                .GetDeclaredMethod(nameof(ReadAllBytes), paramTypes: new[] { typeof(string) })!
                 .CreateDelegate<Func<string, byte[]>>()!;
         }
 

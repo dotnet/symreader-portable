@@ -30,7 +30,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             {
                 Debug.Assert(_metadataImportProvider != null, "MetadataImport disposed");
 
-                var import = MetadataImport.FromObject(_metadataImportProvider.GetMetadataImport()) ?? 
+                var import = MetadataImport.FromObject(_metadataImportProvider.GetMetadataImport()) ??
                     throw new InvalidOperationException();
 
                 Interlocked.CompareExchange(ref _lazyMetadataImport, import, null);
@@ -42,9 +42,12 @@ namespace Microsoft.DiaSymReader.PortablePdb
         public void Dispose()
         {
             var import = Interlocked.Exchange(ref _lazyMetadataImport, null);
-            if (import != null && Marshal.IsComObject(import))
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                Marshal.ReleaseComObject(import);
+                if (import != null && Marshal.IsComObject(import))
+                {
+                    Marshal.ReleaseComObject(import);
+                }
             }
         }
     }

@@ -7,7 +7,6 @@ using System.Reflection;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Microsoft.DiaSymReader.PortablePdb
 {
@@ -55,18 +54,18 @@ namespace Microsoft.DiaSymReader.PortablePdb
             {
                 _import.GetTypeDefProps(typeDefinition, qualifiedName: null, 0, out int nameLength, out _, out _);
 
-                var buffer = new StringBuilder(nameLength + 1);
-                _import.GetTypeDefProps(typeDefinition, buffer, buffer.Capacity, out _, out _, out _);
-                qualifiedName = buffer.ToString();
+                var buffer = new char[nameLength + 1];
+                _import.GetTypeDefProps(typeDefinition, buffer, buffer.Length, out _, out _, out _);
+                qualifiedName = new string(buffer, 0, nameLength);
             }
 
             public override void GetTypeRefProps(int typeReference, out string qualifiedName)
             {
                 _import.GetTypeRefProps(typeReference, out _, qualifiedName: null, 0, out int nameLength);
 
-                var buffer = new StringBuilder(nameLength + 1);
-                _import.GetTypeRefProps(typeReference, out _, buffer, buffer.Capacity, out _);
-                qualifiedName = buffer.ToString();
+                var buffer = new char[nameLength + 1];
+                _import.GetTypeRefProps(typeReference, out _, buffer, buffer.Length, out _);
+                qualifiedName = new string(buffer, 0, nameLength);
             }
 
             public override unsafe int GetSigFromToken(int token, out byte* signaturePtr, out int signatureLength)

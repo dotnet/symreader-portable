@@ -4,11 +4,17 @@
 
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+#if NET9_0_OR_GREATER
+using System.Runtime.InteropServices.Marshalling;
+#endif
 
 namespace Microsoft.DiaSymReader.PortablePdb
 {
     [ComVisible(false)]
-    public sealed class SymScope : ISymUnmanagedScope2
+#if NET9_0_OR_GREATER
+    [GeneratedComClass]
+#endif
+    public sealed partial class SymScope : ISymUnmanagedScope2
     {
         internal readonly ScopeData _data;
 

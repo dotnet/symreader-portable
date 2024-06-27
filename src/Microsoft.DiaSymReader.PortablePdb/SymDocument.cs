@@ -6,11 +6,17 @@ using System;
 using System.Diagnostics;
 using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
+#if NET9_0_OR_GREATER
+using System.Runtime.InteropServices.Marshalling;
+#endif
 
 namespace Microsoft.DiaSymReader.PortablePdb
 {
     [ComVisible(false)]
-    public sealed class SymDocument : ISymUnmanagedDocument
+#if NET9_0_OR_GREATER
+    [GeneratedComClass]
+#endif
+    public sealed partial class SymDocument : ISymUnmanagedDocument
     {
         private readonly static Guid s_vendorMicrosoftGuid = new("994b45c4-e6e9-11d2-903f-00c04fa302a1");
         private readonly static Guid s_documentTypeGuid = new("5a869d0b-6611-11d3-bd2a-0000f80849bd");

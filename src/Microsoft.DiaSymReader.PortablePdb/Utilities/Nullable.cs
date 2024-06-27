@@ -2,6 +2,9 @@
 // The.NET Foundation licenses this file to you under the MIT license.
 // See the License.txt file in the project root for more information.
 
+
+#if !NET
+
 namespace System.Diagnostics.CodeAnalysis
 {
     [AttributeUsage(AttributeTargets.Parameter, Inherited = false)]
@@ -30,3 +33,5 @@ namespace System.Diagnostics.CodeAnalysis
         public string[] Members { get; }
     }
 }
+
+#endif

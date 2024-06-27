@@ -8,10 +8,17 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 
+#if NET9_0_OR_GREATER
+using System.Runtime.InteropServices.Marshalling;
+#endif
+
 namespace Microsoft.DiaSymReader.PortablePdb
 {
     [ComVisible(false)]
-    public sealed class SymConstant : ISymUnmanagedConstant
+#if NET9_0_OR_GREATER
+    [GeneratedComClass]
+#endif
+    public sealed partial class SymConstant : ISymUnmanagedConstant
     {
         private readonly PortablePdbReader _pdbReader;
         private readonly LocalConstantHandle _handle;
