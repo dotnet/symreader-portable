@@ -7,30 +7,46 @@ pr:
     exclude:
     - README.md
     - docs/*
+
 trigger:
   batch: true
   branches:
     include:
     - main
+
+schedules:
+  - cron: "0 8 22-28 * 0"
+    displayName: "Monthly build"
+    branches:
+      include: 
+        - main
+        - release/*
+      exclude: 
+        - ""
+    always: true # Run even if there have been no source code changes since the last successful scheduled run
+    batch: false # Do not run the pipeline if the previously scheduled run is in-progress
+
 variables:
 - template: /eng/common/templates-official/variables/pool-providers.yml@self
 - name: _TeamName
   value: Roslyn
 - name: TeamName
   value: Roslyn
+
 resources:
   repositories:
   - repository: MicroBuildTemplate
     type: git
     name: 1ESPipelineTemplates/MicroBuildTemplate
     ref: refs/tags/release
+
 extends:
   template: azure-pipelines/MicroBuild.1ES.Official.yml@MicroBuildTemplate
   parameters:
     sdl:
       sourceAnalysisPool:
         name: $(DncEngInternalBuildPool)
-        image: 1es-windows-2022-pt
+        image: 1es-windows-2022
         os: windows
     pool:
       name: AzurePipelines-EO
