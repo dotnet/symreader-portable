@@ -19,7 +19,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.Utilities;
 /// </summary>
 /// <remarks>
 /// <see cref="ComStreamWrapper"/> is a wrapper around a <see cref="Stream"/> that implements both interface definitions.
-/// This is a wrapper around a marshalled <see cref="IUnsafeComStream"/> that also implements the <see cref="IStream"/> interface."/>
+/// This is a wrapper around a marshalled <see cref="IUnsafeComStream"/> that also implements the <see cref="IStream"/> interface./>
 /// </remarks>
 #if NET9_0_OR_GREATER
 [GeneratedComClass]
@@ -65,11 +65,23 @@ internal partial class UnsafeComStreamWrapper : IUnsafeComStream, IStream
 
     public void CopyTo(IStream pstm, long cb, IntPtr pcbRead, IntPtr pcbWritten) => throw new NotImplementedException("CopyTo is not implemented in this version.");
 
-    public unsafe void Read(byte[] pv, int cb, IntPtr pcbRead) => _stream.Read((byte*)Unsafe.AsPointer(ref pv[0]), cb, (int*)pcbRead);
+    public unsafe void Read(byte[] pv, int cb, IntPtr pcbRead)
+    {
+        fixed (byte* pByte = pv)
+        {
+            _stream.Read(pByte, cb, (int*)pcbRead);
+        }
+    }
 
     public unsafe void Seek(long dlibMove, int dwOrigin, IntPtr plibNewPosition) => _stream.Seek(dlibMove, dwOrigin, (long*)plibNewPosition);
 
-    public unsafe void Write(byte[] pv, int cb, IntPtr pcbWritten) => _stream.Write((byte*)Unsafe.AsPointer(ref pv[0]), cb, (int*)pcbWritten);
+    public unsafe void Write(byte[] pv, int cb, IntPtr pcbWritten)
+    {
+        fixed (byte* pByte = pv)
+        {
+            _stream.Write(pByte, cb, (int*)pcbWritten);
+        }
+    }
 
     void System.Runtime.InteropServices.ComTypes.IStream.Stat(out System.Runtime.InteropServices.ComTypes.STATSTG pstatstg, int grfStatFlag)
     {

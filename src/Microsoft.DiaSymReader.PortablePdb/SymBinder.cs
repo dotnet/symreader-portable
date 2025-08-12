@@ -325,13 +325,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
             try
             {
-                var comStream = stream as IStream;
-                if (comStream is null)
-                {
-                    var unsafeComStream = stream as IUnsafeComStream ?? throw new ArgumentException(null, nameof(stream));
-                    comStream = new UnsafeComStreamWrapper(unsafeComStream);
-                }
-
+                var comStream = StreamExtensions.GetIStreamFromIUnknown(stream);
                 var mdImport = MetadataImport.FromObject(metadataImport) ?? throw new ArgumentException(null, nameof(metadataImport));
 
                 reader = SymReader.CreateFromStream(comStream, new LazyMetadataImport(mdImport));
@@ -405,12 +399,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             [MarshalAs(UnmanagedType.Interface)]object stream,
             [MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedReader reader)
         {
-            var comStream = stream as IStream;
-            if (comStream is null)
-            {
-                var unsafeComStream = stream as IUnsafeComStream ?? throw new ArgumentException(null, nameof(stream));
-                comStream = new UnsafeComStreamWrapper(unsafeComStream);
-            }
+            var comStream = StreamExtensions.GetIStreamFromIUnknown(stream);
 
             if (metadataImportProvider == null)
                 throw new ArgumentException(null, nameof(metadataImportProvider));

@@ -2,8 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the License.txt file in the project root for more information.
 
-using System.Diagnostics;
+using System;
 using System.IO;
+using System.Runtime.InteropServices.ComTypes;
+using Microsoft.DiaSymReader.PortablePdb.Utilities;
 
 namespace Microsoft.DiaSymReader.PortablePdb
 {
@@ -44,6 +46,17 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 }
             }
             return totalBytesRead;
+        }
+
+        internal static IStream GetIStreamFromIUnknown(object unk)
+        {
+            if (unk is not IStream comStream)
+            {
+                var unsafeComStream = unk as IUnsafeComStream ?? throw new ArgumentException(null, nameof(unk));
+                comStream = new UnsafeComStreamWrapper(unsafeComStream);
+            }
+
+            return comStream;
         }
     }
 }
