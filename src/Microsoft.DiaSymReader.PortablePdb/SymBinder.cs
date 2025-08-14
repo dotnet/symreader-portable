@@ -9,6 +9,8 @@ using System.IO;
 using System.Reflection.PortableExecutable;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
+using Microsoft.DiaSymReader.PortablePdb.Utilities;
+
 #if NET9_0_OR_GREATER
 using System.Runtime.InteropServices.Marshalling;
 #endif
@@ -323,7 +325,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 
             try
             {
-                var comStream = stream as IStream ?? throw new ArgumentNullException(null, nameof(stream));
+                var comStream = StreamExtensions.GetIStreamFromIUnknown(stream);
                 var mdImport = MetadataImport.FromObject(metadataImport) ?? throw new ArgumentException(null, nameof(metadataImport));
 
                 reader = SymReader.CreateFromStream(comStream, new LazyMetadataImport(mdImport));
@@ -397,8 +399,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             [MarshalAs(UnmanagedType.Interface)]object stream,
             [MarshalAs(UnmanagedType.Interface)]out ISymUnmanagedReader reader)
         {
-            var comStream = stream as IStream ??
-                throw new ArgumentException(null, nameof(stream));
+            var comStream = StreamExtensions.GetIStreamFromIUnknown(stream);
 
             if (metadataImportProvider == null)
                 throw new ArgumentException(null, nameof(metadataImportProvider));
