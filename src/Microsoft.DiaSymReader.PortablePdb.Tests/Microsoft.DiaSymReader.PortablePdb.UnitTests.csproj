@@ -1,8 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<!-- Licensed to the .NET Foundation under one or more agreements. The .NET Foundation licenses this file to you under the MIT license. See the License.txt file in the project root for more information. -->
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <TargetFrameworks>$(NetCurrent);$(NetFrameworkMinimum)</TargetFrameworks>
+    <TargetFrameworks>$(NetCurrent);$(NetFrameworkCurrent)</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <!-- 
       We would need to download 32bit dotnet cli, which would add extra time to PR runs 
@@ -10,18 +9,22 @@
     -->
     <TestArchitectures Condition="'$(TargetFramework)' == 'net46'">x64;x86</TestArchitectures>
   </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.DiaSymReader.PortablePdb\Microsoft.DiaSymReader.PortablePdb.csproj" />
   </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.DiaSymReader.Native" Version="$(MicrosoftDiaSymReaderNativeVersion)" />
   </ItemGroup>
+
   <ItemGroup>
     <Compile Remove="Resources\**\*.cs" />
     <Content Include="Resources\**\*.cs" />
     <Content Include="Resources\**\*.cmd" />
     <Content Include="Resources\**\*.txt" />
   </ItemGroup>
+
   <ItemGroup>
     <EmbeddedResource Include="Resources\Async.dll">
       <LogicalName>Async.dll</LogicalName>
@@ -83,9 +86,9 @@
     <EmbeddedResource Include="Resources\EmbeddedSourceNoSequencePoints.cs">
       <LogicalName>EmbeddedSourceNoSequencePoints.cs</LogicalName>
     </EmbeddedResource>
-      <EmbeddedResource Include="Resources\EmbeddedSourceNoCode.cs">
-          <LogicalName>EmbeddedSourceNoCode.cs</LogicalName>
-      </EmbeddedResource>
+    <EmbeddedResource Include="Resources\EmbeddedSourceNoCode.cs">
+      <LogicalName>EmbeddedSourceNoCode.cs</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\EmbeddedSource.dll">
       <LogicalName>EmbeddedSource.dll</LogicalName>
     </EmbeddedResource>
@@ -184,4 +187,5 @@
       <Link>Microsoft.DiaSymReader.Native.amd64.dll</Link>
     </Content>
   </ItemGroup>
+
 </Project>
