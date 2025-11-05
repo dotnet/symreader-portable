@@ -5,7 +5,7 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices.ComTypes;
-using Microsoft.DiaSymReader.PortablePdb.Utilities;
+using Microsoft.DiaSymReader.Utilities;
 
 namespace Microsoft.DiaSymReader.PortablePdb
 {

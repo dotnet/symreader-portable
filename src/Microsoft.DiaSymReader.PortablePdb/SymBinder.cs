@@ -9,7 +9,6 @@ using System.IO;
 using System.Reflection.PortableExecutable;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
-using Microsoft.DiaSymReader.PortablePdb.Utilities;
 
 #if NET9_0_OR_GREATER
 using System.Runtime.InteropServices.Marshalling;

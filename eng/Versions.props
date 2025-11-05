@@ -11,9 +11,7 @@
     <UsingToolNetFrameworkReferenceAssemblies>true</UsingToolNetFrameworkReferenceAssemblies>
     <UsingToolNuGetRepack>true</UsingToolNuGetRepack>
     <!-- symreader -->
-    <MicrosoftDiaSymReaderVersion>2.2.0-beta.24327.1
-
-</MicrosoftDiaSymReaderVersion>
+    <MicrosoftDiaSymReaderVersion>2.2.0-beta.25554.1</MicrosoftDiaSymReaderVersion>
     <MicrosoftDiaSymReaderNativeVersion>17.0.0-beta1.21524.1</MicrosoftDiaSymReaderNativeVersion>
     <!-- CoreFX -->
     <SystemCollectionsImmutableVersion>5.0.0</SystemCollectionsImmutableVersion>
