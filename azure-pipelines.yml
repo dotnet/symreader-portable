@@ -55,6 +55,8 @@ extends:
       tsa:
         enabled: true
         configFile: '$(Build.SourcesDirectory)/eng/TSAConfig.gdntsa'
+    settings:
+      networkIsolationPolicy: Permissive,CFSClean
     pool:
       name: AzurePipelines-EO
       image: AzurePipelinesWindows2022compliantGPT
