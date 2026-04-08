@@ -73,12 +73,13 @@ extends:
           enablePublishBuildArtifacts: true
           enablePublishTestResults: true
           enablePublishBuildAssets: true
-          enablePublishUsingPipelines: true
+          publishingVersion: 4
           enableTelemetry: true
           enableSourceBuild: false
           helixRepo: dotnet/symreader
           jobs:
           - job: Windows
+            enablePublishing: ${{ and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}
             pool:
               ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
                 vmImage: 'windows-latest'
@@ -89,7 +90,7 @@ extends:
             - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
               - group: Publish-Build-Assets
               - name: _OfficialBuildArgs
-                value: /p:DotNetSignType=$(_SignType) /p:TeamName=$(_TeamName) /p:DotNetPublishUsingPipelines=true /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
+                value: /p:DotNetSignType=$(_SignType) /p:TeamName=$(_TeamName) /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
             - ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
               - name: _OfficialBuildArgs
                 value: ''
@@ -162,5 +163,5 @@ extends:
     - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
       - template: /eng/common/templates-official/post-build/post-build.yml@self
         parameters:
-          publishingInfraVersion: 3
+          publishingInfraVersion: 4
           enableSymbolValidation: false
