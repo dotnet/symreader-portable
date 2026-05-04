@@ -31,12 +31,13 @@ stages:
       enablePublishBuildArtifacts: true
       enablePublishTestResults: true
       enablePublishBuildAssets: true
-      enablePublishUsingPipelines: true
+      publishingVersion: 4
       enableTelemetry: true
       enableSourceBuild: false
       helixRepo: dotnet/symreader
       jobs:
       - job: Windows
+        enablePublishing: ${{ and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}
         pool:
           ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
             vmImage: 'windows-latest'
@@ -51,7 +52,7 @@ stages:
           - name: _OfficialBuildArgs
             value: /p:DotNetSignType=$(_SignType)
                    /p:TeamName=$(_TeamName)                   
-                   /p:DotNetPublishUsingPipelines=true
+                  
                    /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
         # else
         - ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
@@ -131,7 +132,7 @@ stages:
 - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
   - template: eng\common\templates\post-build\post-build.yml
     parameters:
-      publishingInfraVersion: 3
+      publishingInfraVersion: 4
       # Symbol validation isn't being very reliable lately. This should be enabled back
       # once this issue is resolved: https://github.com/dotnet/arcade/issues/2871
       enableSymbolValidation: false
