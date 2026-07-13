@@ -123,7 +123,7 @@ extends:
                   packageParentPath: $(Build.SourcesDirectory)\artifacts\packages\$(_BuildConfig)\Shipping\
                   allowPackageConflicts: true
                   nuGetFeedType: external
-                  publishFeedCredentials: 'DevDiv - VS package feed'
+                  publishFeedCredentials: 'dnceng-devdiv-vs-feed-push'
                 condition: succeeded()
           - ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
             - job: MacOS
