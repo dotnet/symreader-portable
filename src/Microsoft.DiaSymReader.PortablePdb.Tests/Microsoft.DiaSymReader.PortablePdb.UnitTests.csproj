@@ -15,10 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.DiaSymReader.Native" Version="$(MicrosoftDiaSymReaderNativeVersion)" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Remove="Resources\**\*.cs" />
     <Content Include="Resources\**\*.cs" />
     <Content Include="Resources\**\*.cmd" />
@@ -176,16 +172,23 @@
   </ItemGroup>
   
   <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
-    <Content Include="$(NuGetPackageRoot)\Microsoft.DiaSymReader.Native\$(MicrosoftDiaSymReaderNativeVersion)\runtimes\win\native\Microsoft.DiaSymReader.Native.x86.dll">
+    <DiaSymReaderNativePackage
+      Include="Microsoft.DiaSymReader.Native"
+      PackageVersion="@(PackageVersion->WithMetadataValue('Identity', 'Microsoft.DiaSymReader.Native')->Metadata('Version'))"
+      PackagePath="$(NuGetPackageRoot)\microsoft.diasymreader.native\%(PackageVersion)\" />
+
+    <Content Include="@(DiaSymReaderNativePackage->'%(PackagePath)runtimes\win\native\Microsoft.DiaSymReader.Native.x86.dll')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Visible>false</Visible>
       <Link>Microsoft.DiaSymReader.Native.x86.dll</Link>
     </Content>
-    <Content Include="$(NuGetPackageRoot)\Microsoft.DiaSymReader.Native\$(MicrosoftDiaSymReaderNativeVersion)\runtimes\win\native\Microsoft.DiaSymReader.Native.amd64.dll">
+    <Content Include="@(DiaSymReaderNativePackage->'%(PackagePath)runtimes\win\native\Microsoft.DiaSymReader.Native.amd64.dll')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Visible>false</Visible>
       <Link>Microsoft.DiaSymReader.Native.amd64.dll</Link>
     </Content>
+
+    <PackageDownload Include="@(DiaSymReaderNativePackage)" Version="[%(PackageVersion)]" />
   </ItemGroup>
 
 </Project>
