@@ -111,19 +111,33 @@ extends:
             steps:
             - checkout: self
               clean: true
+            - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+              - task: NuGetAuthenticate@1
+                displayName: Authenticate to CoreXT Feed
+                inputs:
+                  azureDevOpsServiceConnection: dnceng-devdiv-vs-feed-push
+                  feedUrl: https://pkgs.dev.azure.com/devdiv/_packaging/VS/nuget/v3/index.json
             - script: eng\common\cibuild.cmd -configuration $(_BuildConfig) -prepareMachine $(_BuildArgs)
               displayName: Build and Test
             - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-              - task: 1ES.PublishNuget@1
+              - task: PowerShell@2
                 displayName: Publish CoreXT Packages
-                inputs:
-                  command: push
-                  packagesToPush: '$(Build.SourcesDirectory)\artifacts\packages\$(_BuildConfig)\Shipping\*.nupkg'
-                  packageParentPath: $(Build.SourcesDirectory)\artifacts\packages\$(_BuildConfig)\Shipping\
-                  allowPackageConflicts: true
-                  nuGetFeedType: external
-                  publishFeedCredentials: 'dnceng-devdiv-vs-feed-push'
                 condition: succeeded()
+                inputs:
+                  targetType: inline
+                  script: |
+                    $feedUrl = "https://pkgs.dev.azure.com/devdiv/_packaging/VS/nuget/v3/index.json"
+                    $packages = Get-ChildItem -Path "$(Build.SourcesDirectory)\artifacts\packages\$(_BuildConfig)\Shipping" -Filter "*.nupkg"
+                    Write-Host "Found $($packages.Count) packages to push"
+                    foreach ($package in $packages) {
+                      Write-Host "Pushing $($package.Name)..."
+                      & dotnet nuget push $package.FullName --source $feedUrl --api-key AzureDevOps --skip-duplicate
+                      if ($LASTEXITCODE -ne 0) {
+                        Write-Error "Failed to push $($package.Name)"
+                        exit 1
+                      }
+                    }
+                    Write-Host "Successfully pushed $($packages.Count) packages"
           - ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
             - job: MacOS
               displayName: 'MacOS'
