@@ -7,15 +7,11 @@
       We would need to download 32bit dotnet cli, which would add extra time to PR runs 
       Testing 64bit only on Desktop suffixiently covers our interop code paths.  
     -->
-    <TestArchitectures Condition="'$(TargetFramework)' == 'net46'">x64;x86</TestArchitectures>
+    <TestArchitectures Condition="$([MSBuild]::GetTargetFrameworkIdentifier('$(TargetFramework)')) == '.NETFramework'">x64</TestArchitectures>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.DiaSymReader.PortablePdb\Microsoft.DiaSymReader.PortablePdb.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.DiaSymReader.Native" GeneratePathProperty="true" />
   </ItemGroup>
 
   <ItemGroup>
@@ -175,17 +171,6 @@
     </EmbeddedResource>
   </ItemGroup>
   
-  <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
-    <Content Include="$(PkgMicrosoft_DiaSymReader_Native)\runtimes\win\native\Microsoft.DiaSymReader.Native.x86.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Visible>false</Visible>
-      <Link>Microsoft.DiaSymReader.Native.x86.dll</Link>
-    </Content>
-    <Content Include="$(PkgMicrosoft_DiaSymReader_Native)\runtimes\win\native\Microsoft.DiaSymReader.Native.amd64.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Visible>false</Visible>
-      <Link>Microsoft.DiaSymReader.Native.amd64.dll</Link>
-    </Content>
-  </ItemGroup>
+  <Import Project="$(RepositoryEngineeringDir)DiaSymReaderNative.targets" />
 
 </Project>
