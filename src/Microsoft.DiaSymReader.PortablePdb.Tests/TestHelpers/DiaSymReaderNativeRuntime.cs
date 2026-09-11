@@ -2,31 +2,25 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the License.txt file in the project root for more information.
 
+#if NETFRAMEWORK
+
 using System;
 using System.IO;
-using System.Runtime.InteropServices;
-#if NETFRAMEWORK
 using System.Linq;
 using System.Runtime.CompilerServices;
-#endif
+using System.Runtime.InteropServices;
 
 namespace Roslyn.Test.Utilities
 {
-    public static class DiaSymReaderNativeRuntime
+    internal static class DiaSymReaderNativeRuntime
     {
-#if NETFRAMEWORK
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         private static extern IntPtr AddDllDirectory(string newDirectory);
 
         [ModuleInitializer]
         internal static void AddInstalledDotNetRuntimeDirectory()
         {
-            if (Path.DirectorySeparatorChar != '\\')
-            {
-                return;
-            }
-
-            string directory = GetNativeLibraryDirectory();
+            string directory = GetInstalledDotNetRuntimeDirectory();
             if (string.IsNullOrEmpty(directory))
             {
                 throw new InvalidOperationException("Could not locate an installed .NET runtime containing Microsoft.DiaSymReader.Native.");
@@ -37,18 +31,7 @@ namespace Roslyn.Test.Utilities
                 throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
             }
         }
-#endif
 
-        public static string GetNativeLibraryDirectory()
-        {
-#if NETFRAMEWORK
-            return GetInstalledDotNetRuntimeDirectory();
-#else
-            return RuntimeEnvironment.GetRuntimeDirectory();
-#endif
-        }
-
-#if NETFRAMEWORK
         private static string GetInstalledDotNetRuntimeDirectory()
         {
             string root = Environment.GetEnvironmentVariable("DOTNET_ROOT")
@@ -127,11 +110,9 @@ namespace Roslyn.Test.Utilities
 
             return null;
         }
-#endif
     }
 }
 
-#if NETFRAMEWORK
 namespace System.Runtime.CompilerServices
 {
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
@@ -139,4 +120,5 @@ namespace System.Runtime.CompilerServices
     {
     }
 }
+
 #endif
