@@ -5,6 +5,7 @@
 #if NETFRAMEWORK
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -60,17 +61,54 @@ namespace Roslyn.Test.Utilities
                 root = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "dotnet");
             }
 
-            string shared = Path.Combine(root, "shared", "Microsoft.NETCore.App");
-            if (!Directory.Exists(shared))
-            {
-                return null;
-            }
-
             string dllName = IntPtr.Size == 4
                 ? "Microsoft.DiaSymReader.Native.x86.dll"
                 : RuntimeInformation.ProcessArchitecture == Architecture.Arm64
                     ? "Microsoft.DiaSymReader.Native.arm64.dll"
                     : "Microsoft.DiaSymReader.Native.amd64.dll";
+
+            foreach (string candidate in GetRuntimeRootCandidates(root))
+            {
+                string directory = FindRuntimeDirectory(candidate, dllName);
+                if (directory != null)
+                {
+                    return directory;
+                }
+            }
+
+            return null;
+        }
+
+        private static IEnumerable<string> GetRuntimeRootCandidates(string root)
+        {
+            if (IntPtr.Size == 4)
+            {
+                string rootX86 = Environment.GetEnvironmentVariable("DOTNET_ROOT(x86)")
+                    ?? Environment.GetEnvironmentVariable("DOTNET_ROOT_X86");
+                if (!string.IsNullOrEmpty(rootX86))
+                {
+                    yield return rootX86;
+                }
+
+                if (!string.IsNullOrEmpty(root))
+                {
+                    yield return Path.Combine(root, "x86");
+                }
+            }
+
+            if (!string.IsNullOrEmpty(root))
+            {
+                yield return root;
+            }
+        }
+
+        private static string FindRuntimeDirectory(string root, string dllName)
+        {
+            string shared = Path.Combine(root, "shared", "Microsoft.NETCore.App");
+            if (!Directory.Exists(shared))
+            {
+                return null;
+            }
 
             return Directory.GetDirectories(shared)
                 .Select(dir => (dir, version: TryParseVersion(Path.GetFileName(dir))))
