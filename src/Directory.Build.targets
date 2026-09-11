@@ -2,4 +2,10 @@
 <!-- Licensed to the .NET Foundation under one or more agreements. The .NET Foundation licenses this file to you under the MIT license. See the License.txt file in the project root for more information. -->
 <Project>
   <Import Project="Sdk.targets" Sdk="Microsoft.DotNet.Arcade.Sdk" />
+
+  <PropertyGroup>
+    <!-- Framework x86 uses xunit.console.x86.exe. Core x86 needs a Microsoft.DiaSymReader
+         that passes Guid by pointer (not yet in the 2.2.10 package). -->
+    <TestArchitectures Condition="'$(OS)' == 'Windows_NT' and '$(TargetFrameworkIdentifier)' == '.NETFramework'">x64;x86</TestArchitectures>
+  </PropertyGroup>
 </Project>
