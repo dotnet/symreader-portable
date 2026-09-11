@@ -171,6 +171,4 @@
     </EmbeddedResource>
   </ItemGroup>
   
-  <Import Project="$(RepositoryEngineeringDir)DiaSymReaderNative.targets" />
-
 </Project>
