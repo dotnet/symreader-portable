@@ -4,12 +4,40 @@
 
 using System;
 using System.IO;
+#if !NETSTANDARD2_0_OR_GREATER && !NETCOREAPP
 using System.Reflection;
+#endif
 
 namespace Microsoft.DiaSymReader.PortablePdb
 {
     internal static class PortableShim
     {
+#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP
+        internal static class Environment
+        {
+            internal static string GetEnvironmentVariable(string variable)
+                => System.Environment.GetEnvironmentVariable(variable)!;
+        }
+
+        internal static class File
+        {
+            internal static bool Exists(string path)
+                => System.IO.File.Exists(path);
+
+            internal static byte[] ReadAllBytes(string path)
+                => System.IO.File.ReadAllBytes(path);
+        }
+
+        internal static class FileStream
+        {
+            internal static Stream CreateReadShareDelete(string path)
+                => new System.IO.FileStream(
+                    path,
+                    System.IO.FileMode.Open,
+                    System.IO.FileAccess.Read,
+                    System.IO.FileShare.Read | System.IO.FileShare.Delete);
+        }
+#else
         private static class CoreNames
         {
             internal const string System_IO_FileSystem = "System.IO.FileSystem, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a";
@@ -100,6 +128,6 @@ namespace Microsoft.DiaSymReader.PortablePdb
                 return s_Ctor_String_FileMode_FileAccess_FileShare.InvokeConstructor<Stream>(path, FileMode.Open, FileAccess.Read, FileShare.ReadOrDelete);
             }
         }
-
+#endif
     }
 }

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the License.txt file in the project root for more information.
 
+#if !NETSTANDARD2_0_OR_GREATER && !NETCOREAPP
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -144,3 +145,4 @@ namespace Microsoft.DiaSymReader.PortablePdb
         }
     }
 }
+#endif

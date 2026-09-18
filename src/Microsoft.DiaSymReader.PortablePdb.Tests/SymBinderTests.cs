@@ -39,8 +39,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             public object GetMetadataImport() => _importProvider();
         }
 
-        // TODO: Enable on Linux. https://github.com/dotnet/symreader-portable/issues/110
-        [ConditionalFact(typeof(WindowsOnly))]
+        [Fact]
         public void GetReaderForFile_NextToPE()
         {
             var importer = new TestIMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
@@ -70,8 +69,7 @@ namespace Microsoft.DiaSymReader.PortablePdb.UnitTests
             Directory.Delete(tempDir, recursive: true);
         }
 
-        // TODO: Enable on Linux. https://github.com/dotnet/symreader-portable/issues/110
-        [ConditionalFact(typeof(WindowsOnly))]
+        [Fact]
         public void GetReaderForFile_SearchPaths()
         {
             var importer = new TestIMetadataImport(new MemoryStream(TestResources.Documents.PortableDll));
