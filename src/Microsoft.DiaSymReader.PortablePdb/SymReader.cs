@@ -68,7 +68,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
 		
         internal static MetadataReaderProvider CreateProviderFromFile(string path)
         {
-            var pdbStream = PortableShim.FileStream.CreateReadShareDelete(path);
+            var pdbStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete);
             return MetadataReaderProvider.FromPortablePdbStream(pdbStream);
         }
 		

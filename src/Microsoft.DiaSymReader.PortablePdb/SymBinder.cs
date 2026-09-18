@@ -164,9 +164,9 @@ namespace Microsoft.DiaSymReader.PortablePdb
             }
 
             // 5c) environment variables:
-            yield return PortableShim.Environment.GetEnvironmentVariable("_NT_ALT_SYMBOL_PATH");
-            yield return PortableShim.Environment.GetEnvironmentVariable("_NT_SYMBOL_PATH");
-            yield return PortableShim.Environment.GetEnvironmentVariable("SystemRoot");
+            yield return Environment.GetEnvironmentVariable("_NT_ALT_SYMBOL_PATH")!;
+            yield return Environment.GetEnvironmentVariable("_NT_SYMBOL_PATH")!;
+            yield return Environment.GetEnvironmentVariable("SystemRoot")!;
         }
 
         private static IEnumerable<string> GetSearchPathSubdirectories(string searchPath, string peFileExtension)
@@ -243,7 +243,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
             LazyMetadataImport metadataImport,
             [NotNullWhen(true)] out ISymUnmanagedReader? reader)
         {
-            if (PortableShim.File.Exists(pdbFilePath))
+            if (File.Exists(pdbFilePath))
             {
                 PortablePdbReader? pdbReader;
                 try
@@ -279,7 +279,7 @@ namespace Microsoft.DiaSymReader.PortablePdb
         {
             try
             {
-                var peStream = PortableShim.FileStream.CreateReadShareDelete(peFilePath);
+                var peStream = new FileStream(peFilePath, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete);
                 using (var peReader = new PEReader(peStream))
                 {
                     foreach (var entry in peReader.ReadDebugDirectory())
