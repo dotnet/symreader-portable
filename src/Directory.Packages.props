@@ -10,7 +10,6 @@
     <PackageVersion Include="Microsoft.DiaSymReader" Version="2.2.10" />
     <PackageVersion Include="System.Collections.Immutable" Version="10.0.10" />
     <PackageVersion Include="System.Reflection.Metadata" Version="10.0.10" />
-    <PackageVersion Include="Microsoft.DiaSymReader.Native" Version="17.0.0-beta1.21524.1" />
   </ItemGroup>
 
 </Project>
